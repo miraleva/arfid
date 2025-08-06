@@ -3,22 +3,23 @@
     position: absolute;
     top: 0px;
     right: 0px;
-    border: 2px solid rgb(164, 92, 92);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    border-radius: 5px;
     width: 100vw;
     background: white;
-    height: 60px;
+    height: 70px;
     align-items: center;
+    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.25);
 }
 
 .headerName{
     margin-left: 3vw;
-    color: rgb(177, 75, 211);
-    font-size: larger;
+    color: #9381FF;
+    font-size: x-large;
     font-weight: bold;
+    font-family: "Inter", sans-serif;
+    
 }
 
 .headerButtonContainer{
@@ -26,7 +27,7 @@
 }
 
 .landingButtons:hover{
-    background-color: rgb(187, 209, 23);
+    background-color: rgb(156, 13, 13);
     transform: translateY(2px);
     cursor:pointer;
 }
@@ -36,5 +37,5 @@
 }
 
 body{
-    background: linear-gradient(45deg , #c3c1b0, #aeb4bc);
+    background: linear-gradient(70deg , #f5e896, #efae4c);
 }
