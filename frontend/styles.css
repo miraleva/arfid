@@ -1,0 +1,40 @@
+
+.header{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    border: 2px solid red;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-radius: 5px;
+    width: 100vw;
+    background: white;
+    height: 60px;
+    align-items: center;
+}
+
+.headerName{
+    margin-left: 3vw;
+    color: rgb(177, 75, 211);
+    font-size: larger;
+    font-weight: bold;
+}
+
+.headerButtonContainer{
+    margin-right: 3vw;
+}
+
+.landingButtons:hover{
+    background-color: rgb(187, 209, 23);
+    transform: translateY(2px);
+    cursor:pointer;
+}
+
+.landingButtons{
+    transition: all 0.5s;
+}
+
+body{
+    background: linear-gradient(45deg , #c3c1b0, #aeb4bc);
+}
