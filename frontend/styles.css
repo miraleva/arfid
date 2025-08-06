@@ -7,7 +7,7 @@
     flex-direction: row;
     justify-content: space-between;
     width: 100vw;
-    background: white;
+    background: #F9FAFB;
     height: 70px;
     align-items: center;
     box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.25);
@@ -16,7 +16,7 @@
 .headerName{
     margin-left: 3vw;
     color: #9381FF;
-    font-size: x-large;
+    font-size: xx-large;
     font-weight: bold;
     font-family: "Inter", sans-serif;
     
@@ -27,13 +27,39 @@
 }
 
 .landingButtons:hover{
-    background-color: rgb(156, 13, 13);
+    background-color: rgb(255, 7, 7);
     transform: translateY(2px);
     cursor:pointer;
 }
 
 .landingButtons{
     transition: all 0.5s;
+    margin-right: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 3px 0 rgba(0, 0, 0, 0.25);
+    width: 8vw;
+    height: 35px;
+    
+}
+
+#logInButton{
+    color:#676767;
+    font-family: "Inter", sans-serif;
+    font-weight: bold;
+    font-size: medium;
+    background-color: #F9FAFB;
+    border: 2px solid #bbbaba;
+
+}
+
+#signUpButton{
+    color:#ffffff;
+    font-family: "Inter", sans-serif;
+    font-weight: bold;
+    font-size: medium;
+    background-color: #FDBA4E;
+    border: 2px solid #eb9e22;
+
 }
 
 body{
