@@ -1,0 +1,15 @@
+.container{
+    display: flex;
+    flex-direction: row;
+}
+
+.giris{
+    border: solid red 1px;
+    width: 50%;
+    max-width: 600px;
+}
+
+label {
+  display: block; /* label'ı satırın tamamına yayar */
+  margin-bottom: 4px; /* input ile araya boşluk */
+}

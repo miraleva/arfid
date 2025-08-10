@@ -26,7 +26,6 @@
 }
 
 .landingButtons:hover{
-    background-color: rgb(255, 7, 7);
     transform: translateY(2px);
     cursor:pointer;
 }
@@ -40,6 +39,10 @@
     height: 35px;
 }
 
+#logInButton:hover{
+    background-color: #9381FF;
+}
+
 #logInButton{
     color:#676767;
     font-family: "Inter", sans-serif;
@@ -47,6 +50,9 @@
     font-size: medium;
     background-color: #F9FAFB;
     border: 2px solid #bbbaba;
+}
+
+#signUpButton:hover{
 }
 
 #signUpButton{
@@ -74,6 +80,7 @@
     font-family: "Poppins", sans-serif;
     color:#ffffff;
     font-weight: bold;
+    
 }
 .getStartedButton {
     width: 17vw;
@@ -88,14 +95,13 @@
     border: none;
     border-radius: 10px;
     transition: all 0.5s; 
-  
+
 }
 .getStartedButton:hover {
     background-color: rgb(77, 70, 147);
     transform: translateY(2px);
     cursor:pointer;
 }
-
 
 body{
     background: linear-gradient(70deg , #FCD995, #FDC349);
