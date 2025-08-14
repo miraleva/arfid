@@ -106,7 +106,13 @@
 }
 
 .images{
-    
+    position: absolute; 
+    bottom: 0;
+    right: 0; 
+    width: 500px; 
+    height: auto;
+    opacity: 0.9;
+    z-index: -1; 
 }
 
 body{
