@@ -111,10 +111,10 @@
     right: 0; 
     width: 500px; 
     height: auto;
-    opacity: 0.9;
+    opacity: 0.8;
     z-index: -1; 
 }
 
 body{
-    background: linear-gradient(70deg , #FCD995, #FDC349);
+    background: linear-gradient(70deg , #FCD995, #f1a831);
 }

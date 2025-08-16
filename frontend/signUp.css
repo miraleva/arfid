@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: row;
     
+    
 }
 
 .giris{
@@ -62,10 +63,21 @@ input{
 .already{
   margin-top: 20px;
   margin-left: 10px;
-  font-size: 16px;
+  font-size: 18px;
   font-family: "Inter", sans-serif;
   font-weight: 600;
   color:#656565;
+}
+
+.signLink {
+  color: rgb(72, 164, 244);
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.signLink:hover {
+  text-decoration: underline;
 }
 
 label {
@@ -73,7 +85,3 @@ label {
   margin-bottom: 4px; /* input ile araya boşluk */
 }
 
-.picture{
-  
-  width:50%;
-}
