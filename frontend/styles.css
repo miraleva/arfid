@@ -37,6 +37,7 @@
     box-shadow: 0 4px 3px 0 rgba(0, 0, 0, 0.25);
     width: 8vw;
     height: 35px;
+    min-width: 76px;
 }
 
 #logInButton:hover{
@@ -105,10 +106,10 @@
     cursor:pointer;
 }
 
-.images{
-    position: absolute; 
-    bottom: 0;
-    right: 0; 
+#hands{
+    position:absolute; 
+    bottom: 0px;
+    right: 0px; 
     width: 500px; 
     height: auto;
     opacity: 0.8;
@@ -116,5 +117,16 @@
 }
 
 body{
+    
+    margin:0;
+    padding:0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    scrollbar-width: none;
+    position: relative;
     background: linear-gradient(70deg , #FCD995, #f1a831);
+}
+html::-webkit-scrollbar,body::-webkit-scrollbar{
+    display:none;
 }
