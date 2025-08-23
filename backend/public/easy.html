@@ -12,16 +12,19 @@
             <label for="id">ID</label><br>
             <input type="text" id="id" name="id">
         </form>
-            <button type="button">Click Me</button>
+         <button id="deleteButton" type="button">delete</button>
+            <button id="showResult" type="button">Click Me</button>
 
          <div id="result"></div>
+         
   <script>
-  const button = document.querySelector("button");
+  const delButton = document.getElementById("deleteButton");
+  const button = document.getElementById("showResult");
   const resultDiv = document.getElementById("result");
+  const inputId = document.getElementById("id");
 
   button.addEventListener("click", () => {
     const id = document.getElementById("id").value;
-
     fetch("http://localhost:3000/users/" + id)
       .then(response => response.json())
       .then(data => {
@@ -31,6 +34,12 @@
         resultDiv.innerText = "Bir hata oluştu: " + error;
       });
   });
+
+delButton.addEventListener("click", () => {
+inputId.value="";
+resultDiv.innerText="";
+})
+ 
 </script>
 
 </script>
