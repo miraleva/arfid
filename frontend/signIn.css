@@ -1,3 +1,11 @@
+.giris{
+  width: 50%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .container{
   color:#545454;
   font-family: "Inter", sans-serif;
@@ -7,6 +15,11 @@
   display: flex;
   flex-direction: row;
   justify-content:space-between;
+  height: 100vh;
+}
+#loginForm{
+  color:red;
+  background-color: aquamarine;
 }
 
 .title{
@@ -35,10 +48,17 @@ input{
  font-weight:500;
  
 }
+.image-section {
+  width: 50%;
+  display: flex;
+  align-items: center;   
+  justify-content: center;
+}
 
 #never{
   height: 100vh;
   width: 600px;
+  margin-right: 50vw;
   
 }
 

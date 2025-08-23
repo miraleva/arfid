@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>easyPeasy</title>
+</head>
+   
+    <body>
+     
+        <form>
+            <label for="id">ID</label><br>
+            <input type="text" id="id" name="id">
+        </form>
+            <button type="button">Click Me</button>
+
+         <div id="result"></div>
+  <script>
+  const button = document.querySelector("button");
+  const resultDiv = document.getElementById("result");
+
+  button.addEventListener("click", () => {
+    const id = document.getElementById("id").value;
+
+    fetch("http://localhost:3000/users/" + id)
+      .then(response => response.json())
+      .then(data => {
+        resultDiv.innerText = data.name + " - " + data.age;
+      })
+      .catch(error => {
+        resultDiv.innerText = "Bir hata oluştu: " + error;
+      });
+  });
+</script>
+
+</script>
+
+    </body>
+    
+</html>

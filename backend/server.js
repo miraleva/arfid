@@ -1,15 +1,19 @@
 // server.js
 const express = require("express");
+const cors = require("cors");
+const path = require("path");
 const app = express();
 const PORT = 3000;
 
 // JSON gövdesini okumak için middleware
+app.use(cors());
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
 // Örnek kullanıcı listesi
 let users = [
-  { id: 1, name: "Almira", age: 20 },
-  { id: 2, name: "Ahmet", age: 25 }
+  { id: 1, name: "Slim Easy", age:8 },
+  { id: 2, name: "Whimsy Lou", age: 10 }
 ];
 
 // Root endpoint
