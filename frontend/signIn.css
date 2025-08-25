@@ -1,4 +1,5 @@
 .giris{
+  
   width: 50%;
   padding: 2rem;
   display: flex;
@@ -7,7 +8,7 @@
 }
 
 .container{
-  border:solid #9381FF 2px ;
+
   color:#545454;
   font-family: "Inter", sans-serif;
   font-size: larger;
@@ -18,7 +19,8 @@
   height: 100vh;
 }
 #loginForm{
-  background-color: aquamarine;
+
+  
 }
 
 .title{
@@ -30,6 +32,7 @@
 }
 
 .journey{
+  border: solid purple 2px;
   color: #7c7c7c;
   font-size:20px;
   font-weight: 600;
@@ -47,13 +50,12 @@ input{
  font-weight:500;
  
 }
-.image-section {  
-  
-}
+
+
 
 #never{
   height: 100vh;
-  width: 600px;
+  width: 550px;
   
   
 }
