@@ -32,7 +32,6 @@
 }
 
 .journey{
-  border: solid purple 2px;
   color: #7c7c7c;
   font-size:20px;
   font-weight: 600;
@@ -63,6 +62,73 @@ input{
 label {
   display: block; 
   margin-bottom: 4px; 
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #b0b0b0;
+  border-radius: 3px;
+  background-color: white;
+  box-shadow: 0px 2px 4px rgba(145, 145, 145, 0.25);
+  cursor: pointer;
+  appearance: none;
+  
+}
+
+.checkbox input[type="checkbox"]:checked {
+  background-color: #3a72c6;
+  border-color: #3a72c6;
+  appearance: none;
+  
+}
+
+.checkbox label {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  margin-bottom: 0;
+  color: #545454;
+  cursor: pointer;
+}
+
+.forgot {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  color: #545454;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-left: 30px;
+}
+
+.forgot:hover,
+.forgot:active {
+  color: #3a72c6;
+}
+
+button[type="submit"] {
+  width: 22vw;
+  height: 3.8vw;
+  background-color: #00AFB9;
+  color: white;
+  font-family: "Inter", sans-serif;
+  font-size: larger;
+  font-weight: 650;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  transition: background-color 0.2s ease;
+  cursor:pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #0099a3;
 }
 
 body{
