@@ -1,0 +1,17 @@
+.container{
+color:#545454;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  height: 100vh;
+    
+}
+
+.title{
+    color: #1A0B78;
+    font-size: large;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
