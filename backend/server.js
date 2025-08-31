@@ -1,12 +1,11 @@
 // server.js
+
 const express = require("express");
-const cors = require("cors");
 const path = require("path");
 const app = express();
 const PORT = 3000;
 
 // JSON gövdesini okumak için middleware
-app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
@@ -16,14 +15,28 @@ let users = [
   { id: 2, name: "Whimsy Lou", age: 10 }
 ];
 
+app.post("/count", (req, res) =>{
+  console.log("giriş yapıldı");
+  res.send("ok");
+});
+
 // Root endpoint
 app.get("/", (req, res) => {
   res.send("Merhaba! Express API çalışıyor 🚀");
 });
 
 // Tüm kullanıcıları getir
-app.get("/users", (req, res) => {
-  res.json(users);
+app.get("/signin", (req, res) => res.render("signin"));
+
+// Signin işlemi
+app.post("/signin", (req, res) => {
+  const { email, password } = req.body;
+  const user = users.find(u => u.email === email);
+  if(user && password === user.password) {
+    res.send(`Hoşgeldin, ${user.username}!`);
+  } else {
+    res.send("Hatalı giriş");
+  }
 });
 
 // ID'ye göre kullanıcı getir
