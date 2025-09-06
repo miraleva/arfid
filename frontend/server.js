@@ -45,6 +45,11 @@ app.get("/signup", (req, res) => {
     res.render("signup");
 });
 
+app.get("/forgot", (req, res) => {
+    res.render("forgot");
+});
+
+
 // Örnek signin POST
 app.post("/signin", (req, res) => {
     const { email, password } = req.body;
