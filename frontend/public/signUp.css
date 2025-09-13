@@ -1,23 +1,20 @@
-
-.giris{
-    /*border: solid  1px;*/
-    width: 50%;
-    /*max-width: 600px;*/
-    
-}
-
 .container{
-  color:#545454;
-  font-family: "Inter", sans-serif;
-  font-size: larger;
-  font-weight: 600;
-  margin-left: 2vw;
   display: flex;
   flex-direction: row;
   justify-content:space-between;
-  
-  
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
 }
+
+.giris{
+  width: 50%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid red;
+}
+
 
 .title{
   color: #9381FF;
@@ -27,11 +24,37 @@
   margin-top: 10px;
 }
 
-.journey{
+.subtitle{
   color: #7c7c7c;
   font-size:20px;
   font-weight: 600;
   margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+input{
+  width: 23vw;
+  height: 3.1vw;
+  border: 2px solid #c0c0c0;
+  border-radius: 12px;
+  padding: 0 16px;
+  box-shadow: 0px 4px 4px rgba(145, 145, 145, 0.25);
+  font-size: 16px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s ease;
+  background-color: white;
+ }
+
+ input:focus {
+  border-color: #9381FF;
 }
 
 button[type="submit"] {
@@ -40,23 +63,31 @@ button[type="submit"] {
   background-color: #00AFB9;
   color: white;
   font-family: "Inter", sans-serif;
-  font-size: larger;
-  font-weight: 650;
-  border: 0;
+  font-size: 24px;
+  font-weight: 600;
+  border: none;
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  cursor:pointer;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
 }
-input{
- width: 23vw;
- height: 3.1vw;
- border-radius: 12px;
- border-color:#C2C2C2 ;
- box-shadow: 0px 4px 4px rgba(145, 145, 145, 0.25);
- font-size: small;
- font-family: "Inter", sans-serif;
- font-weight:500;
- 
+
+button[type="submit"]:hover {
+  background-color: #0099a3;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: auto;
+  scrollbar-width: none;
+  position: relative;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 .already{
@@ -69,39 +100,21 @@ input{
 }
 
 .signLink {
-  color: rgb(72, 164, 244);
-  font-weight: bold;
-  text-decoration: none;
-  cursor: pointer;
+  color: #9381FF;
+  font-size: 20px;
+  font-family: "Inter", sans-serifs;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 .signLink:hover {
+  color: #6d5fe7;
   text-decoration: underline;
 }
 
 #dish{
   height: 100vh;
   width: 600px;
-  
-}
-
-label {
-  display: block; /* label'ı satırın tamamına yayar */
-  margin-bottom: 4px; /* input ile araya boşluk */
-}
-
-body{
-    
-    margin:0;
-    padding:0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    scrollbar-width: none;
-    position: relative;
-  
-}
-html::-webkit-scrollbar,body::-webkit-scrollbar{
-    display:none;
+  object-fit: cover;
 }
 

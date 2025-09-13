@@ -1,26 +1,18 @@
-.giris{
-  
-  width: 50%;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  
-}
-
 .container{
-
-  color:#545454;
-  font-family: "Inter", sans-serif;
-  font-size: larger;
-  font-weight: 600;
   display: flex;
   flex-direction: row;
   justify-content:space-between;
   height: 100vh;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
 }
-#loginForm{
 
-  
+.login{
+  width: 50%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .title{
@@ -31,37 +23,37 @@
   margin-top: 10px;
 }
 
-.journey{
+.subtitle{
   color: #7c7c7c;
   font-size:20px;
   font-weight: 600;
   margin-bottom: 30px;
 }
 
-input{
- width: 23vw;
- height: 3.1vw;
- border-radius: 12px;
- border-color:#C2C2C2 ;
- box-shadow: 0px 4px 4px rgba(145, 145, 145, 0.25);
- font-size: small;
- font-family: "Inter", sans-serif;
- font-weight:500;
- 
-}
-
-
-
-#never{
-  height: 100vh;
-  width: 550px;
-  
-  
-}
-
 label {
-  display: block; 
-  margin-bottom: 4px; 
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+
+input {
+  width: 23vw;
+  height: 3.1vw;
+  border: 2px solid #c0c0c0;
+  border-radius: 12px;
+  padding: 0 16px;
+  box-shadow: 0px 4px 4px rgba(145, 145, 145, 0.25);
+  font-size: 16px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s ease;
+  background-color: white;
+}
+input:focus {
+  border-color: #9381FF;
 }
 
 .checkbox {
@@ -72,10 +64,10 @@ label {
 }
 
 .checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border: 2px solid #b0b0b0;
-  border-radius: 3px;
+  border-radius: 4px;
   background-color: white;
   box-shadow: 0px 2px 4px rgba(145, 145, 145, 0.25);
   cursor: pointer;
@@ -84,15 +76,16 @@ label {
 }
 
 .checkbox input[type="checkbox"]:checked {
-  background-color: #3a72c6;
-  border-color: #3a72c6;
+  background-color: #f3c22f;
+  border-color: #f3c22f;
   appearance: none;
   
 }
 
 .checkbox label {
   font-family: "Inter", sans-serif;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 600;
   margin-bottom: 0;
   color: #545454;
   cursor: pointer;
@@ -100,7 +93,7 @@ label {
 
 .forgot {
   font-family: "Inter", sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   color: #545454;
   cursor: pointer;
   transition: color 0.2s ease;
@@ -109,7 +102,7 @@ label {
 
 .forgot:hover,
 .forgot:active {
-  color: #3a72c6;
+  color:#20b2da;
 }
 
 button[type="submit"] {
@@ -118,31 +111,56 @@ button[type="submit"] {
   background-color: #00AFB9;
   color: white;
   font-family: "Inter", sans-serif;
-  font-size: larger;
-  font-weight: 650;
-  border: 0;
+  font-size: 24px;
+  font-weight: 600;
+  border: none;
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   transition: background-color 0.2s ease;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 button[type="submit"]:hover {
   background-color: #0099a3;
 }
 
-body{
-    
-    margin:0;
-    padding:0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    scrollbar-width: none;
-    position: relative;
-  
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: auto;
+  scrollbar-width: none;
+  position: relative;
 }
-html::-webkit-scrollbar,body::-webkit-scrollbar{
-    display:none;
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
+.noAccount {
+  text-align: left;
+  margin-top: 20px;
+  font-size: 20px;
+  color: #545454;
+}
+
+.signLink {
+  color: #9381FF;
+  font-size: 20px;
+  font-family: "Inter", sans-serifs;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.signLink:hover {
+  color: #6d5fe7;
+  text-decoration: underline;
+}
+
+#never{
+  height: 100vh;
+  width: 550px;
+  object-fit: cover;
+  
+}
