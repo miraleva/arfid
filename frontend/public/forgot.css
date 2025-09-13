@@ -105,7 +105,6 @@ input:focus {
   width: 550px;
   object-fit: cover;
 }
-
 body {
   margin: 0;
   padding: 0;
@@ -120,3 +119,4 @@ html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none;
 }
+

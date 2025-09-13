@@ -33,7 +33,7 @@
 
 label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   font-size: 18px;
   font-weight: 600;
 }
@@ -116,5 +116,16 @@ body::-webkit-scrollbar {
   height: 100vh;
   width: 600px;
   object-fit: cover;
+}
+
+.warning {
+  color: #ff4757;
+  font-size: 14px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  margin-top: 3px;
+  margin-left: 4px;
+  min-height: 4px;
+  transition: opacity 0.2s ease;
 }
 

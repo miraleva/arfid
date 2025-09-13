@@ -49,6 +49,11 @@ app.get("/forgot", (req, res) => {
     res.render("forgot");
 });
 
+// Test sayfası
+app.get("/test", (req, res) => {
+    res.render("test");
+});
+
 
 // Örnek signin POST
 app.post("/signin", (req, res) => {
