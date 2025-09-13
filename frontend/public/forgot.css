@@ -1,62 +1,122 @@
-.container{
-color:#545454;
-  font-family: "Inter", sans-serif;
+.container {
   display: flex;
   flex-direction: row;
-  justify-content:space-between;
+  justify-content: space-between;
   height: 100vh;
-    
+  font-size: 18px;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  color: #545454;
+}
+.forgotBox {
+  width: 50%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.title{
-    color: #1A0B78;
-    font-size: 54px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
+
+.title {
+  color: #9381FF;
+  font-size: 32px;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  margin: 10px 0 8px 0;
+}
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #545454;
 }
 
-input{
- width: 23vw;
- height: 3.1vw;
- border-radius: 12px;
- border-color:#C2C2C2 ;
- box-shadow: 0px 4px 4px rgba(145, 145, 145, 0.25);
- font-size: small;
- font-family: "Inter", sans-serif;
- font-weight:500;
- 
+input {
+  width: 23vw;
+  height: 3.1vw;
+  border: 2px solid #c0c0c0;
+  border-radius: 12px;
+  padding: 0 16px;
+  box-shadow: 0px 4px 4px rgba(145, 145, 145, 0.25);
+  font-size: 16px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s ease;
+  background-color: white;
 }
-.journey{
-    color: #7c7c7c;
-  font-size:20px;
+
+input:focus {
+  border-color: #9381FF;
+}
+.subtitle {
+  color: #7c7c7c;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 30px;
 }
-.btn{
+.btn {
   width: 22vw;
   height: 3.8vw;
   background-color: #00AFB9;
   color: white;
   font-family: "Inter", sans-serif;
-  font-size: larger;
-  font-weight: 650;
-  border: 0;
+  font-size: 24px;
+  font-weight: 600;
+  border: none;
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   transition: background-color 0.2s ease;
-  cursor:pointer;
+  cursor: pointer;
   margin-top: 20px;
 }
-.backSignin{
-    color: #7c7c7c;
-  font-size:20px;
-  font-weight: 600;
-  margin-bottom: 30px;
+
+.btn:hover {
+  background-color: #0099a3;
 }
-.emailLabel{
-  color:rgb(68, 68, 68);
-  font-size:20px;
-  font-weight: 400;
+.backSignin {
+  color: #7c7c7c;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 30px;
+  text-align: left;
+}
+
+.backSignin a {
+  color: #9381FF;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.backSignin a:hover {
+  color: #7a6bff;
+  text-decoration: underline;
+}
+.emailLabel {
+  color: #545454;
+  font-size: 18px;
+  font-weight: 600;
   display: block;
+  margin-bottom: 8px;
+}
+#empty {
+  height: 100vh;
+  width: 550px;
+  object-fit: cover;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: auto;
+  scrollbar-width: none;
+  position: relative;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
