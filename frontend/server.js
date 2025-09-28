@@ -49,33 +49,58 @@ app.get("/forgot", (req, res) => {
     res.render("forgot");
 });
 
-// Test sayfası
-app.get("/test", (req, res) => {
-    res.render("test");
-});
 
 
-// Örnek signin POST
-app.post("/signin", (req, res) => {
+// Signin POST - Backend API'ye bağlı
+app.post("/signin", async (req, res) => {
     const { email, password } = req.body;
 
- // Basit kontrol (demo amaçlı)
-    if(email === "test@test.com" && password === "1234") {
-        const response = fetch("http://localhost/3000/count");
-        req.session.user = { email }; // 🟢 Kullanıcıyı session’a ekledik
-        res.redirect("/"); // 🟢 Başarılı girişte ana sayfaya yönlendir
-    } else {
-        res.render("signin", { title: "Giriş Yap", error: "Email veya şifre yanlış" });
+    try {
+        const response = await fetch("http://localhost:3000/signin", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            req.session.user = { email: data.email, username: data.username };
+            res.redirect("/");
+        } else {
+            res.render("signin", { error: data.error || "Email veya şifre yanlış" });
+        }
+    } catch (error) {
+        res.render("signin", { error: "Bağlantı hatası" });
     }
 });
 
-// Signup POST
-app.post("/signup", (req, res) => {
-    const { email, password } = req.body;
-    // Kayıt işlemleri burada yapılabilir
-    // 🟢 Demo için kullanıcıyı direkt session’a ekleyelim
-    req.session.user = { email };
-    res.redirect("/"); // 🟢 Kayıt sonrası ana sayfaya yönlendir
+// Signup POST - Backend API'ye bağlı
+app.post("/signup", async (req, res) => {
+    const { email, password, username } = req.body;
+    
+    try {
+        const response = await fetch("http://localhost:3000/signup", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password, username })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            req.session.user = { email: data.email, username: data.username };
+            res.redirect("/");
+        } else {
+            res.render("signup", { error: data.error || "Kayıt sırasında bir hata oluştu" });
+        }
+    } catch (error) {
+        res.render("signup", { error: "Bağlantı hatası" });
+    }
 });
 
 // Logout route

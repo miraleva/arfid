@@ -1,67 +1,64 @@
 // server.js
-
 const express = require("express");
+const sqlite3 = require("sqlite3").verbose();
+const bodyParser = require("body-parser");
 const path = require("path");
+
 const app = express();
 const PORT = 3000;
 
-// JSON gövdesini okumak için middleware
+// Middleware
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
 
-// Örnek kullanıcı listesi
-let users = [
-  { id: 1, name: "Slim Easy", age:8 },
-  { id: 2, name: "Whimsy Lou", age: 10 }
-];
+// Database setup
+const db = new sqlite3.Database("users.db");
 
-app.post("/count", (req, res) =>{
-  console.log("giriş yapıldı");
-  res.send("ok");
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        username TEXT NOT NULL
+    )`);
+});
+
+// API: User signup
+app.post("/signup", (req, res) => {
+    const { email, password, username } = req.body;
+    if (!email || !password || !username) {
+        return res.status(400).json({ error: "Email, password and username are required" });
+    }
+    db.run("INSERT INTO users (email, password, username) VALUES (?, ?, ?)", 
+           [email, password, username], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ id: this.lastID, email, username });
+    });
+});
+
+// API: User signin
+app.post("/signin", (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required" });
+    }
+    db.get("SELECT * FROM users WHERE email = ? AND password = ?", 
+           [email, password], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (row) {
+            res.json({ id: row.id, email: row.email, username: row.username });
+        } else {
+            res.status(401).json({ error: "Invalid email or password" });
+        }
+    });
 });
 
 // Root endpoint
 app.get("/", (req, res) => {
-  res.send("Merhaba! Express API çalışıyor 🚀");
-});
-
-// Tüm kullanıcıları getir
-app.get("/signin", (req, res) => res.render("signin"));
-
-// Signin işlemi
-app.post("/signin", (req, res) => {
-  const { email, password } = req.body;
-  const user = users.find(u => u.email === email);
-  if(user && password === user.password) {
-    res.send(`Hoşgeldin, ${user.username}!`);
-  } else {
-    res.send("Hatalı giriş");
-  }
-});
-
-// ID'ye göre kullanıcı getir
-app.get("/users/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const user = users.find(u => u.id === id);
-  if (user) {
-    res.json(user);
-  } else {
-    res.status(404).json({ message: "Kullanıcı bulunamadı" });
-  }
-});
-
-// Yeni kullanıcı ekle
-app.post("/users", (req, res) => {
-  const newUser = {
-    id: users.length + 1,
-    name: req.body.name,
-    age: req.body.age
-  };
-  users.push(newUser);
-  res.status(201).json(newUser);
+    res.send("ARFID Backend API çalışıyor 🚀");
 });
 
 // Sunucuyu başlat
 app.listen(PORT, () => {
-  console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`);
+    console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`);
 });
