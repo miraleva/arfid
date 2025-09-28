@@ -28,6 +28,7 @@ function isAuthenticated(req, res, next) {
     if(req.session.user) { // 🟢 Kullanıcı giriş yaptıysa devam et
         return next();
     }
+    console.log("ok");
     res.redirect("/signin"); // 🟢 Giriş yoksa signin sayfasına yönlendir
 }
 

@@ -23,7 +23,7 @@
       <div class="leftist">
         <div class="title">Create an account</div>
         <div class="subtitle">Start your journey</div>
-          <form id="signUpForm" action="/signup" method="POST">
+          <form id="signUpForm">
           <label for="email">Email</label>
           <input type="text" id="email" name="email" placeholder="Enter your email" required />
           <div id="emailWarning" class="warning"></div>
@@ -70,7 +70,9 @@
     <!-- <script nomodule src="/js/legacy.js"></script> -->
     
     <script>
-        document.getElementById('signUpForm').addEventListener('submit', function(e) {
+        document.getElementById('signUpForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
             const email = document.getElementById('email').value;
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -124,7 +126,46 @@
             }
             
             if (!isValid) {
-                e.preventDefault();
+                return;
+            }
+            
+            // If validation passes, send data to backend using fetch
+            try {
+                const response = await fetch('/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        username: username
+                    })
+                });
+                console.log(response);
+
+                if (response.ok) {
+                    // Success - redirect to home page
+                    window.location.href = '/';
+                } else {
+                    // Handle error response
+                    const errorData = await response.text();
+                    let errorMessage = 'Kayıt sırasında bir hata oluştu';
+                    
+                    try {
+                        const errorJson = JSON.parse(errorData);
+                        errorMessage = errorJson.error || errorMessage;
+                    } catch (e) {
+                        // If response is not JSON, use the text as error message
+                        errorMessage = errorData || errorMessage;
+                    }
+                    
+                    // Display error message
+                    emailWarning.textContent = errorMessage;
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                emailWarning.textContent = 'Bağlantı hatası. Lütfen tekrar deneyin.';
             }
         });
         

@@ -23,15 +23,22 @@ db.serialize(() => {
     )`);
 });
 
+
 // API: User signup
 app.post("/signup", (req, res) => {
     const { email, password, username } = req.body;
+    console.log("signup isteği geldi");
     if (!email || !password || !username) {
+        console.log("bilgi eksik");
         return res.status(400).json({ error: "Email, password and username are required" });
     }
     db.run("INSERT INTO users (email, password, username) VALUES (?, ?, ?)", 
            [email, password, username], function (err) {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) 
+            
+        {console.log(err.message);
+        return res.status(500).json({ error: err.message });}
+        console.log("kaydedildi");
         res.json({ id: this.lastID, email, username });
     });
 });
