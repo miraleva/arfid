@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chat</title>
+    <link rel="stylesheet" href="chat.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter"/>
+</head>
+<body>
+    <div class="header">
+        <div class="headerName">Asistancım</div>
+        <div class="headerButton">
+            <a href="/logout"><button class="logoutButton">Log out</button></a>
+        </div>
+    </div>
+
+    <div class="chatContainer">
+        <div class="chatArea" id="chatArea">
+            <div class="welcomeMessage">
+                <div class="aiAvatar">
+                    <div class="smileyIcon">😊</div>
+                </div>
+                <div class="aiMessageBubble">
+                    Hi, how can I help you? :3
+                </div>
+            </div>
+        </div>
+
+        <div class="messageInputContainer">
+            <div class="messageInputWrapper">
+                <input type="text" class="messageInput" id="messageInput" placeholder="Type here...">
+                <button class="sendButton" id="sendButton">↑</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const chatArea = document.getElementById('chatArea');
+
+        function addUserMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'userMessage';
+            messageDiv.innerHTML = `
+                <div class="userMessageBubble">
+                    ${message}
+                </div>
+            `;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                addUserMessage(message);
+                messageInput.value = '';
+                
+                // Here you would typically send the message to your backend
+                // For now, we'll just add the user message
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

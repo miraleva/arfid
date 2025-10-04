@@ -50,6 +50,11 @@ app.get("/forgot", (req, res) => {
     res.render("forgot");
 });
 
+// Chat sayfası
+app.get("/chat", isAuthenticated, (req, res) => {
+    res.render("chat", { title: "Chat", user: req.session.user });
+});
+
 
 
 // Signin POST - Backend API'ye bağlı
@@ -69,7 +74,7 @@ app.post("/signin", async (req, res) => {
         
         if (response.ok) {
             req.session.user = { email: data.email, username: data.username };
-            res.redirect("/");
+            res.redirect("/chat");
         } else {
             res.render("signin", { error: data.error || "Email veya şifre yanlış" });
         }
@@ -95,7 +100,7 @@ app.post("/signup", async (req, res) => {
         
         if (response.ok) {
             req.session.user = { email: data.email, username: data.username };
-            res.redirect("/");
+            res.redirect("/chat");
         } else {
             res.render("signup", { error: data.error || "Kayıt sırasında bir hata oluştu" });
         }
@@ -106,8 +111,8 @@ app.post("/signup", async (req, res) => {
 
 // Logout route
 app.get("/logout", (req, res) => {
-    req.session.destroy(); // 🟢 Session’ı temizle
-    res.redirect("/signin"); // 🟢 Giriş sayfasına yönlendir
+    req.session.destroy(); 
+    res.redirect("/"); 
 });
 
 // Sunucuyu başlat
