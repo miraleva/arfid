@@ -192,27 +192,3 @@ body {
     background-color: #555555;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .chatHeaderName {
-        font-size: large;
-        margin-left: 2vw;
-    }
-    
-    .chatHeaderButton {
-        margin-right: 2vw;
-    }
-    
-    .aiMessageBubble,
-    .userMessageBubble {
-        max-width: 80%;
-    }
-    
-    .chatArea {
-        padding: 15px;
-    }
-    
-    .messageInputContainer {
-        padding: 15px;
-    }
-}
