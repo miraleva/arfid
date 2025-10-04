@@ -1,11 +1,41 @@
 // server.js
+const { GoogleGenAI } = require("@google/genai");
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const bodyParser = require("body-parser");
 const path = require("path");
-
+const dotenv= require("dotenv");
+require("dotenv").config();
+const ai = new GoogleGenAI({apiKey : process.env.GOOGLE_API_KEY});
 const app = express();
 const PORT = 3000;
+
+
+
+async function geminiResponse(userText) {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: userText,
+  });
+  console.log(response.text);
+  return response.text;
+}
+
+
+app.get("/aiSearch", async (req, res) =>  {
+    const userText= req.query.query;
+    const response=  await geminiResponse(userText);
+    res.send(response);
+
+});
+
+app.get("/aiAsist", async (req, res) =>  {
+    const userText= req.query.query;
+    const prompt= "Sen bir diyetisyensin. Kilo almak isteyenler için ayrı, Kilo vermek isteyenler için ayrı bir yemek programı önererek verilen soruyu cevapla.";
+    const response=  await geminiResponse(prompt.concat(userText));
+    res.send(response);
+
+});
 
 // Middleware
 app.use(bodyParser.json());
