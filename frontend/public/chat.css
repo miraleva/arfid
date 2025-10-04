@@ -54,7 +54,7 @@ body {
 }
 
 .chatContainer {
-    border: solid, 2px,red;
+
     display: flex;
     flex-direction: column;
     height: calc(100vh - 80px); /* Full height minus header */
@@ -62,7 +62,6 @@ body {
 }
 
 .chatArea {
-    border: solid, 2px,rgb(13, 145, 13);
     flex: 1;
     padding: 20px;
     overflow-y: auto;
