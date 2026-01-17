@@ -53,14 +53,46 @@
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        function sendMessage() {
+        function addAiMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'welcomeMessage'; // Using existing AI message style
+            messageDiv.innerHTML = `
+                <div class="aiAvatar">
+                    <div class="smileyIcon">😊</div>
+                </div>
+                <div class="aiMessageBubble">
+                    ${message}
+                </div>
+            `;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        async function sendMessage() {
             const message = messageInput.value.trim();
             if (message) {
                 addUserMessage(message);
                 messageInput.value = '';
                 
-                // Here you would typically send the message to your backend
-                // For now, we'll just add the user message
+                try {
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        addAiMessage(data.response);
+                    } else {
+                        addAiMessage("Üzgünüm, şu an cevap veremiyorum. (Sunucu hatası)");
+                    }
+                } catch (error) {
+                    console.error('Chat error:', error);
+                    addAiMessage("Bağlantı hatası oluştu. Lütfen sunucuyu kontrol edin.");
+                }
             }
         }
 

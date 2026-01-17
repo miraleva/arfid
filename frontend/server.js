@@ -25,7 +25,7 @@ app.use(session({
 
 // 🟢 Auth kontrol middleware
 function isAuthenticated(req, res, next) {
-    if(req.session.user) { // 🟢 Kullanıcı giriş yaptıysa devam et
+    if (req.session.user) { // 🟢 Kullanıcı giriş yaptıysa devam et
         return next();
     }
     console.log("ok");
@@ -69,9 +69,9 @@ app.post("/signin", async (req, res) => {
             },
             body: JSON.stringify({ email, password })
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             req.session.user = { email: data.email, username: data.username };
             res.redirect("/chat");
@@ -86,7 +86,7 @@ app.post("/signin", async (req, res) => {
 // Signup POST - Backend API'ye bağlı
 app.post("/signup", async (req, res) => {
     const { email, password, username } = req.body;
-    
+
     try {
         const response = await fetch("http://localhost:3000/signup", {
             method: 'POST',
@@ -95,9 +95,9 @@ app.post("/signup", async (req, res) => {
             },
             body: JSON.stringify({ email, password, username })
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             req.session.user = { email: data.email, username: data.username };
             res.redirect("/chat");
@@ -109,10 +109,31 @@ app.post("/signup", async (req, res) => {
     }
 });
 
+// Chat POST - Proxy to Backend
+app.post("/chat", isAuthenticated, async (req, res) => {
+    const { message } = req.body;
+
+    try {
+        const response = await fetch("http://localhost:3000/chat", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error("Chat proxy hatası:", error);
+        res.status(500).json({ error: "Backend bağlantı hatası" });
+    }
+});
+
 // Logout route
 app.get("/logout", (req, res) => {
-    req.session.destroy(); 
-    res.redirect("/"); 
+    req.session.destroy();
+    res.redirect("/");
 });
 
 // Sunucuyu başlat
