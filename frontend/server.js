@@ -33,20 +33,32 @@ function isAuthenticated(req, res, next) {
 }
 
 // Ana sayfa
-app.get("/", isAuthenticated, (req, res) => { // 🟢 isAuthenticated ekledik
-    res.render("index", { title: "Ana Sayfa", user: req.session.user });
+app.get("/", (req, res) => {
+    if (req.session.user) {
+        return res.redirect("/chat");
+    }
+    res.render("mainPage", { title: "Ana Sayfa", user: req.session.user });
 });
 // Signin sayfası
 app.get("/signin", (req, res) => {
+    if (req.session.user) {
+        return res.redirect("/chat");
+    }
     res.render("signin");
 });
 
 // Signup sayfası
 app.get("/signup", (req, res) => {
+    if (req.session.user) {
+        return res.redirect("/chat");
+    }
     res.render("signup");
 });
 
 app.get("/forgot", (req, res) => {
+    if (req.session.user) {
+        return res.redirect("/chat");
+    }
     res.render("forgot");
 });
 

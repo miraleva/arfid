@@ -51,7 +51,7 @@
           <button type="submit">Sign up</button>
 
             <p class="already">Already have an account? 
-            <a class="signLink" href="/signIn">Sign In</a>
+            <a class="signLink" href="/signin">Sign In</a>
             </p>
 
           
@@ -146,7 +146,7 @@
 
                 if (response.ok) {
                     // Success - redirect to home page
-                    window.location.href = '/';
+                    window.location.href = '/chat';
                 } else {
                     // Handle error response
                     const errorData = await response.text();

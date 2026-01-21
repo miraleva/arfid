@@ -38,7 +38,7 @@
           <br /><br />
           
           <p class="noAccount">Don't have an account? 
-            <a class="signLink" href="/signUp">Sign Up</a>
+            <a class="signLink" href="/signup">Sign Up</a>
             </p>
           
          </form> 
@@ -95,7 +95,7 @@
                 
                 if (response.ok) {
                     // Success - redirect to home page
-                    window.location.href = '/';
+                    window.location.href = '/chat';
                 } else {
                     // Handle error response
                     const errorData = await response.text();
