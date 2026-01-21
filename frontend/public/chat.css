@@ -57,8 +57,10 @@ body {
 
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 80px); /* Full height minus header */
-    margin-top: 80px; /* Account for fixed header */
+    height: calc(100vh - 80px);
+    /* Full height minus header */
+    margin-top: 80px;
+    /* Account for fixed header */
 }
 
 .chatArea {
@@ -68,7 +70,8 @@ body {
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
-    min-height: 0; /* Allows flex item to shrink */
+    min-height: 0;
+    /* Allows flex item to shrink */
 }
 
 .chatArea::-webkit-scrollbar {
@@ -93,11 +96,11 @@ body {
 .aiAvatar {
     margin-right: 12px;
     margin-top: 5px;
-    
+
 }
 
 .smileyIcon {
-    
+
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -142,14 +145,15 @@ body {
     padding: 20px;
     background-color: #ffffff;
     border-top: 1px solid #E5E5E5;
-    flex-shrink: 0; /* Prevent input from shrinking */
+    flex-shrink: 0;
+    /* Prevent input from shrinking */
     position: sticky;
     bottom: 0;
     z-index: 100;
 }
 
 .messageInputWrapper {
-    border: solid, 2px,rgb(179, 179, 179);
+    border: solid, 2px, rgb(179, 179, 179);
     display: flex;
     align-items: center;
     background-color: #F5F5F5;
@@ -192,3 +196,52 @@ body {
     background-color: #555555;
 }
 
+/* Loading Animation */
+.loadingBubble {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.loadingText {
+    font-style: italic;
+    color: #666;
+    font-size: 13px;
+}
+
+.typingDots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    background-color: #9381FF;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}

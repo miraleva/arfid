@@ -41,6 +41,41 @@
         const sendButton = document.getElementById('sendButton');
         const chatArea = document.getElementById('chatArea');
 
+        let currentLoadingBubble = null;
+
+        function showLoading() {
+            if (currentLoadingBubble) return;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'welcomeMessage';
+            messageDiv.id = 'loadingIndicator';
+            messageDiv.innerHTML = `
+                <div class="aiAvatar">
+                    <div class="smileyIcon">😊</div>
+                </div>
+                <div class="aiMessageBubble">
+                    <div class="loadingBubble">
+                        <span class="loadingText">Thinking...</span>
+                        <div class="typingDots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            currentLoadingBubble = messageDiv;
+        }
+
+        function removeLoading() {
+            if (currentLoadingBubble) {
+                currentLoadingBubble.remove();
+                currentLoadingBubble = null;
+            }
+        }
+
         function addUserMessage(message) {
             const messageDiv = document.createElement('div');
             messageDiv.className = 'userMessage';
@@ -54,6 +89,7 @@
         }
 
         function addAiMessage(message) {
+            removeLoading();
             const messageDiv = document.createElement('div');
             messageDiv.className = 'welcomeMessage'; // Using existing AI message style
             messageDiv.innerHTML = `
@@ -73,6 +109,7 @@
             if (message) {
                 addUserMessage(message);
                 messageInput.value = '';
+                showLoading();
                 
                 try {
                     const response = await fetch('/chat', {
@@ -87,10 +124,12 @@
                         const data = await response.json();
                         addAiMessage(data.response);
                     } else {
+                        removeLoading();
                         addAiMessage("Üzgünüm, şu an cevap veremiyorum. (Sunucu hatası)");
                     }
                 } catch (error) {
                     console.error('Chat error:', error);
+                    removeLoading();
                     addAiMessage("Bağlantı hatası oluştu. Lütfen sunucuyu kontrol edin.");
                 }
             }
