@@ -13,32 +13,57 @@ const PORT = 3000;
 
 
 async function geminiResponse(userText) {
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: userText,
-    });
-    console.log(response.text);
-    return response.text;
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.0-flash",
+            contents: userText,
+        });
+        console.log(response.text);
+        return response.text;
+    } catch (error) {
+        console.error("Gemini Response Error:", error);
+        throw error;
+    }
 }
 async function getDietitianResponse(userText) {
     const prompt = "Sen bir diyetisyensin. Verilen mesajı maksimum 200 karakter uzunluğunda cevapla. Verilen mesajın dışında bir cevap verme. İşte kullanıcı mesajı: ";
-    const response = await geminiResponse(prompt.concat(userText));
-    return response;
+    try {
+        const response = await geminiResponse(prompt.concat(userText));
+        return response;
+    } catch (error) {
+        // Log the error internally
+        console.error("Dietitian Assistant Error:", error.message);
+
+        // Check for Quota/Rate Limit error
+        if (error.status === 429 || error.message?.includes("RESOURCE_EXHAUSTED") || error.code === 429) {
+            return "I'm a bit overwhelmed right now. Please try again in a moment.";
+        }
+
+        return "I'm having trouble connecting to my knowledge base right now. Please try again later.";
+    }
 }
 
 
 app.get("/aiSearch", async (req, res) => {
-    const userText = req.query.query;
-    const response = await geminiResponse(userText);
-    res.send(response);
-
+    try {
+        const userText = req.query.query;
+        const response = await geminiResponse(userText);
+        res.send(response);
+    } catch (error) {
+        console.error("aiSearch Error:", error.message);
+        res.status(500).send("AI Search is temporarily unavailable. Please try again later.");
+    }
 });
 
 app.get("/aiAsist", async (req, res) => {
-    const userText = req.query.query;
-    const response = await getDietitianResponse(userText);
-    res.send(response);
-
+    try {
+        const userText = req.query.query;
+        const response = await getDietitianResponse(userText);
+        res.send(response);
+    } catch (error) {
+        console.error("aiAsist Error:", error.message);
+        res.status(500).send("AI Assistant is temporarily unavailable. Please try again later.");
+    }
 });
 
 // Middleware
@@ -96,10 +121,15 @@ app.post("/signin", (req, res) => {
 
 // API: Chat message
 app.post("/chat", async (req, res) => {
-    const { message } = req.body;
-    console.log("Chat mesajı geldi:", message);
-    const response = await getDietitianResponse(message);
-    res.json({ response: response });
+    try {
+        const { message } = req.body;
+        console.log("Chat mesajı geldi:", message);
+        const response = await getDietitianResponse(message);
+        res.json({ response: response });
+    } catch (error) {
+        console.error("Chat route crash prevented:", error);
+        res.status(500).json({ response: "Üzgünüm, şu an bir hata oluştu. Daha sonra tekrar deneyebilir misiniz?" });
+    }
 });
 
 // Root endpoint
