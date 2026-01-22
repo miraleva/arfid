@@ -19,11 +19,18 @@
           </div>
         </div>
 
-        <div class="content-box">
-          <div class="backgroundTitle"> WHAT IS ARFID?</div>
-          <div class="backgroundText"> 
-            ARFID (Avoidant/Restrictive Food Intake Disorder), yani Kaçıngan/Kısıtlayıcı Yeme Bozukluğu,<br>
-            kişinin besin çeşitliliğini veya miktarını ciddi şekilde kısıtlamasıyla ortaya çıkan bir yeme bozukluğudur.
+        <div class="hero-container">
+          <div class="hero-content">
+            <div class="backgroundTitle animate-fade-up"> WHAT IS ARFID?</div>
+            <div class="backgroundText animate-fade-up"> 
+              ARFID (Avoidant/Restrictive Food Intake Disorder), yani Kaçıngan/Kısıtlayıcı Yeme Bozukluğu,<br>
+              kişinin besin çeşitliliğini veya miktarını ciddi şekilde kısıtlamasıyla ortaya çıkan bir yeme bozukluğudur.
+            </div>
+          </div>
+          <div class="hero-cta-box animate-fade-up">
+            <a href="<%= user ? '/chat' : '/signin' %>">
+              <button class="getStartedButton">Let's Get Started</button>
+            </a>
           </div>
         </div>
       </section>
@@ -44,7 +51,6 @@
         <div class="content-box">
           <a href="/chat"><button class="getStartedButton">Let's Get Started</button></a>
         </div>
-        <img src="image/hands.png" id="hands" alt="eller">
       </section>
     </div>
   </body>
