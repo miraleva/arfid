@@ -145,10 +145,11 @@ html {
     justify-content: center;
     align-items: center;
     background-size: cover;
+    /* Responsive scaling */
     background-position: center;
+    /* Responsive centering */
     background-repeat: no-repeat;
     background-attachment: scroll;
-    /* Default to scroll for standard behavior */
 }
 
 .section-1 {
@@ -174,10 +175,10 @@ html {
 
 .hero-content {
     flex: 2;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 40px;
-    border-radius: 20px;
-    backdrop-filter: blur(5px);
+    background: none;
+    /* Step 1: Clean and unobstructed */
+    padding: 0;
+    backdrop-filter: none;
     text-align: left;
 }
 
@@ -208,15 +209,14 @@ html {
 
 .backgroundTitle.animate-fade-up {
     animation-delay: 0.2s;
-    text-shadow: 0 0 20px rgba(147, 129, 255, 0.3);
+    text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.6);
+    /* Soft shadow for readability on image */
 }
 
-.backgroundText.animate-fade-up {
-    animation-delay: 0.8s;
-}
-
+/* Synchronized Entrance: Text & CTA follow Title together */
+.backgroundText.animate-fade-up,
 .hero-cta-box.animate-fade-up {
-    animation-delay: 1.4s;
+    animation-delay: 0.8s;
 }
 
 /* Section specific overrides for consistency */
