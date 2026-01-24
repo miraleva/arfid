@@ -108,17 +108,13 @@
         async function sendMessage() {
             const message = messageInput.value.trim();
             if (message) {
-                // Abort previous request if still pending
-                if (currentController) {
-                    currentController.abort();
-                }
+                // Disable UI to prevent spam
+                sendButton.disabled = true;
+                messageInput.disabled = true;
 
                 addUserMessage(message);
                 messageInput.value = '';
                 showLoading();
-                
-                // Create new controller for this request
-                currentController = new AbortController();
 
                 try {
                     const response = await fetch('/chat', {
@@ -126,29 +122,24 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ message }),
-                        signal: currentController.signal
+                        body: JSON.stringify({ message })
                     });
                     
                     if (response.ok) {
                         const data = await response.json();
                         addAiMessage(data.response);
-                        currentController = null;
                     } else {
                         const data = await response.json().catch(() => ({}));
-                        removeLoading();
                         addAiMessage(data.error || "Üzgünüm, şu an cevap veremiyorum. (Sunucu hatası)");
-                        currentController = null;
                     }
                 } catch (error) {
-                    if (error.name === 'AbortError') {
-                        console.log('Previous request aborted');
-                        return; // Don't remove loading or show error for aborted requests
-                    }
                     console.error('Chat error:', error);
-                    removeLoading();
                     addAiMessage("Bağlantı hatası oluştu. Lütfen sunucuyu kontrol edin.");
-                    currentController = null;
+                } finally {
+                    // Re-enable UI regardless of success or error
+                    sendButton.disabled = false;
+                    messageInput.disabled = false;
+                    messageInput.focus();
                 }
             }
         }
