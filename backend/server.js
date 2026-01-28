@@ -74,12 +74,119 @@ app.use(express.static(path.join(__dirname, "public")));
 const db = new sqlite3.Database("users.db");
 
 db.serialize(() => {
+    // 1. Foreign Key Desteği
+    db.run("PRAGMA foreign_keys = ON;");
+
+    // 2. Mevcut Users Tablosu
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         username TEXT NOT NULL
     )`);
+
+    // 3. Master Listeler (Ana Listeler)
+    // Foods
+    db.run(`CREATE TABLE IF NOT EXISTS foods (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE COLLATE NOCASE
+    )`);
+
+    // Sensory Attributes
+    db.run(`CREATE TABLE IF NOT EXISTS sensory_attributes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE COLLATE NOCASE
+    )`);
+
+    // Conditions
+    db.run(`CREATE TABLE IF NOT EXISTS conditions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE COLLATE NOCASE
+    )`);
+
+    // 4. Kullanıcı Eşleştirme Tabloları (Mappings)
+    // User - Food Preferences
+    db.run(`CREATE TABLE IF NOT EXISTS user_food_preferences (
+        user_id INTEGER NOT NULL,
+        food_id INTEGER NOT NULL,
+        is_safe INTEGER NOT NULL CHECK (is_safe IN (0, 1)),
+        PRIMARY KEY (user_id, food_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (food_id) REFERENCES foods(id) ON DELETE CASCADE
+    )`);
+
+    // User - Sensory Triggers
+    db.run(`CREATE TABLE IF NOT EXISTS user_sensory_triggers (
+        user_id INTEGER NOT NULL,
+        attribute_id INTEGER NOT NULL,
+        is_problematic INTEGER NOT NULL CHECK (is_problematic IN (0, 1)),
+        PRIMARY KEY (user_id, attribute_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (attribute_id) REFERENCES sensory_attributes(id) ON DELETE CASCADE
+    )`);
+
+    // User - Conditions
+    db.run(`CREATE TABLE IF NOT EXISTS user_conditions (
+        user_id INTEGER NOT NULL,
+        condition_id INTEGER NOT NULL,
+        has_condition INTEGER NOT NULL CHECK (has_condition IN (0, 1)),
+        PRIMARY KEY (user_id, condition_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (condition_id) REFERENCES conditions(id) ON DELETE CASCADE
+    )`);
+
+    // 5. Seed Verileri (Başlangıç Verileri)
+    // Foods
+    const foods = [
+        'Apple', 'Banana', 'Orange', 'Strawberry', 'Grapes',
+        'Chicken', 'Beef', 'Pork', 'Turkey', 'Lamb',
+        'Rice', 'Pasta', 'Bread', 'Toast', 'Cereal',
+        'Potato', 'French Fries', 'Mashed Potatoes', 'Sweet Potato',
+        'Carrot', 'Broccoli', 'Cucumber', 'Tomato', 'Lettuce',
+        'Milk', 'Cheese', 'Yogurt', 'Ice Cream', 'Butter',
+        'Egg', 'Scrambled Eggs', 'Boiled Eggs',
+        'Pizza', 'Burger', 'Sandwich', 'Soup',
+        'Chocolate', 'Chips', 'Crackers', 'Popcorn', 'Cookie',
+        'Water', 'Juice', 'Soda', 'Tea', 'Coffee',
+        'Peanut Butter', 'Jam', 'Honey', 'Nuts', 'Fish'
+    ];
+    // Optimize: Use a single transaction or prepared statement if list is long, 
+    // but for 50 items, individual INSERT OR IGNORE is acceptable for startup.
+    // Actually, let's use a single parameterized query with placeholders for cleaner code if possible,
+    // but standard SQL doesn't support bulk insert nicely across all versions without multiple VALUES.
+    // We will stick to the loop for simplicity and readability as requested "minimal".
+    const insertFood = db.prepare("INSERT OR IGNORE INTO foods (name) VALUES (?)");
+    foods.forEach(food => insertFood.run(food));
+    insertFood.finalize();
+
+    // Sensory Attributes
+    const sensoryAttributes = [
+        'Crunchy Texture', 'Slimy Texture', 'Mushy Texture', 'Chewy Texture',
+        'Strong Smell', 'Lack of Smell',
+        'Bright Colors', 'Mixed Textures', 'Lumpy',
+        'Hot Temperature', 'Cold Temperature',
+        'Spicy Taste', 'Bitter Taste', 'Sour Taste', 'Bland Taste'
+    ];
+    const insertSensory = db.prepare("INSERT OR IGNORE INTO sensory_attributes (name) VALUES (?)");
+    sensoryAttributes.forEach(attr => insertSensory.run(attr));
+    insertSensory.finalize();
+
+    // Conditions
+    const conditions = [
+        'Anxiety', 'Depression', 'OCD',
+        'Autism / ASD', 'ADHD',
+        'Sensory Processing Disorder',
+        'Emetophobia', 'Choking Phobia',
+        'Lactose Intolerance', 'Gluten Sensitivity',
+        'Acid Reflux',
+        'Iron Deficiency', 'Vitamin D Deficiency',
+        'Social Anxiety', 'General Fatigue'
+    ];
+    const insertCondition = db.prepare("INSERT OR IGNORE INTO conditions (name) VALUES (?)");
+    conditions.forEach(cond => insertCondition.run(cond));
+    insertCondition.finalize();
+
+    console.log("Database initialized with V1 schema and seed data.");
 });
 
 
