@@ -3,3 +3,5 @@ frontend/node_modules
 backend/.env
 backend/users.db-shm
 backend/users.db-wal
+**/.env
+**/node_modules/
