@@ -1,6 +1,8 @@
 const express = require("express");
 const path = require("path");
+
 const session = require("express-session");
+require("dotenv").config(); // Load environment variables
 
 const app = express();
 const PORT = 4000;
@@ -78,6 +80,7 @@ app.post("/signin", async (req, res) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Internal-Token': process.env.INTERNAL_SHARED_SECRET
             },
             body: JSON.stringify({ email, password })
         });
@@ -85,7 +88,7 @@ app.post("/signin", async (req, res) => {
         const data = await response.json();
 
         if (response.ok) {
-            req.session.user = { email: data.email, username: data.username };
+            req.session.user = { id: data.id, email: data.email, username: data.username };
             res.redirect("/chat");
         } else {
             res.render("signin", { error: data.error || "Email veya şifre yanlış" });
@@ -104,6 +107,7 @@ app.post("/signup", async (req, res) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Internal-Token': process.env.INTERNAL_SHARED_SECRET
             },
             body: JSON.stringify({ email, password, username })
         });
@@ -111,7 +115,7 @@ app.post("/signup", async (req, res) => {
         const data = await response.json();
 
         if (response.ok) {
-            req.session.user = { email: data.email, username: data.username };
+            req.session.user = { id: data.id, email: data.email, username: data.username };
             res.redirect("/chat");
         } else {
             res.render("signup", { error: data.error || "Kayıt sırasında bir hata oluştu" });
@@ -124,12 +128,15 @@ app.post("/signup", async (req, res) => {
 // Chat POST - Proxy to Backend
 app.post("/chat", isAuthenticated, async (req, res) => {
     const { message } = req.body;
+    const userId = req.session.user ? req.session.user.id : null;
 
     try {
         const response = await fetch("http://localhost:3000/chat", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-User-Id': userId, // Pass trusted Identity
+                'X-Internal-Token': process.env.INTERNAL_SHARED_SECRET
             },
             body: JSON.stringify({ message })
         });
