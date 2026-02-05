@@ -68,17 +68,20 @@ async function geminiResponse(userText) {
     }
 }
 async function getDietitianResponse(userText, userId) {
-    // 1. Fetch User Memory Context Strategy
+    // 1. Fetch User Memory Context & Master Lists for Semantic Mapping
     let memoryContext = "";
-    if (userId) {
-        try {
+    let masterLists = { foods: [], sensory: [], conditions: [] };
+
+    try {
+        if (userId) {
             memoryContext = await memoryOps.getUserConstraints(db, userId);
-        } catch (err) {
-            console.error("Error fetching memory context:", err);
         }
+        masterLists = await memoryOps.getMasterLists(db);
+    } catch (err) {
+        console.error("Error fetching context/lists:", err);
     }
 
-    // 2. Construct V2.5 Prompt with Strict JSON Requirements
+    // 2. Construct V2.6 Prompt with Semantic Mapping
     const systemPrompt = `
     You are an expert ARFID Dietitian Assistant.
     Your goal is to provide supportive, safe, and encouraging advice to a user with Avoidant/Restrictive Food Intake Disorder.
@@ -104,12 +107,19 @@ async function getDietitianResponse(userText, userId) {
       }
     }
 
-    MEMORY UPDATE RULES (CONSERVATIVE):
-    - Only add updates if the user EXPLICITLY states a preference, trigger, or condition about themselves in the CURRENT message.
-    - If the user's message is vague, hypothetical, or just asking a question, return empty arrays for updates.
-    - Max 5 updates per category.
-    - Normalize names to lowercase English.
-    - Do NOT hallucinate. Do NOT invent items that are not in the user's message.
+    MEMORY UPDATE RULES (CONSERVATIVE & SEMANTIC):
+    1. SEMANTIC MAPPING (CRITICAL): Before adding any item to 'memory_updates', check the VALID MASTER LISTS below.
+       - If the user mentions something that is a synonym, near-match, or the same thing as an item in the master list (e.g., "cocoa" -> "chocolate", "mush mush" -> "mushy texture"), you MUST use the exact name from the master list.
+       - If no near-match exists in the list, you may use the user's specific term ONLY if it is a clear food, sensory attribute, or condition.
+    2. Only add updates if the user EXPLICITLY states a preference, trigger, or condition about themselves in the CURRENT message.
+    3. If the user's message is vague, hypothetical, or just asking a question, return empty arrays for updates.
+    4. Max 5 updates per category. Normalize names to lowercase English.
+    5. Do NOT hallucinate. Do NOT invent items that are not in the user's message.
+
+    VALID MASTER LISTS (PRIORITIZE THESE NAMES):
+    - FOODS: ${masterLists.foods.join(", ")}
+    - SENSORY: ${masterLists.sensory.join(", ")}
+    - CONDITIONS: ${masterLists.conditions.join(", ")}
 
     KNOWN USER CONSTRAINTS (RESPECT THESE):
     ${memoryContext ? memoryContext : "None yet."}

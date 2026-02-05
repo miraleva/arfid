@@ -104,17 +104,6 @@ function ensureMasterRecord(db, table, name, originalMessage) {
     return new Promise((resolve, reject) => {
         const normalizedName = name.trim().toLowerCase();
 
-        // Anti-hallucination check
-        if (originalMessage) {
-            const normalizedMsg = originalMessage.toLowerCase();
-            // Simple substring check. 
-            // NOTE: A more robust check might use word boundaries, but this covers basic safety.
-            if (!normalizedMsg.includes(normalizedName)) {
-                console.log(`[Memory Safety] Skipped inserting '${name}' into ${table}: Not found in user message.`);
-                return resolve(null); // Resolve null to indicate skip
-            }
-        }
-
         db.get(`SELECT id FROM ${table} WHERE name = ?`, [name], (err, row) => {
             if (err) return reject(err);
             if (row) {
@@ -197,7 +186,50 @@ async function applyMemoryUpdates(db, userId, updates, originalMessage) {
     }
 }
 
+/**
+ * Fetches all items from master tables for semantic mapping.
+ */
+function getMasterLists(db) {
+    return new Promise((resolve, reject) => {
+        const queries = {
+            foods: "SELECT name FROM foods",
+            sensory: "SELECT name FROM sensory_attributes",
+            conditions: "SELECT name FROM conditions"
+        };
+
+        const lists = {
+            foods: [],
+            sensory: [],
+            conditions: []
+        };
+
+        db.serialize(() => {
+            let pending = 3;
+            const checkDone = () => {
+                pending--;
+                if (pending === 0) resolve(lists);
+            };
+
+            db.all(queries.foods, [], (err, rows) => {
+                if (!err && rows) lists.foods = rows.map(r => r.name);
+                checkDone();
+            });
+
+            db.all(queries.sensory, [], (err, rows) => {
+                if (!err && rows) lists.sensory = rows.map(r => r.name);
+                checkDone();
+            });
+
+            db.all(queries.conditions, [], (err, rows) => {
+                if (!err && rows) lists.conditions = rows.map(r => r.name);
+                checkDone();
+            });
+        });
+    });
+}
+
 module.exports = {
     getUserConstraints,
-    applyMemoryUpdates
+    applyMemoryUpdates,
+    getMasterLists
 };
