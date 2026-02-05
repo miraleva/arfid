@@ -13,6 +13,47 @@ const PORT = 3000;
 
 
 
+
+/**
+ * Generates a short "Patient Card" summary using a second Gemini call.
+ * This runs AFTER memory updates to reflect the latest state.
+ */
+async function generatePatientCard(userId) {
+    if (!userId) return "";
+
+    try {
+        // 1. Re-fetch fresh constraints (including just-added ones)
+        const memoryContext = await memoryOps.getUserConstraints(db, userId);
+
+        if (!memoryContext || memoryContext.trim() === "") {
+            return "No specific dietary constraints recorded yet.";
+        }
+
+        // 2. Short, strict prompt for summary
+        const summaryPrompt = `
+        You are summarizing a patient's dietary profile for a quick-view card.
+        Based ONLY on the following constraints, create a very short summary (max 400 chars).
+        
+        CONSTRAINTS:
+        ${memoryContext}
+
+        REQUIREMENTS:
+        - Bullet points or single paragraph.
+        - Mention Unsafe Foods (AVOID), Triggers, and Conditions.
+        - Be clinical but clear.
+        - NO introductory text.
+        `;
+
+        // 3. Call Gemini (Lightweight call)
+        const summary = await geminiResponse(summaryPrompt);
+        return summary.trim();
+
+    } catch (e) {
+        console.error("Patient Card Generation Failed:", e);
+        return ""; // Fail gracefully, don't crash chat
+    }
+}
+
 async function geminiResponse(userText) {
     try {
         const response = await ai.models.generateContent({
@@ -101,21 +142,38 @@ async function getDietitianResponse(userText, userId) {
             return rawText; // Attempt to return the raw text as the response (risky but better than crash)
         }
 
-        // 5. Apply Memory Updates (if valid)
+        // 5. Apply Memory Updates (if valid) - AWAIT THIS NOW
         if (parsedDate && parsedDate.memory_updates && userId) {
-            // Fire and forget - don't block response
-            memoryOps.applyMemoryUpdates(db, userId, parsedDate.memory_updates, userText)
-                .catch(err => console.error("Async memory update failed:", err));
+            try {
+                await memoryOps.applyMemoryUpdates(db, userId, parsedDate.memory_updates, userText);
+            } catch (memErr) {
+                console.error("Memory update failed, but continuing:", memErr);
+            }
         }
 
-        return parsedDate.assistant_response || "I'm having trouble processing that right now.";
+        const assistantResponse = parsedDate.assistant_response || "I'm having trouble processing that right now.";
+
+        // 6. Generate Patient Card (Call #2)
+        let patientCard = "";
+        if (userId) {
+            patientCard = await generatePatientCard(userId);
+        }
+
+        return {
+            assistant_response: assistantResponse,
+            patient_card: patientCard
+        };
 
     } catch (error) {
         console.error("Dietitian Assistant Error:", error.message);
+        let errorMsg = "I'm having trouble connecting to my knowledge base right now. Please try again later.";
         if (error.status === 429) {
-            return "I'm a bit overwhelmed right now. Please try again in a moment.";
+            errorMsg = "I'm a bit overwhelmed right now. Please try again in a moment.";
         }
-        return "I'm having trouble connecting to my knowledge base right now. Please try again later.";
+        return {
+            assistant_response: errorMsg,
+            patient_card: ""
+        };
     }
 }
 
@@ -327,8 +385,11 @@ app.post("/chat", async (req, res) => {
 
         console.log(`Chat message from User[${userId || 'Guest'}]:`, message);
 
-        const response = await getDietitianResponse(message, userId);
-        res.json({ response: response });
+        const { assistant_response, patient_card } = await getDietitianResponse(message, userId);
+        res.json({
+            response: assistant_response,
+            patient_card: patient_card
+        });
     } catch (error) {
         console.error("Chat route crash prevented:", error);
         res.status(500).json({ response: "Üzgünüm, şu an bir hata oluştu. Daha sonra tekrar deneyebilir misiniz?" });
