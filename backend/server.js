@@ -9,6 +9,7 @@ require("dotenv").config();
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 const app = express();
 const memoryOps = require("./memoryOps"); // Import memory operations
+const chatHistorian = require("./chatHistorian"); // Import chat history operations
 const PORT = 3000;
 
 
@@ -81,6 +82,23 @@ async function getDietitianResponse(userText, userId) {
         console.error("Error fetching context/lists:", err);
     }
 
+    // 1.1 Fetch Recent Chat Context
+    let recentChatContext = "";
+    if (userId) {
+        try {
+            const recentMessages = await chatHistorian.getRecentMessages(db, userId, 10);
+            if (recentMessages && recentMessages.length > 0) {
+                recentChatContext = "RECENT CHAT (last 10):\n" +
+                    recentMessages.map(m => {
+                        const content = m.content.length > 300 ? m.content.substring(0, 300) + "..." : m.content;
+                        return `${m.role}: ${content}`;
+                    }).join("\n");
+            }
+        } catch (histErr) {
+            console.error("Error fetching recent messages:", histErr);
+        }
+    }
+
     // 2. Construct V2.6 Prompt with Semantic Mapping
     const systemPrompt = `
     You are an expert ARFID Dietitian Assistant.
@@ -124,6 +142,10 @@ async function getDietitianResponse(userText, userId) {
     KNOWN USER CONSTRAINTS (RESPECT THESE):
     ${memoryContext ? memoryContext : "None yet."}
 
+    The following are the last messages between the user and you (assistant). Keep the response tone consistant with this chat history
+    -BEGINNING OF CHAT HISTORY- 
+    ${recentChatContext ? recentChatContext : ""}
+    -END OF CHAT HISTORY-
     USER MESSAGE:
     "${userText}"
     `;
@@ -139,17 +161,36 @@ async function getDietitianResponse(userText, userId) {
             const firstBrace = rawText.indexOf('{');
             const lastBrace = rawText.lastIndexOf('}');
             if (firstBrace !== -1 && lastBrace !== -1) {
-                const jsonString = rawText.substring(firstBrace, lastBrace + 1);
-                parsedDate = JSON.parse(jsonString);
+                const jsonContent = rawText.substring(firstBrace, lastBrace + 1);
+
+                // Primary attempt
+                try {
+                    parsedDate = JSON.parse(jsonContent);
+                } catch (firstParseErr) {
+                    // Fallback: The model might have appended junk *after* a valid JSON but *before* a final brace.
+                    // We iterate backwards from the last index of '}' to find the first validly parsable JSON block.
+                    let candidateIndex = lastBrace;
+                    while (candidateIndex > firstBrace) {
+                        try {
+                            const candidate = rawText.substring(firstBrace, candidateIndex + 1);
+                            parsedDate = JSON.parse(candidate);
+                            break; // Success
+                        } catch (e) {
+                            candidateIndex = rawText.lastIndexOf('}', candidateIndex - 1);
+                        }
+                    }
+                }
             } else {
                 throw new Error("No JSON braces found");
             }
         } catch (parseError) {
             console.error("JSON Parse Failed. Fallback to raw text if safe, or generic error.", parseError);
             console.log("Raw Output was:", rawText);
-            // Fallback: If model refused JSON but gave text, try to use it as response, but skip memory.
-            // Or just return a standard error if completely malformed.
-            return rawText; // Attempt to return the raw text as the response (risky but better than crash)
+            // Fallback: If model refused JSON but gave text, try to use it as response.
+            return {
+                assistant_response: rawText.length > 500 ? rawText.substring(0, 500) + "..." : rawText,
+                patient_card: ""
+            };
         }
 
         // 5. Apply Memory Updates (if valid) - AWAIT THIS NOW
@@ -213,6 +254,7 @@ app.get("/aiAsist", async (req, res) => {
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
+
 
 // Security Middleware: Verify Internal Shared Secret
 app.use((req, res, next) => {
@@ -346,6 +388,9 @@ db.serialize(() => {
     conditions.forEach(cond => insertCondition.run(cond));
     insertCondition.finalize();
 
+    // Initialize Chat History Schema
+    chatHistorian.initChatSchema(db);
+
     console.log("Database initialized with V1 schema and seed data.");
 });
 
@@ -395,7 +440,18 @@ app.post("/chat", async (req, res) => {
 
         console.log(`Chat message from User[${userId || 'Guest'}]:`, message);
 
+        // A) Save User Message
+        if (userId) {
+            await chatHistorian.saveMessage(db, userId, 'user', message);
+        }
+
         const { assistant_response, patient_card } = await getDietitianResponse(message, userId);
+
+        // B) Save Assistant Response
+        if (userId && assistant_response) {
+            await chatHistorian.saveMessage(db, userId, 'assistant', assistant_response);
+        }
+
         res.json({
             response: assistant_response,
             patient_card: patient_card
