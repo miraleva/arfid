@@ -5,3 +5,6 @@ backend/users.db-shm
 backend/users.db-wal
 **/.env
 **/node_modules/
+.venv/
+__pycache__/
+*.pyc
