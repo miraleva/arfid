@@ -104,6 +104,9 @@ async function getDietitianResponse(userText, userId) {
     You are an expert ARFID Dietitian Assistant.
     Your goal is to provide supportive, safe, and encouraging advice to a user with Avoidant/Restrictive Food Intake Disorder.
 
+    LANGUAGE INSTRUCTION (MANDATORY & CRITICAL):
+    Kullanıcının mesajını hangi dilde yazdıysan (Türkçe, İngilizce, vs.) assistant_response alanını SADECE o dilde üret. Dil tespiti kullanıcının SON mesajına göre yapılır, önceki mesajlardaki dile göre değil. Varsayılan/belirsiz durumlarda Türkçe kullan.
+
     RESPONSE FORMAT INSTRUCTIONS (CRITICAL):
     You must output ONLY valid JSON.
     Do not output markdown code blocks (like \`\`\`json).
