@@ -55,11 +55,12 @@ async function generatePatientCard(userId) {
     }
 }
 
-async function geminiResponse(userText) {
+async function geminiResponse(userText, config = {}) {
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: userText,
+            config: config
         });
         console.log(response.text);
         return response.text;
@@ -99,6 +100,27 @@ async function getDietitianResponse(userText, userId) {
         }
     }
 
+    // 1.2 Fetch RAG Context (Knowledge Base)
+    let ragContext = "";
+    try {
+        const ragResponse = await fetch("http://localhost:5001/retrieve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: userText, top_k: 4 })
+        });
+        if (ragResponse.ok) {
+            const ragData = await ragResponse.json();
+            if (ragData.chunks && ragData.chunks.length > 0) {
+                console.log("[RAG DEBUG] Gelen chunk sayısı:", ragData.chunks.length);
+                console.log("[RAG DEBUG] Chunk içerikleri:", JSON.stringify(ragData.chunks, null, 2));
+                ragContext = "İLGİLİ TARİF / KİTAP BİLGİSİ (RAG Context):\n" +
+                    ragData.chunks.map((c, i) => `[Chunk ${i + 1} - Kaynak: ${c.source}]\n${c.text}`).join("\n\n");
+            }
+        }
+    } catch (ragErr) {
+        console.error("RAG Service unavailable, continuing without RAG context:", ragErr.message);
+    }
+
     // 2. Construct V2.6 Prompt with Semantic Mapping
     const systemPrompt = `
     You are an expert ARFID Dietitian Assistant.
@@ -108,9 +130,7 @@ async function getDietitianResponse(userText, userId) {
     Kullanıcının mesajını hangi dilde yazdıysan (Türkçe, İngilizce, vs.) assistant_response alanını SADECE o dilde üret. Dil tespiti kullanıcının SON mesajına göre yapılır, önceki mesajlardaki dile göre değil. Varsayılan/belirsiz durumlarda Türkçe kullan.
 
     RESPONSE FORMAT INSTRUCTIONS (CRITICAL):
-    You must output ONLY valid JSON.
-    Do not output markdown code blocks (like \`\`\`json).
-    Do not output any text before or after the JSON.
+    assistant_response alanı içindeki metinde ASLA çift tırnak işareti (") kullanma — vurgu yapmak istersen tek tırnak (') veya parantez kullan. Bu kural JSON'un bozulmaması için kritiktir.
     
     Structure:
     {
@@ -145,6 +165,10 @@ async function getDietitianResponse(userText, userId) {
     KNOWN USER CONSTRAINTS (RESPECT THESE):
     ${memoryContext ? memoryContext : "None yet."}
 
+    RAG INSTRUCTION:
+    Aşağıda sağlanan "İLGİLİ TARİF / KİTAP BİLGİSİ" alanını SADECE kullanıcının mesajıyla gerçekten ilgiliyse ve faydalı bir tarif/öneri sunabileceksen kullan. Eğer bilgi kullanıcı mesajıyla alakasızsa tamamen görmezden gel ve normal diyetisyen tavsiyeni ver.
+    ${ragContext ? ragContext : "İlgili tarif bilgisi bulunamadı."}
+
     The following are the last messages between the user and you (assistant). Keep the response tone consistant with this chat history
     -BEGINNING OF CHAT HISTORY- 
     ${recentChatContext ? recentChatContext : ""}
@@ -153,63 +177,85 @@ async function getDietitianResponse(userText, userId) {
     "${userText}"
     `;
 
-    try {
-        // 3. Single Gemini Call
-        const rawText = await geminiResponse(systemPrompt);
-
-        // 4. Robust JSON Parsing (Defensive)
-        let parsedDate;
-        try {
-            // Attempt to find and extract JSON object
-            const firstBrace = rawText.indexOf('{');
-            const lastBrace = rawText.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace !== -1) {
-                const jsonContent = rawText.substring(firstBrace, lastBrace + 1);
-
-                // Primary attempt
-                try {
-                    parsedDate = JSON.parse(jsonContent);
-                } catch (firstParseErr) {
-                    // Fallback: The model might have appended junk *after* a valid JSON but *before* a final brace.
-                    // We iterate backwards from the last index of '}' to find the first validly parsable JSON block.
-                    let candidateIndex = lastBrace;
-                    while (candidateIndex > firstBrace) {
-                        try {
-                            const candidate = rawText.substring(firstBrace, candidateIndex + 1);
-                            parsedDate = JSON.parse(candidate);
-                            break; // Success
-                        } catch (e) {
-                            candidateIndex = rawText.lastIndexOf('}', candidateIndex - 1);
+    const jsonSchemaConfig = {
+        responseMimeType: "application/json",
+        responseSchema: {
+            type: "object",
+            properties: {
+                assistant_response: { type: "string" },
+                memory_updates: {
+                    type: "object",
+                    properties: {
+                        foods: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                    is_safe: { type: "integer" }
+                                }
+                            }
+                        },
+                        sensory: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                    is_problematic: { type: "integer" }
+                                }
+                            }
+                        },
+                        conditions: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                    has_condition: { type: "integer" }
+                                }
+                            }
                         }
                     }
                 }
-            } else {
-                throw new Error("No JSON braces found");
-            }
+            },
+            required: ["assistant_response", "memory_updates"]
+        }
+    };
+
+    try {
+        // 3. Single Gemini Call with Native JSON Mode
+        const rawText = await geminiResponse(systemPrompt, jsonSchemaConfig);
+
+        // 4. Direct JSON Parsing with Defensive Fallback
+        let parsedData;
+        let isFallback = false;
+        try {
+            parsedData = JSON.parse(rawText);
         } catch (parseError) {
-            console.error("JSON Parse Failed. Fallback to raw text if safe, or generic error.", parseError);
-            console.log("Raw Output was:", rawText);
-            // Fallback: If model refused JSON but gave text, try to use it as response.
-            return {
-                assistant_response: rawText.length > 500 ? rawText.substring(0, 500) + "..." : rawText,
-                patient_card: ""
+            console.error("JSON Parse Error on Native Output:", parseError);
+            console.log("Raw Gemini Output was:", rawText);
+            isFallback = true;
+            parsedData = {
+                assistant_response: "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?",
+                memory_updates: { foods: [], sensory: [], conditions: [] }
             };
         }
 
-        // 5. Apply Memory Updates (if valid) - AWAIT THIS NOW
-        if (parsedDate && parsedDate.memory_updates && userId) {
+        // 5. Apply Memory Updates (if valid)
+        if (parsedData && parsedData.memory_updates && userId) {
             try {
-                await memoryOps.applyMemoryUpdates(db, userId, parsedDate.memory_updates, userText);
+                await memoryOps.applyMemoryUpdates(db, userId, parsedData.memory_updates, userText);
             } catch (memErr) {
                 console.error("Memory update failed, but continuing:", memErr);
             }
         }
 
-        const assistantResponse = parsedDate.assistant_response || "I'm having trouble processing that right now.";
+        const assistantResponse = parsedData.assistant_response || "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?";
 
-        // 6. Generate Patient Card (Call #2)
+        // 6. Generate Patient Card (Call #2) - Skip if fallback occurred
         let patientCard = "";
-        if (userId) {
+        if (userId && !isFallback) {
             patientCard = await generatePatientCard(userId);
         }
 
