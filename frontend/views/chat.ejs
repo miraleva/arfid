@@ -23,7 +23,7 @@
                     <div class="smileyIcon">😊</div>
                 </div>
                 <div class="aiMessageBubble">
-                    Hi, how can I help you? :3
+                    Merhaba! Ben ARFID (Kaçıngan/Kısıtlayıcı Gıda Alım Bozukluğu) süreçlerinizde size destek olmak için tasarlanmış klinik diyetisyen asistanınızım. Yiyecek tercihlerinizi, duyusal hassasiyetlerinizi veya tetikleyicilerinizi benimle paylaşabilir; beslenme yolculuğunuzda size özel, güvenli ve adım adım rehberlik alabilirsiniz.
                 </div>
             </div>
         </div>
@@ -42,7 +42,22 @@
         const chatArea = document.getElementById('chatArea');
 
         let currentLoadingBubble = null;
-        let currentController = null;
+        let activeTypingInterval = null;
+        let activeTypingBubble = null;
+        let activeTypingFullText = '';
+        const TYPING_SPEED_MS = 25; // 25ms per character / speed config
+
+        function finishActiveTyping() {
+            if (activeTypingInterval) {
+                clearInterval(activeTypingInterval);
+                activeTypingInterval = null;
+            }
+            if (activeTypingBubble && activeTypingFullText) {
+                activeTypingBubble.textContent = activeTypingFullText;
+                activeTypingBubble = null;
+                activeTypingFullText = '';
+            }
+        }
 
         function showLoading() {
             if (currentLoadingBubble) return;
@@ -78,6 +93,7 @@
         }
 
         function addUserMessage(message) {
+            finishActiveTyping();
             const messageDiv = document.createElement('div');
             messageDiv.className = 'userMessage';
             messageDiv.innerHTML = `
@@ -91,18 +107,37 @@
 
         function addAiMessage(message) {
             removeLoading();
+            finishActiveTyping();
+
             const messageDiv = document.createElement('div');
             messageDiv.className = 'welcomeMessage'; // Using existing AI message style
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'aiMessageBubble';
+            
             messageDiv.innerHTML = `
                 <div class="aiAvatar">
                     <div class="smileyIcon">😊</div>
                 </div>
-                <div class="aiMessageBubble">
-                    ${message}
-                </div>
             `;
+            messageDiv.appendChild(bubbleDiv);
             chatArea.appendChild(messageDiv);
-            chatArea.scrollTop = chatArea.scrollHeight;
+
+            activeTypingBubble = bubbleDiv;
+            activeTypingFullText = message;
+
+            let charIndex = 0;
+            activeTypingInterval = setInterval(() => {
+                charIndex++;
+                bubbleDiv.textContent = message.substring(0, charIndex);
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                if (charIndex >= message.length) {
+                    clearInterval(activeTypingInterval);
+                    activeTypingInterval = null;
+                    activeTypingBubble = null;
+                    activeTypingFullText = '';
+                }
+            }, TYPING_SPEED_MS);
         }
 
         async function sendMessage() {

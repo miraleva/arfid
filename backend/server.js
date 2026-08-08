@@ -9,6 +9,7 @@ require("dotenv").config();
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 const app = express();
 const memoryOps = require("./memoryOps"); // Import memory operations
+const chatHistorian = require("./chatHistorian"); // Import chat history operations
 const PORT = 3000;
 
 
@@ -54,11 +55,12 @@ async function generatePatientCard(userId) {
     }
 }
 
-async function geminiResponse(userText) {
+async function geminiResponse(userText, config = {}) {
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: userText,
+            config: config
         });
         console.log(response.text);
         return response.text;
@@ -81,15 +83,54 @@ async function getDietitianResponse(userText, userId) {
         console.error("Error fetching context/lists:", err);
     }
 
+    // 1.1 Fetch Recent Chat Context
+    let recentChatContext = "";
+    if (userId) {
+        try {
+            const recentMessages = await chatHistorian.getRecentMessages(db, userId, 10);
+            if (recentMessages && recentMessages.length > 0) {
+                recentChatContext = "RECENT CHAT (last 10):\n" +
+                    recentMessages.map(m => {
+                        const content = m.content.length > 300 ? m.content.substring(0, 300) + "..." : m.content;
+                        return `${m.role}: ${content}`;
+                    }).join("\n");
+            }
+        } catch (histErr) {
+            console.error("Error fetching recent messages:", histErr);
+        }
+    }
+
+    // 1.2 Fetch RAG Context (Knowledge Base)
+    let ragContext = "";
+    try {
+        const ragResponse = await fetch("http://localhost:5001/retrieve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: userText, top_k: 4 })
+        });
+        if (ragResponse.ok) {
+            const ragData = await ragResponse.json();
+            if (ragData.chunks && ragData.chunks.length > 0) {
+                console.log("[RAG DEBUG] Gelen chunk sayısı:", ragData.chunks.length);
+                console.log("[RAG DEBUG] Chunk içerikleri:", JSON.stringify(ragData.chunks, null, 2));
+                ragContext = "İLGİLİ TARİF / KİTAP BİLGİSİ (RAG Context):\n" +
+                    ragData.chunks.map((c, i) => `[Chunk ${i + 1} - Kaynak: ${c.source}]\n${c.text}`).join("\n\n");
+            }
+        }
+    } catch (ragErr) {
+        console.error("RAG Service unavailable, continuing without RAG context:", ragErr.message);
+    }
+
     // 2. Construct V2.6 Prompt with Semantic Mapping
     const systemPrompt = `
     You are an expert ARFID Dietitian Assistant.
     Your goal is to provide supportive, safe, and encouraging advice to a user with Avoidant/Restrictive Food Intake Disorder.
 
+    LANGUAGE INSTRUCTION (MANDATORY & CRITICAL):
+    Kullanıcının mesajını hangi dilde yazdıysan (Türkçe, İngilizce, vs.) assistant_response alanını SADECE o dilde üret. Dil tespiti kullanıcının SON mesajına göre yapılır, önceki mesajlardaki dile göre değil. Varsayılan/belirsiz durumlarda Türkçe kullan.
+
     RESPONSE FORMAT INSTRUCTIONS (CRITICAL):
-    You must output ONLY valid JSON.
-    Do not output markdown code blocks (like \`\`\`json).
-    Do not output any text before or after the JSON.
+    assistant_response alanı içindeki metinde ASLA çift tırnak işareti (") kullanma — vurgu yapmak istersen tek tırnak (') veya parantez kullan. Bu kural JSON'un bozulmaması için kritiktir.
     
     Structure:
     {
@@ -124,48 +165,97 @@ async function getDietitianResponse(userText, userId) {
     KNOWN USER CONSTRAINTS (RESPECT THESE):
     ${memoryContext ? memoryContext : "None yet."}
 
+    RAG INSTRUCTION:
+    Aşağıda sağlanan "İLGİLİ TARİF / KİTAP BİLGİSİ" alanını SADECE kullanıcının mesajıyla gerçekten ilgiliyse ve faydalı bir tarif/öneri sunabileceksen kullan. Eğer bilgi kullanıcı mesajıyla alakasızsa tamamen görmezden gel ve normal diyetisyen tavsiyeni ver.
+    ${ragContext ? ragContext : "İlgili tarif bilgisi bulunamadı."}
+
+    The following are the last messages between the user and you (assistant). Keep the response tone consistant with this chat history
+    -BEGINNING OF CHAT HISTORY- 
+    ${recentChatContext ? recentChatContext : ""}
+    -END OF CHAT HISTORY-
     USER MESSAGE:
     "${userText}"
     `;
 
-    try {
-        // 3. Single Gemini Call
-        const rawText = await geminiResponse(systemPrompt);
+    const jsonSchemaConfig = {
+        responseMimeType: "application/json",
+        responseSchema: {
+            type: "object",
+            properties: {
+                assistant_response: { type: "string" },
+                memory_updates: {
+                    type: "object",
+                    properties: {
+                        foods: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                    is_safe: { type: "integer" }
+                                }
+                            }
+                        },
+                        sensory: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                    is_problematic: { type: "integer" }
+                                }
+                            }
+                        },
+                        conditions: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                    has_condition: { type: "integer" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            required: ["assistant_response", "memory_updates"]
+        }
+    };
 
-        // 4. Robust JSON Parsing (Defensive)
-        let parsedDate;
+    try {
+        // 3. Single Gemini Call with Native JSON Mode
+        const rawText = await geminiResponse(systemPrompt, jsonSchemaConfig);
+
+        // 4. Direct JSON Parsing with Defensive Fallback
+        let parsedData;
+        let isFallback = false;
         try {
-            // Attempt to find and extract JSON object
-            const firstBrace = rawText.indexOf('{');
-            const lastBrace = rawText.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace !== -1) {
-                const jsonString = rawText.substring(firstBrace, lastBrace + 1);
-                parsedDate = JSON.parse(jsonString);
-            } else {
-                throw new Error("No JSON braces found");
-            }
+            parsedData = JSON.parse(rawText);
         } catch (parseError) {
-            console.error("JSON Parse Failed. Fallback to raw text if safe, or generic error.", parseError);
-            console.log("Raw Output was:", rawText);
-            // Fallback: If model refused JSON but gave text, try to use it as response, but skip memory.
-            // Or just return a standard error if completely malformed.
-            return rawText; // Attempt to return the raw text as the response (risky but better than crash)
+            console.error("JSON Parse Error on Native Output:", parseError);
+            console.log("Raw Gemini Output was:", rawText);
+            isFallback = true;
+            parsedData = {
+                assistant_response: "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?",
+                memory_updates: { foods: [], sensory: [], conditions: [] }
+            };
         }
 
-        // 5. Apply Memory Updates (if valid) - AWAIT THIS NOW
-        if (parsedDate && parsedDate.memory_updates && userId) {
+        // 5. Apply Memory Updates (if valid)
+        if (parsedData && parsedData.memory_updates && userId) {
             try {
-                await memoryOps.applyMemoryUpdates(db, userId, parsedDate.memory_updates, userText);
+                await memoryOps.applyMemoryUpdates(db, userId, parsedData.memory_updates, userText);
             } catch (memErr) {
                 console.error("Memory update failed, but continuing:", memErr);
             }
         }
 
-        const assistantResponse = parsedDate.assistant_response || "I'm having trouble processing that right now.";
+        const assistantResponse = parsedData.assistant_response || "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?";
 
-        // 6. Generate Patient Card (Call #2)
+        // 6. Generate Patient Card (Call #2) - Skip if fallback occurred
         let patientCard = "";
-        if (userId) {
+        if (userId && !isFallback) {
             patientCard = await generatePatientCard(userId);
         }
 
@@ -213,6 +303,7 @@ app.get("/aiAsist", async (req, res) => {
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
+
 
 // Security Middleware: Verify Internal Shared Secret
 app.use((req, res, next) => {
@@ -346,6 +437,9 @@ db.serialize(() => {
     conditions.forEach(cond => insertCondition.run(cond));
     insertCondition.finalize();
 
+    // Initialize Chat History Schema
+    chatHistorian.initChatSchema(db);
+
     console.log("Database initialized with V1 schema and seed data.");
 });
 
@@ -395,7 +489,18 @@ app.post("/chat", async (req, res) => {
 
         console.log(`Chat message from User[${userId || 'Guest'}]:`, message);
 
+        // A) Save User Message
+        if (userId) {
+            await chatHistorian.saveMessage(db, userId, 'user', message);
+        }
+
         const { assistant_response, patient_card } = await getDietitianResponse(message, userId);
+
+        // B) Save Assistant Response
+        if (userId && assistant_response) {
+            await chatHistorian.saveMessage(db, userId, 'assistant', assistant_response);
+        }
+
         res.json({
             response: assistant_response,
             patient_card: patient_card

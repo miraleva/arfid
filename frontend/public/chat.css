@@ -5,7 +5,7 @@ body {
     height: 100vh;
     overflow: hidden;
     font-family: "Inter", sans-serif;
-    background-color: #ffffff;
+    background-color: #FDFCFF;
 }
 
 .header {
@@ -16,18 +16,20 @@ body {
     flex-direction: row;
     justify-content: space-between;
     width: 100vw;
-    background: #F9FAFB;
+    background: #FFFFFF;
     height: 80px;
     align-items: center;
-    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid #EFEFEF;
 }
 
 .headerName {
     margin-left: 3vw;
-    color: #9381FF;
+    color: #7B61FF;
     font-size: xx-large;
-    font-weight: bold;
+    font-weight: 700;
     font-family: "Inter", sans-serif;
+    letter-spacing: -0.5px;
 }
 
 .headerButtonContainer {
@@ -35,43 +37,41 @@ body {
 }
 
 .logoutButton {
-    background-color: #4A90E2;
+    background-color: #A594F9;
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 8px 16px;
+    border-radius: 20px;
+    padding: 8px 20px;
     font-family: "Inter", sans-serif;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 14px;
     margin-right: 20px;
     cursor: pointer;
-    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(165, 148, 249, 0.3);
+    transition: all 0.25s ease;
 }
 
 .logoutButton:hover {
-    background-color: #357ABD;
-    transform: translateY(1px);
+    background-color: #8E79F3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(142, 121, 243, 0.4);
 }
 
 .chatContainer {
-
     display: flex;
     flex-direction: column;
     height: calc(100vh - 80px);
-    /* Full height minus header */
     margin-top: 80px;
-    /* Account for fixed header */
 }
 
 .chatArea {
     flex: 1;
-    padding: 20px;
+    padding: 24px;
     overflow-y: auto;
-    background-color: #ffffff;
+    background-color: #FDFCFF;
     display: flex;
     flex-direction: column;
     min-height: 0;
-    /* Allows flex item to shrink */
 }
 
 .chatArea::-webkit-scrollbar {
@@ -79,11 +79,11 @@ body {
 }
 
 .chatArea::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #F3EEFF;
 }
 
 .chatArea::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: #D5C7FF;
     border-radius: 3px;
 }
 
@@ -95,33 +95,34 @@ body {
 
 .aiAvatar {
     margin-right: 12px;
-    margin-top: 5px;
-
+    margin-top: 2px;
 }
 
 .smileyIcon {
-
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    border: 2px solid #FF8C00;
+    border: 2px solid #C9BFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    background-color: #ffffff;
+    font-size: 19px;
+    background-color: #FAF8FF;
+    box-shadow: 0 2px 8px rgba(184, 174, 255, 0.2);
 }
 
 .aiMessageBubble {
-    background-color: #E5E5E5;
-    color: #333333;
-    padding: 12px 16px;
-    border-radius: 16px;
-    max-width: 60%;
-    font-size: 14px;
+    background-color: #F2F4F8;
+    color: #2D2D3E;
+    padding: 14px 18px;
+    border-radius: 20px;
+    border-top-left-radius: 4px;
+    max-width: 65%;
+    font-size: 14.5px;
     font-family: "Inter", sans-serif;
-    line-height: 1.2;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    line-height: 1.45;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+    border: 1px solid #E5E8F0;
 }
 
 .userMessage {
@@ -131,35 +132,43 @@ body {
 }
 
 .userMessageBubble {
-    background-color: #9381FF;
-    color: white;
-    padding: 12px 16px;
-    border-radius: 16px;
-    max-width: 60%;
-    font-size: 14px;
-    line-height: 1.2;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #C9BFFF 0%, #B4A7F5 100%);
+    color: #1A1344;
+    padding: 14px 18px;
+    border-radius: 20px;
+    border-top-right-radius: 4px;
+    max-width: 65%;
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.45;
+    box-shadow: 0 4px 14px rgba(180, 167, 245, 0.3);
 }
 
 .messageInputContainer {
-    padding: 20px;
-    background-color: #ffffff;
-    border-top: 1px solid #E5E5E5;
+    padding: 16px 24px 20px 24px;
+    background-color: #FDFCFF;
+    border-top: 1px solid #F0EBFF;
     flex-shrink: 0;
-    /* Prevent input from shrinking */
     position: sticky;
     bottom: 0;
     z-index: 100;
 }
 
 .messageInputWrapper {
-    border: solid, 2px, rgb(179, 179, 179);
+    border: 1.5px solid #E2D9FF;
     display: flex;
     align-items: center;
-    background-color: #F5F5F5;
-    border-radius: 25px;
-    padding: 8px 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #F6F3FE;
+    border-radius: 28px;
+    padding: 6px 10px 6px 16px;
+    box-shadow: 0 4px 15px rgba(165, 148, 249, 0.08);
+    transition: all 0.25s ease;
+}
+
+.messageInputWrapper:focus-within {
+    border-color: #A594F9;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 18px rgba(165, 148, 249, 0.2);
 }
 
 .messageInput {
@@ -167,33 +176,42 @@ body {
     border: none;
     outline: none;
     background: transparent;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 8px 8px;
+    font-size: 14.5px;
     font-family: "Inter", sans-serif;
-    color: #333333;
+    color: #2D2D3E;
 }
 
 .messageInput::placeholder {
-    color: #999999;
+    color: #9C95BA;
 }
 
 .sendButton {
-    background-color: #333333;
+    background-color: #A594F9;
     border: none;
     color: white;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 16px;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(165, 148, 249, 0.4);
 }
 
 .sendButton:hover {
-    background-color: #555555;
+    background-color: #8E79F3;
+    transform: scale(1.05);
+}
+
+.sendButton:disabled {
+    background-color: #D3CBF8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 /* Loading Animation */
@@ -205,7 +223,7 @@ body {
 
 .loadingText {
     font-style: italic;
-    color: #666;
+    color: #6E6789;
     font-size: 13px;
 }
 
@@ -218,7 +236,7 @@ body {
 .dot {
     width: 6px;
     height: 6px;
-    background-color: #9381FF;
+    background-color: #A594F9;
     border-radius: 50%;
     opacity: 0.3;
     animation: pulse 1.5s infinite ease-in-out;
@@ -233,13 +251,10 @@ body {
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
+    0%, 100% {
         opacity: 0.3;
         transform: scale(0.8);
     }
-
     50% {
         opacity: 0.8;
         transform: scale(1.1);
