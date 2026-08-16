@@ -6,6 +6,7 @@ require("dotenv").config(); // Load environment variables
 
 const app = express();
 const PORT = 4000;
+const BACKEND_API_URL = process.env.BACKEND_API_URL || "http://localhost:3000";
 
 // EJS kullanımı
 app.set("view engine", "ejs");
@@ -76,7 +77,7 @@ app.post("/signin", async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const response = await fetch("http://localhost:3000/signin", {
+        const response = await fetch(`${BACKEND_API_URL}/signin`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -103,7 +104,7 @@ app.post("/signup", async (req, res) => {
     const { email, password, username } = req.body;
 
     try {
-        const response = await fetch("http://localhost:3000/signup", {
+        const response = await fetch(`${BACKEND_API_URL}/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ app.post("/chat", isAuthenticated, async (req, res) => {
     const userId = req.session.user ? req.session.user.id : null;
 
     try {
-        const response = await fetch("http://localhost:3000/chat", {
+        const response = await fetch(`${BACKEND_API_URL}/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
