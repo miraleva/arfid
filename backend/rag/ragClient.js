@@ -6,11 +6,10 @@
 const { shouldTriggerRag } = require("./ragFilter");
 
 /**
- * Fetches relevant RAG context for a user query if applicable.
- * Returns formatted context string or empty string on non-trigger, timeout, or error.
+ * Fetches relevant recipe and knowledge base context for a user query via RAG service.
  * 
- * @param {string} userText 
- * @returns {Promise<string>}
+ * @param {string} userText - User message text
+ * @returns {Promise<string>} Formatted RAG context string or empty string on failure/non-trigger
  */
 async function getRagContext(userText) {
     if (!shouldTriggerRag(userText)) {

@@ -135,6 +135,11 @@ db.serialize(() => {
     console.log("Database initialized with V1 schema and seed data.");
 });
 
+/**
+ * Gracefully closes the active SQLite database connection.
+ * 
+ * @returns {void}
+ */
 function closeDb() {
     try {
         db.close((err) => {

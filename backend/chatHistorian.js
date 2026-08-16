@@ -3,6 +3,11 @@ const db = require("./db");
 
 /**
  * Saves a message to the database and applies retention policy.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {'user' | 'assistant'} role - Message sender role
+ * @param {string} content - Message text
+ * @returns {Promise<number|void>} Last inserted ID or void on fallback
  */
 async function saveMessage(userId, role, content) {
     if (!userId) return;
@@ -33,6 +38,10 @@ async function saveMessage(userId, role, content) {
 
 /**
  * Retrieves the last N messages for a user, ordered chronologically.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {number} [limit=10] - Max messages to retrieve
+ * @returns {Promise<Array<{ role: 'user' | 'assistant', content: string }>>} List of recent chat messages
  */
 function getRecentMessages(userId, limit = 10) {
     return new Promise((resolve, reject) => {

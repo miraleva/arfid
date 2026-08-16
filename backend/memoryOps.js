@@ -5,6 +5,9 @@ const db = require("./db");
  * Fetch user constraints from the database.
  * Returns a compact string summary of safe/unsafe foods, triggers, and conditions.
  * Limits to 10 items per category to keep context small.
+ * 
+ * @param {number} userId - Target user ID
+ * @returns {Promise<string>} Formatted constraints string
  */
 function getUserConstraints(userId) {
     return new Promise((resolve, reject) => {
@@ -122,6 +125,11 @@ function ensureMasterRecord(table, name, originalMessage) {
 /**
  * Applies memory updates to the database.
  * Handles Foods, Sensory Attributes, and Conditions.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {import('./types').MemoryUpdates} updates - Extracted updates from LLM
+ * @param {string} originalMessage - Original user message to prevent hallucinations
+ * @returns {Promise<void>}
  */
 async function applyMemoryUpdates(userId, updates, originalMessage) {
     if (!userId || !updates) return;
@@ -188,6 +196,8 @@ async function applyMemoryUpdates(userId, updates, originalMessage) {
 
 /**
  * Fetches all items from master tables for semantic mapping.
+ * 
+ * @returns {Promise<import('./types').MasterLists>} Master lists of foods, sensory, and conditions
  */
 function getMasterLists() {
     return new Promise((resolve, reject) => {

@@ -13,7 +13,7 @@ const chatHistorian = require("./chatHistorian"); // Import chat history operati
 const { buildSystemPrompt, jsonSchemaConfig } = require("./promptBuilder");
 const { getRagContext } = require("./rag/ragClient");
 const { startRagService } = require("./rag/ragManager");
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // RAG Retrieval servisini otomatik başlat
 startRagService();
@@ -24,6 +24,9 @@ startRagService();
 /**
  * Generates a short "Patient Card" summary using a second Gemini call.
  * This runs AFTER memory updates to reflect the latest state.
+ * 
+ * @param {number} userId - Target user ID
+ * @returns {Promise<string>} Short patient card text
  */
 async function generatePatientCard(userId) {
     if (!userId) return "";
@@ -61,6 +64,13 @@ async function generatePatientCard(userId) {
     }
 }
 
+/**
+ * Sends a text prompt to Google Gemini model and returns the raw response text.
+ * 
+ * @param {string} userText - Prompt or structured text for Gemini
+ * @param {Object} [config={}] - Optional model configuration (JSON schema, mimeType, etc.)
+ * @returns {Promise<string>} Model output text
+ */
 async function geminiResponse(userText, config = {}) {
     try {
         const response = await ai.models.generateContent({
@@ -75,6 +85,15 @@ async function geminiResponse(userText, config = {}) {
         throw error;
     }
 }
+
+/**
+ * Main coordinator function that processes user messages, queries RAG, 
+ * generates structured dietitian responses, and applies memory updates.
+ * 
+ * @param {string} userText - User message
+ * @param {number} [userId] - Optional user ID for logged-in sessions
+ * @returns {Promise<import('./types').DietitianResult>}
+ */
 async function getDietitianResponse(userText, userId) {
     // 1. Fetch User Memory Context & Master Lists for Semantic Mapping
     let memoryContext = "";
@@ -172,25 +191,56 @@ async function getDietitianResponse(userText, userId) {
     }
 }
 
+/**
+ * Middleware: Verifies X-Dev-Token header against DEV_TEST_TOKEN environment variable.
+ * Protects internal development and testing endpoints.
+ * 
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {import('express').NextFunction} next 
+ */
+function checkDevToken(req, res, next) {
+    const clientDevToken = req.get("X-Dev-Token");
+    const validDevToken = process.env.DEV_TEST_TOKEN;
 
-app.get("/aiSearch", async (req, res) => {
+    if (!validDevToken || !clientDevToken || clientDevToken !== validDevToken) {
+        return res.status(401).json({ error: "Dev endpoint access denied: Invalid or missing X-Dev-Token" });
+    }
+    next();
+}
+
+/* ==========================================================================
+   DEV / TEST ONLY ENDPOINTS
+   Bu endpoint'ler geliştirme ve manuel test amaçlıdır, kullanıcı arayüzünden
+   erişilmez ve X-Dev-Token header'ı gerektirir.
+   ========================================================================== */
+
+/**
+ * Route: Direct AI search endpoint for raw queries (DEV/TEST ONLY).
+ * Requires X-Dev-Token header.
+ */
+app.get("/dev/aiSearch", checkDevToken, async (req, res) => {
     try {
         const userText = req.query.query;
         const response = await geminiResponse(userText);
         res.send(response);
     } catch (error) {
-        console.error("aiSearch Error:", error.message);
+        console.error("[DEV] aiSearch Error:", error.message);
         res.status(500).send("AI Search is temporarily unavailable. Please try again later.");
     }
 });
 
-app.get("/aiAsist", async (req, res) => {
+/**
+ * Route: Dietitian assistant query endpoint for guest/test searches (DEV/TEST ONLY).
+ * Requires X-Dev-Token header.
+ */
+app.get("/dev/aiAsist", checkDevToken, async (req, res) => {
     try {
         const userText = req.query.query;
         const response = await getDietitianResponse(userText);
         res.send(response);
     } catch (error) {
-        console.error("aiAsist Error:", error.message);
+        console.error("[DEV] aiAsist Error:", error.message);
         res.status(500).send("AI Assistant is temporarily unavailable. Please try again later.");
     }
 });
@@ -216,7 +266,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// API: User signup
+/**
+ * Route: User registration / account creation.
+ */
 app.post("/signup", (req, res) => {
     const { email, password, username } = req.body;
     console.log("signup isteği geldi");
@@ -235,7 +287,9 @@ app.post("/signup", (req, res) => {
         });
 });
 
-// API: User signin
+/**
+ * Route: User authentication and credential check.
+ */
 app.post("/signin", (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -252,7 +306,9 @@ app.post("/signin", (req, res) => {
         });
 });
 
-// API: Chat message
+/**
+ * Route: Main chat endpoint for Dietitian conversational flow and patient card updates.
+ */
 app.post("/chat", async (req, res) => {
     try {
         const { message } = req.body;
@@ -283,7 +339,9 @@ app.post("/chat", async (req, res) => {
     }
 });
 
-// Root endpoint
+/**
+ * Route: Healthcheck root endpoint.
+ */
 app.get("/", (req, res) => {
     res.send("ARFID Backend API çalışıyor 🚀");
 });

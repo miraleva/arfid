@@ -37,9 +37,10 @@ const INTENT_PATTERNS = [
 ];
 
 /**
- * Checks if the message contains food/recipe context warranting a RAG query.
- * @param {string} text - User message
- * @returns {boolean}
+ * Checks if a user message contains food, meal, recipe or sensory keywords/intents warranting a RAG retrieval.
+ * 
+ * @param {string} text - Raw user message text
+ * @returns {boolean} True if RAG retrieval should be triggered, false otherwise
  */
 function shouldTriggerRag(text) {
     if (!text || typeof text !== "string") return false;

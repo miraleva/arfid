@@ -74,6 +74,9 @@ function formatChatHistory(recentChatContext) {
 /**
  * Builds the complete system prompt for ARFID dietitian interaction.
  * 
+ * @param {import('./types').PromptBuilderParams} params - Prompt generation parameters
+ * @returns {string} Fully formatted system prompt string
+ * 
  * Note for future extensions (e.g. crisis/trigger directives):
  * Additional sections can be composed using helper functions when needed.
  */

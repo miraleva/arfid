@@ -10,10 +10,11 @@ const net = require("net");
 let ragProcess = null;
 
 /**
- * Checks if a specific port is currently open and accepting connections via TCP.
- * @param {number} port 
- * @param {string} host 
- * @returns {Promise<boolean>}
+ * Checks if a specific TCP port is currently open and accepting connections.
+ * 
+ * @param {number} [port=5001] - Target port to check
+ * @param {string} [host="127.0.0.1"] - Target host address
+ * @returns {Promise<boolean>} True if the port is in use, false if available
  */
 function isPortInUse(port = 5001, host = "127.0.0.1") {
     return new Promise((resolve) => {
@@ -40,9 +41,10 @@ function isPortInUse(port = 5001, host = "127.0.0.1") {
 }
 
 /**
- * Checks the HTTP health of the service on the given port.
- * @param {number} port 
- * @returns {Promise<boolean>}
+ * Performs an HTTP health check on the specified port.
+ * 
+ * @param {number} [port=5001] - Port to test for HTTP health
+ * @returns {Promise<boolean>} True if the HTTP service is responding, false otherwise
  */
 async function checkServiceHealth(port = 5001) {
     try {
@@ -62,7 +64,9 @@ async function checkServiceHealth(port = 5001) {
 }
 
 /**
- * Starts the retrieval.py FastAPI server as a child process if port 5001 is not already in use.
+ * Starts the Python FastAPI retrieval service as a child process if port 5001 is available.
+ * 
+ * @returns {Promise<import('child_process').ChildProcess|null>} Spawned child process or null if already running
  */
 async function startRagService() {
     if (ragProcess) {
@@ -126,7 +130,9 @@ async function startRagService() {
 }
 
 /**
- * Stops the retrieval.py process gracefully.
+ * Gracefully terminates the running Python retrieval service process.
+ * 
+ * @returns {void}
  */
 function stopRagService() {
     if (ragProcess && !ragProcess.killed) {
