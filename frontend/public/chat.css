@@ -123,6 +123,24 @@ body {
     line-height: 1.45;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
     border: 1px solid #E5E8F0;
+    word-break: break-word;
+    white-space: pre-wrap;
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.aiMessageBubble.fadeContent {
+    animation: smoothContentReveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes smoothContentReveal {
+    0% {
+        opacity: 0.85;
+        transform: translateY(2px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .userMessage {
