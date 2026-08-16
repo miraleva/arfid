@@ -1,12 +1,15 @@
 // backend/memoryOps.js
-const sqlite3 = require("sqlite3").verbose();
+const db = require("./db");
 
 /**
  * Fetch user constraints from the database.
  * Returns a compact string summary of safe/unsafe foods, triggers, and conditions.
  * Limits to 10 items per category to keep context small.
+ * 
+ * @param {number} userId - Target user ID
+ * @returns {Promise<string>} Formatted constraints string
  */
-function getUserConstraints(db, userId) {
+function getUserConstraints(userId) {
     return new Promise((resolve, reject) => {
         if (!userId) {
             return resolve("");
@@ -100,7 +103,7 @@ function getUserConstraints(db, userId) {
  * CRITICAL SAFETY CHECK: Only inserts if the item name appears in the user's original message.
  * This prevents hallucinated items from polluting the master lists.
  */
-function ensureMasterRecord(db, table, name, originalMessage) {
+function ensureMasterRecord(table, name, originalMessage) {
     return new Promise((resolve, reject) => {
         const normalizedName = name.trim().toLowerCase();
 
@@ -122,8 +125,13 @@ function ensureMasterRecord(db, table, name, originalMessage) {
 /**
  * Applies memory updates to the database.
  * Handles Foods, Sensory Attributes, and Conditions.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {import('./types').MemoryUpdates} updates - Extracted updates from LLM
+ * @param {string} originalMessage - Original user message to prevent hallucinations
+ * @returns {Promise<void>}
  */
-async function applyMemoryUpdates(db, userId, updates, originalMessage) {
+async function applyMemoryUpdates(userId, updates, originalMessage) {
     if (!userId || !updates) return;
 
     try {
@@ -133,7 +141,7 @@ async function applyMemoryUpdates(db, userId, updates, originalMessage) {
                 if (!item.name || item.is_safe === undefined) continue;
 
                 try {
-                    const foodId = await ensureMasterRecord(db, 'foods', item.name, originalMessage);
+                    const foodId = await ensureMasterRecord('foods', item.name, originalMessage);
                     if (foodId) {
                         db.run(`INSERT OR REPLACE INTO user_food_preferences (user_id, food_id, is_safe) VALUES (?, ?, ?)`,
                             [userId, foodId, item.is_safe]);
@@ -151,7 +159,7 @@ async function applyMemoryUpdates(db, userId, updates, originalMessage) {
                 if (!item.name || item.is_problematic === undefined) continue;
 
                 try {
-                    const attrId = await ensureMasterRecord(db, 'sensory_attributes', item.name, originalMessage);
+                    const attrId = await ensureMasterRecord('sensory_attributes', item.name, originalMessage);
                     if (attrId) {
                         db.run(`INSERT OR REPLACE INTO user_sensory_triggers (user_id, attribute_id, is_problematic) VALUES (?, ?, ?)`,
                             [userId, attrId, item.is_problematic]);
@@ -169,7 +177,7 @@ async function applyMemoryUpdates(db, userId, updates, originalMessage) {
                 if (!item.name || item.has_condition === undefined) continue;
 
                 try {
-                    const condId = await ensureMasterRecord(db, 'conditions', item.name, originalMessage);
+                    const condId = await ensureMasterRecord('conditions', item.name, originalMessage);
                     if (condId) {
                         db.run(`INSERT OR REPLACE INTO user_conditions (user_id, condition_id, has_condition) VALUES (?, ?, ?)`,
                             [userId, condId, item.has_condition]);
@@ -188,8 +196,10 @@ async function applyMemoryUpdates(db, userId, updates, originalMessage) {
 
 /**
  * Fetches all items from master tables for semantic mapping.
+ * 
+ * @returns {Promise<import('./types').MasterLists>} Master lists of foods, sensory, and conditions
  */
-function getMasterLists(db) {
+function getMasterLists() {
     return new Promise((resolve, reject) => {
         const queries = {
             foods: "SELECT name FROM foods",
