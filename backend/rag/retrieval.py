@@ -42,9 +42,14 @@ def query_rag(text: str, top_k: int = 4):
         chunks.append({
             "text": metadata.get("text", ""),
             "source": metadata.get("source", ""),
+            "page_number": metadata.get("page_number", None),
             "score": match.get("score", 0.0)
         })
     return chunks
+
+@app.get("/")
+def health_check():
+    return {"status": "ok", "service": "ARFID RAG Retrieval API"}
 
 @app.post("/retrieve")
 def retrieve_endpoint(request: QueryRequest):

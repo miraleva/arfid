@@ -25,7 +25,7 @@ def embed_and_store():
     print("Loading embedding model 'all-MiniLM-L6-v2'...")
     model = SentenceTransformer('all-MiniLM-L6-v2')
 
-    print("Loading and chunking markdown files...")
+    print("Loading and chunking markdown files (page-aware)...")
     chunks = load_and_chunk_all_markdowns()
     print(f"Total chunks to process: {len(chunks)}")
 
@@ -49,10 +49,17 @@ def embed_and_store():
                 region="us-east-1"
             )
         )
-        # Wait for index initialization
         time.sleep(5)
 
     index = pc.Index(index_name)
+
+    # Clean existing vectors for a fresh, clean index
+    print(f"Clearing old vectors from index '{index_name}'...")
+    try:
+        index.delete(delete_all=True)
+        print("Existing vectors cleared successfully.")
+    except Exception as e:
+        print(f"Note on index clearing: {e}")
 
     print("Generating embeddings and upserting vectors to Pinecone...")
     batch_size = 100
@@ -66,13 +73,17 @@ def embed_and_store():
         vectors_to_upsert = []
         for idx, (c, emb) in enumerate(zip(batch_chunks, embeddings)):
             vector_id = f"chunk_{i + idx}"
+            metadata = {
+                "text": c["text"],
+                "source": c["source"]
+            }
+            if c.get("page_number") is not None:
+                metadata["page_number"] = c["page_number"]
+
             vectors_to_upsert.append({
                 "id": vector_id,
                 "values": emb,
-                "metadata": {
-                    "text": c["text"],
-                    "source": c["source"]
-                }
+                "metadata": metadata
             })
 
         index.upsert(vectors=vectors_to_upsert)

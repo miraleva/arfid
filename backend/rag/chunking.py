@@ -2,7 +2,7 @@ import os
 import glob
 import re
 
-def chunk_text_by_markdown(text, source_name, chunk_size=500, overlap=50):
+def chunk_text_by_markdown(text, source_name, page_number=None, chunk_size=500, overlap=50):
     """
     Paragraph and heading aware markdown chunking with fallback overlap.
     """
@@ -31,7 +31,8 @@ def chunk_text_by_markdown(text, source_name, chunk_size=500, overlap=50):
             if current_chunk:
                 chunks.append({
                     "text": current_chunk,
-                    "source": source_name
+                    "source": source_name,
+                    "page_number": page_number
                 })
             # If section itself is bigger than chunk_size, split by character window
             if len(sec) > chunk_size:
@@ -40,7 +41,8 @@ def chunk_text_by_markdown(text, source_name, chunk_size=500, overlap=50):
                     end = start + chunk_size
                     chunks.append({
                         "text": sec[start:end],
-                        "source": source_name
+                        "source": source_name,
+                        "page_number": page_number
                     })
                     start += (chunk_size - overlap)
                 current_chunk = ""
@@ -50,7 +52,8 @@ def chunk_text_by_markdown(text, source_name, chunk_size=500, overlap=50):
     if current_chunk:
         chunks.append({
             "text": current_chunk,
-            "source": source_name
+            "source": source_name,
+            "page_number": page_number
         })
 
     return chunks
@@ -66,8 +69,19 @@ def load_and_chunk_all_markdowns(chunk_size=500, overlap=50):
         with open(md_path, "r", encoding="utf-8") as f:
             content = f.read()
 
-        file_chunks = chunk_text_by_markdown(content, filename, chunk_size=chunk_size, overlap=overlap)
-        all_chunks.extend(file_chunks)
+        # MarkItDown preserves page boundaries via form-feed (\x0c / \f)
+        pages = content.split('\x0c')
+        for p_num, page_text in enumerate(pages, start=1):
+            if not page_text.strip():
+                continue
+            file_chunks = chunk_text_by_markdown(
+                page_text, 
+                filename, 
+                page_number=p_num, 
+                chunk_size=chunk_size, 
+                overlap=overlap
+            )
+            all_chunks.extend(file_chunks)
 
     return all_chunks
 
@@ -77,4 +91,5 @@ if __name__ == "__main__":
     if chunks:
         print("\n--- SAMPLE CHUNK ---")
         print(f"Source: {chunks[0]['source']}")
+        print(f"Page: {chunks[0].get('page_number')}")
         print(f"Content:\n{chunks[0]['text'][:300]}...")
