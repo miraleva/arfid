@@ -1,28 +1,10 @@
 // backend/chatHistorian.js
-
-/**
- * Creates the chat_messages table and necessary indexes.
- */
-function initChatSchema(db) {
-    db.serialize(() => {
-        db.run(`CREATE TABLE IF NOT EXISTS chat_messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),
-            content TEXT NOT NULL,
-            created_at INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )`);
-
-        db.run(`CREATE INDEX IF NOT EXISTS idx_chat_messages_user_id_id ON chat_messages(user_id, id)`);
-        console.log("[Historian] Chat schema initialized.");
-    });
-}
+const db = require("./db");
 
 /**
  * Saves a message to the database and applies retention policy.
  */
-async function saveMessage(db, userId, role, content) {
+async function saveMessage(userId, role, content) {
     if (!userId) return;
 
     const createdAt = Math.floor(Date.now() / 1000); // Unix epoch seconds
@@ -38,7 +20,7 @@ async function saveMessage(db, userId, role, content) {
                 }
 
                 try {
-                    await applyRetention(db, userId);
+                    await applyRetention(userId);
                     resolve(this.lastID);
                 } catch (retentionErr) {
                     console.error("[Historian] Retention policy failed:", retentionErr.message);
@@ -52,7 +34,7 @@ async function saveMessage(db, userId, role, content) {
 /**
  * Retrieves the last N messages for a user, ordered chronologically.
  */
-function getRecentMessages(db, userId, limit = 10) {
+function getRecentMessages(userId, limit = 10) {
     return new Promise((resolve, reject) => {
         if (!userId) return resolve([]);
 
@@ -80,7 +62,7 @@ function getRecentMessages(db, userId, limit = 10) {
  * Ensures a user's chat history does not exceed the limit.
  * If > 200 messages, deletes the oldest 50.
  */
-async function applyRetention(db, userId) {
+async function applyRetention(userId) {
     return new Promise((resolve, reject) => {
         db.get(`SELECT COUNT(*) as count FROM chat_messages WHERE user_id = ?`, [userId], (err, row) => {
             if (err) return reject(err);
@@ -121,7 +103,6 @@ async function applyRetention(db, userId) {
 }
 
 module.exports = {
-    initChatSchema,
     saveMessage,
     getRecentMessages,
     applyRetention
