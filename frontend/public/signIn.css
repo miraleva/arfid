@@ -1,179 +1,366 @@
-.container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  height: 100vh;
-  font-size: 18px;
-  font-weight: 600;
-  font-family: "Inter", sans-serif;
+:root {
+  /* 🎨 ARFID Playful / Foodie Palette */
+  --color-bubblegum: #f478b0;
+  --color-tangerine: #ffa934;
+  --color-ocean-blue: #00a0b5;
+  --color-ocean-blue-hover: #008a9c;
+  --color-banana: #ffef5a;
+  --color-avocado: #98c54e;
+  --color-bell-pepper: #14704f;
+  
+  --text-dark: #1E293B;
+  --text-muted: #475569;
+  --text-label: #1E370B;
+  --color-error: #FF3B30;
+  
+  --radius-pill: 9999px;
+  --radius-box: 28px;
+  --radius-input: 28px;
 }
 
-.login {
-  width: 50%;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.title {
-  color: #9381FF;
-  font-size: 32px;
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  margin-top: 10px;
-}
-
-.subtitle {
-  color: #7c7c7c;
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 30px;
-}
-
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-
-input {
-  width: 23vw;
-  height: 3.1vw;
-  border: 2px solid #c0c0c0;
-  border-radius: 12px;
-  padding: 0 16px;
-  box-shadow: 0px 4px 4px rgba(145, 145, 145, 0.25);
-  font-size: 16px;
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  outline: none;
-  transition: border-color 0.2s ease;
-  background-color: white;
-}
-
-input:focus {
-  border-color: #9381FF;
-}
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.checkbox input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  border: 2px solid #bebebe;
-  border-radius: 4px;
-  background-color: white;
-  box-shadow: 0px 2px 4px rgba(145, 145, 145, 0.25);
-  cursor: pointer;
-  appearance: none;
-
-}
-
-.checkbox input[type="checkbox"]:checked {
-  background-color: #f3c22f;
-  border-color: #f3c22f;
-  appearance: none;
-
-}
-
-.checkbox label {
-  font-family: "Inter", sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 0;
-  color: #545454;
-  cursor: pointer;
-}
-
-.forgot {
-  font-family: "Inter", sans-serif;
-  font-size: 18px;
-  color: #545454;
-  cursor: pointer;
-  transition: color 0.2s ease;
-  margin-left: 30px;
-}
-
-.forgot:hover,
-.forgot:active {
-  color: #20b2da;
-}
-
-button[type="submit"] {
-  width: 22vw;
-  height: 3.8vw;
-  background-color: #00AFB9;
-  color: white;
-  font-family: "Inter", sans-serif;
-  font-size: 24px;
-  font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  transition: background-color 0.2s ease;
-  cursor: pointer;
-}
-
-button[type="submit"]:hover {
-  background-color: #0099a3;
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  overflow: auto;
-  scrollbar-width: none;
+  background-color: var(--color-avocado);
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ana Taşıyıcı: Sayfanın %50'si Sol Görsel, %50'si Sağ Form */
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--color-avocado);
   position: relative;
+  overflow: hidden;
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
+/* 1. Sol Taraf: Sayfanın tam yarısını (%50) kaplayan ve en sola dayalı alan */
+.imageSection {
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Direkt sol tarafa dayalı */
+  padding: 0;
+  margin: 0;
+  background-color: var(--color-avocado);
+  position: relative;
+  overflow: hidden;
 }
 
-.noAccount {
+#shapesImg {
+  width: auto;
+  max-width: 100%;
+  height: 92vh;
+  max-height: 92vh;
+  object-fit: contain;
+  object-position: left center; /* Direkt sola dayalı */
+  margin-left: 0; /* Sol sınıra sıfır */
+  /* Animasyon tamamen kaldırıldı */
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.08));
+}
+
+/* 2. Sağ Taraf: Giriş Formu (Sağ %50'de, Sağa Dayalı / Aligned) */
+.login {
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.5rem 6vw 2.5rem 3vw;
+  z-index: 2;
+}
+
+#loginForm {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Başlıklar */
+.title {
+  color: var(--color-banana);
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  margin-top: 0;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  line-height: 1.15;
   text-align: left;
-  margin-top: 20px;
-  font-size: 20px;
-  color: #545454;
 }
 
-.signLink {
-  color: #9381FF;
-  font-size: 20px;
-  font-family: "Inter", sans-serifs;
+.subtitle {
+  color: #2E4E14;
+  font-size: 15px;
   font-weight: 600;
-  transition: color 0.2s ease;
+  margin-bottom: 20px;
+  line-height: 1.35;
+  opacity: 0.95;
+  text-align: left;
 }
 
-.signLink:hover {
-  color: #6d5fe7;
+/* Etiketler */
+label {
+  display: block;
+  margin-top: 4px;
+  margin-bottom: 5px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-label);
+}
+
+/* Input Kutuları & Wrapper */
+.inputWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  height: 48px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-input);
+  padding: 0 20px;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 500;
+  outline: none;
+  background-color: #FFFFFF;
+  color: var(--text-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: var(--color-ocean-blue);
+  box-shadow: 0 0 0 4px rgba(0, 160, 181, 0.25), 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Şifre Göster/Gizle Butonu */
+.togglePasswordBtn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748B;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.togglePasswordBtn:hover {
+  color: var(--color-ocean-blue);
+  background-color: rgba(0, 160, 181, 0.08);
+}
+
+.eyeIcon {
+  width: 19px;
+  height: 19px;
+}
+
+/* Checkbox & Forgot Password Satırı */
+.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  margin-bottom: 14px;
+}
+
+.checkbox label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14.5px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-label);
+  cursor: pointer;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 5px;
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.checkbox input[type="checkbox"]:checked {
+  background-color: var(--color-tangerine);
+  border-color: var(--color-tangerine);
+}
+
+.checkbox input[type="checkbox"]:checked::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.forgot {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0E5E6F;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.forgot:hover {
+  color: var(--color-banana);
   text-decoration: underline;
 }
 
-#never {
-  height: 100vh;
-  width: 550px;
-  object-fit: cover;
-
+/* Sign In Butonu (Ocean Blue, Yuvarlak & Dolgun) */
+button[type="submit"],
+.signButton {
+  width: 100%;
+  max-width: 200px;
+  height: 48px;
+  background-color: var(--color-ocean-blue);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 5px 18px rgba(0, 160, 181, 0.35), 0 2px 5px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
 }
 
-.warning {
-  color: #ff4757;
-  font-size: 14px;
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  margin-top: 5px;
+button[type="submit"]:hover,
+.signButton:hover {
+  background-color: var(--color-ocean-blue-hover);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 7px 22px rgba(0, 160, 181, 0.45);
+}
+
+button[type="submit"]:active,
+.signButton:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Alt Hesap Yok Alanı */
+.noAccount {
+  text-align: left;
+  margin-top: 14px;
+  margin-bottom: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-label);
+}
+
+.signLink {
+  color: var(--color-banana);
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.2s ease;
   margin-left: 4px;
-  min-height: 18px;
-  transition: opacity 0.2s ease;
+}
+
+.signLink:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+/* Uyarı & Hata Mesajları */
+.warning {
+  color: var(--color-error);
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 3px;
+  margin-bottom: 4px;
+  margin-left: 6px;
+  min-height: 16px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive (Tablet & Mobil) */
+@media (max-width: 960px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+    align-items: center;
+  }
+
+  .imageSection {
+    flex: none;
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    padding: 1rem 0;
+  }
+
+  #shapesImg {
+    max-width: 320px;
+    height: auto;
+    object-position: center;
+  }
+
+  .login {
+    flex: none;
+    width: 100%;
+    height: auto;
+    padding: 1rem 0;
+    align-items: center;
+  }
+
+  .title,
+  .subtitle,
+  .noAccount {
+    text-align: center;
+  }
 }
