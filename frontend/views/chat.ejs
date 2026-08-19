@@ -1,46 +1,248 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>chat</title>
+    <title>ARFID Asistanı - Sohbet</title>
     
     <link rel="stylesheet" href="chat.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"/>
 </head>
 <body>
-    <div class="header">
-        <div class="headerName">Asistancım</div>
-        <div class="headerButton">
-            <a href="/logout"><button class="logoutButton">Log out</button></a>
-        </div>
-    </div>
-
-    <div class="chatContainer">
-        <div class="chatArea" id="chatArea">
-            <div class="welcomeMessage">
-                <div class="aiAvatar">
-                    <div class="smileyIcon">😊</div>
+    <div class="appContainer">
+        <!-- Sol Claude Tarzı Sidebar (Beyaz Arkaplan) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebarHeader">
+                <div class="brand">
+                    <div class="brandLogo">
+                        <img src="/image/arfid_icon.png" alt="Asistancım Logo" class="brandIconImg">
+                    </div>
+                    <span class="brandText">Asistancım</span>
                 </div>
-                <div class="aiMessageBubble">
-                    Merhaba! Ben ARFID (Kaçıngan/Kısıtlayıcı Gıda Alım Bozukluğu) süreçlerinizde size destek olmak için tasarlanmış klinik diyetisyen asistanınızım. Yiyecek tercihlerinizi, duyusal hassasiyetlerinizi veya tetikleyicilerinizi benimle paylaşabilir; beslenme yolculuğunuzda size özel, güvenli ve adım adım rehberlik alabilirsiniz.
+                <button class="sidebarCloseBtn" id="sidebarCloseBtn" title="Sidebar'ı Kapat" aria-label="Sidebar'ı Kapat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 1. Üst Kısım: Yeni Sohbet Butonu (Flat Mor + Glow + Sarı İkon) -->
+            <div class="newChatSection">
+                <button class="newChatBtn" id="newChatBtn">
+                    <span class="newChatIcon">+</span>
+                    <span>Yeni Sohbet</span>
+                </button>
+            </div>
+
+            <!-- 2. Arama Kutusu (UI Placeholder) -->
+            <div class="searchSection">
+                <div class="searchInputWrapper">
+                    <svg class="searchIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" class="searchInput" placeholder="Sohbetlerde ara..." aria-label="Sohbetlerde ara" />
                 </div>
             </div>
-        </div>
 
-        <div class="messageInputContainer">
-            <div class="messageInputWrapper">
-                <input type="text" class="messageInput" id="messageInput" placeholder="Type here...">
-                <button class="sendButton" id="sendButton">↑</button>
+            <!-- 3. Geçmiş Sohbetler Listesi (Scrollable & Placeholder Gruplama) -->
+            <div class="chatHistorySection">
+                <div class="historyGroup">
+                    <div class="groupTitle">BUGÜN</div>
+                    <div class="historyItem active">
+                        <span class="historyDot"></span>
+                        <span class="historyTitle">Duyusal besin hassasiyetleri</span>
+                    </div>
+                    <div class="historyItem">
+                        <span class="historyDot"></span>
+                        <span class="historyTitle">Kahvaltı denemesi günlüğü</span>
+                    </div>
+                </div>
+
+                <div class="historyGroup">
+                    <div class="groupTitle">BU HAFTA</div>
+                    <div class="historyItem">
+                        <span class="historyDot"></span>
+                        <span class="historyTitle">Doku ve tat hedefleri</span>
+                    </div>
+                    <div class="historyItem">
+                        <span class="historyDot"></span>
+                        <span class="historyTitle">Güvenli besin listesi oluşturma</span>
+                    </div>
+                    <div class="historyItem">
+                        <span class="historyDot"></span>
+                        <span class="historyTitle">Yeni gıda alıştırma teknikleri</span>
+                    </div>
+                </div>
+
+                <div class="historyGroup">
+                    <div class="groupTitle">ÖNCEKİLER</div>
+                    <div class="historyItem">
+                        <span class="historyDot"></span>
+                        <span class="historyTitle">ARFID başlangıç rehberi</span>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <!-- 4. Alt Kısım: Profil ve Logout Alanı -->
+            <div class="sidebarFooter">
+                <div class="userProfile">
+                    <div class="userAvatar">
+                        <%= (typeof user !== 'undefined' && user && user.username) ? user.username.charAt(0).toUpperCase() : 'U' %>
+                    </div>
+                    <div class="userInfo">
+                        <div class="userName">
+                            <%= (typeof user !== 'undefined' && user && user.username) ? user.username : 'Kullanıcı' %>
+                        </div>
+                        <div class="userEmail">
+                            <%= (typeof user !== 'undefined' && user && user.email) ? user.email : 'Giriş yapıldı' %>
+                        </div>
+                    </div>
+                </div>
+                <a href="/logout" class="logoutLink" title="Çıkış Yap" aria-label="Çıkış Yap">
+                    <button class="logoutBtn" type="button">
+                        <svg class="logoutIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span class="logoutText">Çıkış</span>
+                    </button>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Sidebar Kapalıyken Gösterilecek Açma Butonu Toggle -->
+        <button class="sidebarOpenBtn" id="sidebarOpenBtn" title="Sidebar'ı Aç" aria-label="Sidebar'ı Aç">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+
+        <div class="sidebarBackdrop" id="sidebarBackdrop"></div>
+
+        <!-- Ana Chat Alanı -->
+        <main class="mainChat">
+            <div class="chatContainer">
+                
+                <!-- 4. DİKEY VE YATAY ORTALANMIŞ KARŞILAMA EKRANI (Başlık + Alt Başlık + Input Tek Grup) -->
+                <div class="welcomeCenteredGroup" id="welcomeCenteredGroup">
+                    <div class="welcomeMascot">
+                        <img src="/image/arfid_icon.png" alt="ARFID Asistanı" class="mascotIconImg">
+                    </div>
+                    <h1 class="welcomeHeroTitle">Hoşgeldiniz, <%= (typeof user !== 'undefined' && user && user.username) ? user.username : 'Kullanıcı' %></h1>
+                    <p class="welcomeHeroSubtitle">Bugün beslenme yolculuğunda sana nasıl yardımcı olabilirim?</p>
+                    
+                    <!-- Karşılama Ekranındayken Input Bar Buraya Entegre Olur -->
+                    <div class="messageInputContainer heroMode" id="messageInputContainer">
+                        <div class="messageInputWrapper">
+                            <input type="text" class="messageInput" id="messageInput" placeholder="Duygularınızı, tercihlerinizi veya sorularınızı yazın..." autocomplete="off">
+                            <button class="sendButton" id="sendButton" title="Gönder" aria-label="Gönder">
+                                <svg class="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="19" x2="12" y2="5"></line>
+                                    <polyline points="5 12 12 5 19 12"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="inputHint">Asistanımız medikal tanı koymaz; ARFID rehberliği ve destek sunar.</div>
+                    </div>
+                </div>
+
+                <!-- Chat Mesajları Akış Alanı (Mesajlar başlayınca görünür) -->
+                <div class="chatArea" id="chatArea" style="display: none;">
+                    <!-- Dinamik mesajlar buraya eklenecektir -->
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
+        // Sidebar Açma / Kapatma Mantığı (UI Katmanı)
+        const sidebar = document.getElementById('sidebar');
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const sidebarOpenBtn = document.getElementById('sidebarOpenBtn');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        const newChatBtn = document.getElementById('newChatBtn');
+        
+        const welcomeCenteredGroup = document.getElementById('welcomeCenteredGroup');
+        const chatContainer = document.querySelector('.chatContainer');
+        const messageInputContainer = document.getElementById('messageInputContainer');
+        const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
-        const chatArea = document.getElementById('chatArea');
 
+        function openSidebar() {
+            sidebar.classList.remove('collapsed');
+            sidebarBackdrop.classList.add('active');
+            sidebarOpenBtn.classList.remove('visible');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('collapsed');
+            sidebarBackdrop.classList.remove('active');
+            sidebarOpenBtn.classList.add('visible');
+        }
+
+        if (sidebarCloseBtn) {
+            sidebarCloseBtn.addEventListener('click', closeSidebar);
+        }
+        if (sidebarOpenBtn) {
+            sidebarOpenBtn.addEventListener('click', openSidebar);
+        }
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', closeSidebar);
+        }
+
+        // Karşılama Ekranı & Input Konum Durum Yönetimi (Boş/Dolu Sohbet)
+        function checkWelcomeState() {
+            const hasMessages = chatArea && chatArea.children.length > 0;
+            if (hasMessages) {
+                // Mesaj akış moduna geç: Ortalanmış karşılama grubunu gizle
+                if (welcomeCenteredGroup) welcomeCenteredGroup.style.display = 'none';
+                if (chatArea) chatArea.style.display = 'flex';
+                
+                // Input barını chatContainer'ın altına taşı ve normal moda al
+                if (messageInputContainer) {
+                    messageInputContainer.classList.remove('heroMode');
+                    chatContainer.appendChild(messageInputContainer);
+                }
+            } else {
+                // Boş sohbet moduna geç: Ortalanmış grubu göster
+                if (welcomeCenteredGroup) welcomeCenteredGroup.style.display = 'flex';
+                if (chatArea) chatArea.style.display = 'none';
+                
+                // Input barını ortalanmış grubun içine geri taşı
+                if (messageInputContainer && welcomeCenteredGroup) {
+                    messageInputContainer.classList.add('heroMode');
+                    welcomeCenteredGroup.appendChild(messageInputContainer);
+                }
+            }
+        }
+
+        // Sayfa açıldığında başlangıç durumunu kontrol et
+        checkWelcomeState();
+
+        // Yeni Sohbet Butonu: Mevcut chat alanını temizleyip ortalanmış hoşgeldin ekranını geri getirir
+        if (newChatBtn) {
+            newChatBtn.addEventListener('click', () => {
+                finishActiveTyping();
+                removeLoading();
+                chatArea.innerHTML = '';
+                checkWelcomeState();
+                messageInput.value = '';
+                messageInput.focus();
+                // Mobilde sohbet başlatıldığında sidebar'ı kapat
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        }
+
+        // ==========================================
+        // MEVCUT MESAJLAŞMA & FONKSİYONEL JS MANTIĞI
+        // ==========================================
         let currentLoadingBubble = null;
         let activeTypingInterval = null;
         let activeTypingBubble = null;
@@ -71,7 +273,7 @@
                 </div>
                 <div class="aiMessageBubble">
                     <div class="loadingBubble">
-                        <span class="loadingText">Thinking...</span>
+                        <span class="loadingText">Düşünüyor...</span>
                         <div class="typingDots">
                             <div class="dot"></div>
                             <div class="dot"></div>
@@ -94,15 +296,30 @@
 
         function addUserMessage(message) {
             finishActiveTyping();
+            
+            // İlk mesaj gönderildiğinde karşılama ekranını kaldır ve input'u alt konuma taşı
+            if (welcomeCenteredGroup && welcomeCenteredGroup.style.display !== 'none') {
+                welcomeCenteredGroup.style.display = 'none';
+                chatArea.style.display = 'flex';
+                messageInputContainer.classList.remove('heroMode');
+                chatContainer.appendChild(messageInputContainer);
+            }
+
             const messageDiv = document.createElement('div');
             messageDiv.className = 'userMessage';
             messageDiv.innerHTML = `
                 <div class="userMessageBubble">
-                    ${message}
+                    ${escapeHtml(message)}
                 </div>
             `;
             chatArea.appendChild(messageDiv);
             chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         function addAiMessage(message) {
@@ -110,7 +327,7 @@
             finishActiveTyping();
 
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'welcomeMessage'; // Using existing AI message style
+            messageDiv.className = 'welcomeMessage';
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'aiMessageBubble typingReveal';
             
