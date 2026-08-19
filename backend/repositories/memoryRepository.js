@@ -1,5 +1,9 @@
-// backend/memoryOps.js
-const db = require("./db");
+/**
+ * Memory Repository
+ * Handles all direct SQLite database queries for user constraints, master lists, and memory updates.
+ */
+
+const db = require("../db");
 
 /**
  * Fetch user constraints from the database.
@@ -102,6 +106,11 @@ function getUserConstraints(userId) {
  * Ensures a master record exists for an item.
  * CRITICAL SAFETY CHECK: Only inserts if the item name appears in the user's original message.
  * This prevents hallucinated items from polluting the master lists.
+ * 
+ * @param {string} table - Table name (foods, sensory_attributes, conditions)
+ * @param {string} name - Item name
+ * @param {string} originalMessage - Raw user input text for anti-hallucination check
+ * @returns {Promise<number>} ID of the master record
  */
 function ensureMasterRecord(table, name, originalMessage) {
     return new Promise((resolve, reject) => {
@@ -127,7 +136,7 @@ function ensureMasterRecord(table, name, originalMessage) {
  * Handles Foods, Sensory Attributes, and Conditions.
  * 
  * @param {number} userId - Target user ID
- * @param {import('./types').MemoryUpdates} updates - Extracted updates from LLM
+ * @param {import('../types').MemoryUpdates} updates - Extracted updates from LLM
  * @param {string} originalMessage - Original user message to prevent hallucinations
  * @returns {Promise<void>}
  */
@@ -197,7 +206,7 @@ async function applyMemoryUpdates(userId, updates, originalMessage) {
 /**
  * Fetches all items from master tables for semantic mapping.
  * 
- * @returns {Promise<import('./types').MasterLists>} Master lists of foods, sensory, and conditions
+ * @returns {Promise<import('../types').MasterLists>} Master lists of foods, sensory, and conditions
  */
 function getMasterLists() {
     return new Promise((resolve, reject) => {
@@ -241,5 +250,6 @@ function getMasterLists() {
 module.exports = {
     getUserConstraints,
     applyMemoryUpdates,
-    getMasterLists
+    getMasterLists,
+    ensureMasterRecord
 };
