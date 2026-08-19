@@ -72,27 +72,20 @@ app.get("/chat", isAuthenticated, (req, res) => {
 
 
 
+const apiClient = require("./apiClient");
+
 // Signin POST - Backend API'ye bağlı
 app.post("/signin", async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const response = await fetch(`${BACKEND_API_URL}/signin`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Internal-Token': process.env.INTERNAL_SHARED_SECRET
-            },
-            body: JSON.stringify({ email, password })
-        });
+        const result = await apiClient.signin(email, password);
 
-        const data = await response.json();
-
-        if (response.ok) {
-            req.session.user = { id: data.id, email: data.email, username: data.username };
+        if (result.ok) {
+            req.session.user = { id: result.data.id, email: result.data.email, username: result.data.username };
             res.redirect("/chat");
         } else {
-            res.render("signin", { error: data.error || "Email veya şifre yanlış" });
+            res.render("signin", { error: result.data.error || "Email veya şifre yanlış" });
         }
     } catch (error) {
         res.render("signin", { error: "Bağlantı hatası" });
@@ -104,22 +97,13 @@ app.post("/signup", async (req, res) => {
     const { email, password, username } = req.body;
 
     try {
-        const response = await fetch(`${BACKEND_API_URL}/signup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Internal-Token': process.env.INTERNAL_SHARED_SECRET
-            },
-            body: JSON.stringify({ email, password, username })
-        });
+        const result = await apiClient.signup(email, password, username);
 
-        const data = await response.json();
-
-        if (response.ok) {
-            req.session.user = { id: data.id, email: data.email, username: data.username };
+        if (result.ok) {
+            req.session.user = { id: result.data.id, email: result.data.email, username: result.data.username };
             res.redirect("/chat");
         } else {
-            res.render("signup", { error: data.error || "Kayıt sırasında bir hata oluştu" });
+            res.render("signup", { error: result.data.error || "Kayıt sırasında bir hata oluştu" });
         }
     } catch (error) {
         res.render("signup", { error: "Bağlantı hatası" });
@@ -132,18 +116,8 @@ app.post("/chat", isAuthenticated, async (req, res) => {
     const userId = req.session.user ? req.session.user.id : null;
 
     try {
-        const response = await fetch(`${BACKEND_API_URL}/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-User-Id': userId, // Pass trusted Identity
-                'X-Internal-Token': process.env.INTERNAL_SHARED_SECRET
-            },
-            body: JSON.stringify({ message })
-        });
-
-        const data = await response.json();
-        res.json(data);
+        const result = await apiClient.sendChatMessage(message, userId);
+        res.status(result.status).json(result.data);
     } catch (error) {
         console.error("Chat proxy hatası:", error);
         res.status(500).json({ error: "Backend bağlantı hatası" });
