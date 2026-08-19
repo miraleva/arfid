@@ -1,130 +1,301 @@
-.container{
-  display: flex;
-  flex-direction: row;
-  justify-content:space-between;
-  font-family: "Inter", sans-serif;
-  font-size: 18px;
-  font-weight: 600;
+:root {
+  /* 🎨 ARFID Playful / Foodie Palette */
+  --color-bubblegum: #f478b0;
+  --color-tangerine: #ffa934;
+  --color-ocean-blue: #00a0b5;
+  --color-ocean-blue-hover: #008a9c;
+  --color-banana: #ffef5a;
+  --color-avocado: #98c54e;
+  --color-bell-pepper: #14704f;
+  
+  --text-dark: #1E293B;
+  --text-muted: #E0F2FE;
+  --text-label: #042F38;
+  --color-error: #FF3B30;
+  
+  --radius-pill: 9999px;
+  --radius-box: 28px;
+  --radius-input: 28px;
 }
 
-.leftist{
-  width: 50%;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-}
-
-
-.title{
-  color: #9381FF;
-  font-size: 32px;
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  margin-top: 10px;
-}
-
-.subtitle{
-  color: #7c7c7c;
-  font-size:20px;
-  font-weight: 600;
-  margin-bottom: 30px;
-}
-
-label {
-  display: block;
-  margin-bottom: 2px;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-input{
-  width: 23vw;
-  height: 3.1vw;
-  border: 2px solid #c0c0c0;
-  border-radius: 12px;
-  padding: 0 16px;
-  box-shadow: 0px 4px 4px rgba(145, 145, 145, 0.25);
-  font-size: 16px;
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  outline: none;
-  transition: border-color 0.2s ease;
-  background-color: white;
- }
-
- input:focus {
-  border-color: #9381FF;
-}
-
-button[type="submit"] {
-  width: 22vw;
-  height: 3.8vw;
-  background-color: #00AFB9;
-  color: white;
-  font-family: "Inter", sans-serif;
-  font-size: 24px;
-  font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  transition: background-color 0.2s ease;
-  cursor: pointer;
-}
-
-button[type="submit"]:hover {
-  background-color: #0099a3;
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  overflow: auto;
-  scrollbar-width: none;
-  position: relative;
-}
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
+  background-color: var(--color-ocean-blue);
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-.already{
-  margin-top: 20px;
-  margin-left: 10px;
-  font-size: 18px;
-  font-family: "Inter", sans-serif;
+/* Ana Taşıyıcı: Sayfanın %50'si Sol Görsel, %50'si Sağ Form */
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--color-ocean-blue);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 1. Sol Taraf: Sayfanın tam yarısını (%50) kaplayan ve en sola dayalı görsel */
+.imageSection {
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Direkt sol tarafa dayalı */
+  padding: 0;
+  margin: 0;
+  background-color: var(--color-ocean-blue);
+  position: relative;
+  overflow: hidden;
+}
+
+#shapesImg {
+  width: auto;
+  max-width: 100%;
+  height: 92vh;
+  max-height: 92vh;
+  object-fit: contain;
+  object-position: left center; /* Direkt sola dayalı */
+  margin-left: 0;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.12));
+}
+
+/* 2. Sağ Taraf: Kayıt Formu (Sağ %50'de, Sağa Dayalı / Aligned) */
+.leftist {
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 6vw 2rem 3vw;
+  z-index: 2;
+}
+
+#signUpForm {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Başlıklar */
+.title {
+  color: var(--color-banana);
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  margin-top: 0;
+  margin-bottom: 2px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  line-height: 1.15;
+  text-align: left;
+}
+
+.subtitle {
+  color: #E0F7FA;
+  font-size: 15px;
   font-weight: 600;
-  color:#656565;
+  margin-bottom: 16px;
+  line-height: 1.35;
+  opacity: 0.95;
+  text-align: left;
+}
+
+/* Etiketler (Dikey boşluk daraltıldı) */
+label {
+  display: block;
+  margin-top: 3px;
+  margin-bottom: 4px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-label);
+}
+
+/* Input Kutuları & Wrapper */
+.inputWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  height: 46px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-input);
+  padding: 0 18px;
+  font-size: 14.5px;
+  font-family: inherit;
+  font-weight: 500;
+  outline: none;
+  background-color: #FFFFFF;
+  color: var(--text-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: var(--color-banana);
+  box-shadow: 0 0 0 4px rgba(255, 239, 90, 0.3), 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Şifre Göster/Gizle Butonu */
+.togglePasswordBtn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748B;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.togglePasswordBtn:hover {
+  color: var(--color-ocean-blue);
+  background-color: rgba(0, 160, 181, 0.08);
+}
+
+.eyeIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Sign Up Butonu (Avocado Yeşil / Tangerine Tonu, Yuvarlak & Dolgun) */
+button[type="submit"],
+.signButton {
+  width: 100%;
+  max-width: 200px;
+  height: 48px;
+  background-color: var(--color-avocado);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 5px 18px rgba(152, 197, 78, 0.4), 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+button[type="submit"]:hover,
+.signButton:hover {
+  background-color: #8bb844;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 7px 22px rgba(152, 197, 78, 0.5);
+}
+
+button[type="submit"]:active,
+.signButton:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Alt Hesap Var Alanı (Already have an account? Sign In) */
+.already {
+  text-align: left;
+  margin-top: 14px;
+  margin-bottom: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #042F38;
 }
 
 .signLink {
-  color: #9381FF;
-  font-size: 20px;
-  font-family: "Inter", sans-serifs;
-  font-weight: 600;
-  transition: color 0.2s ease;
+  color: var(--color-banana);
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-left: 4px;
 }
 
 .signLink:hover {
-  color: #6d5fe7;
+  color: #FFFFFF;
   text-decoration: underline;
 }
 
-#dish{
-  height: 100vh;
-  width: 600px;
-  object-fit: cover;
-}
-
+/* Uyarı & Hata Mesajları */
 .warning {
-  color: #ff4757;
-  font-size: 14px;
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  margin-top: 3px;
-  margin-left: 4px;
-  min-height: 4px;
-  transition: opacity 0.2s ease;
+  color: var(--color-error);
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-top: 2px;
+  margin-bottom: 3px; /* Dikey mesafeler sıkı */
+  margin-left: 6px;
+  min-height: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
+/* Responsive (Tablet & Mobil) */
+@media (max-width: 960px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+    align-items: center;
+  }
+
+  .imageSection {
+    flex: none;
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    padding: 1rem 0;
+  }
+
+  #shapesImg {
+    max-width: 320px;
+    height: auto;
+    object-position: center;
+  }
+
+  .leftist {
+    flex: none;
+    width: 100%;
+    height: auto;
+    padding: 1rem 0;
+    align-items: center;
+  }
+
+  .title,
+  .subtitle,
+  .already {
+    text-align: center;
+  }
+}

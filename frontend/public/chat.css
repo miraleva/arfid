@@ -1,76 +1,576 @@
+:root {
+    /* 🎨 1. WHIMSICAL & PLAYFUL CARTOON / STORYBOOK RENK PALETİ */
+    --primary-purple: #6C5CE7;
+    --primary-purple-dark: #5844D8;
+    --primary-purple-light: #EBE8FD;
+    
+    --primary-cyan: #00B8D9;
+    --primary-cyan-dark: #009FB8;
+    --primary-teal: #00D1B2;
+    --primary-teal-dark: #00B89C;
+    --primary-green: #7AE582;
+    --primary-green-dark: #5AC963;
+    
+    --accent-yellow: #FFE66D;
+    --accent-yellow-light: #FFFDE6;
+    --accent-yellow-border: #FCE672;
+    
+    /* Vurgu & Aksiyon Detayları */
+    --accent-orchid: #C77DFF;
+    
+    /* Yalnızca minik detaylar/çıkış/uyarı için kırmızı */
+    --accent-red: #FF6B6B;
+    --accent-red-bg: #FFF0F0;
+    --accent-red-border: #FFD1D1;
+
+    /* 2. Arkaplanlar: Beyaz, Temiz & Masalsı */
+    --bg-app: #FFFFFF;
+    --bg-sidebar: #FAFAFD;
+    --bg-sidebar-hover: #F1EFFE;
+    --bg-chat: #FFFFFF;
+    
+    /* Mesaj Balonları (Flat + Soft Border/Glow) */
+    --bubble-ai-bg: #FFFEEA;
+    --bubble-ai-border: #F7EDA3;
+    --bubble-ai-text: #202E2B;
+    
+    --bubble-user-bg: #6C5CE7;
+    --bubble-user-border: #5844D8;
+    --bubble-user-text: #FFFFFF;
+    
+    /* Tipografi ve Kenarlıklar */
+    --text-main: #1E1B4B;
+    --text-muted: #5B5882;
+    --text-light: #8E8AA8;
+    --border-color: #ECEAF8;
+
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    --radius-full: 9999px;
+    
+    --sidebar-width: 280px;
+    --transition-fast: 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-smooth: 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+    
+    /* Flat Glow & Deep Shadow Tanımları (Gradyansız Derinlik) */
+    --glow-purple: 0 4px 18px rgba(108, 92, 231, 0.28);
+    --glow-purple-hover: 0 6px 24px rgba(108, 92, 231, 0.42);
+    --glow-teal: 0 4px 18px rgba(0, 209, 178, 0.28);
+    --glow-cyan: 0 4px 18px rgba(0, 184, 217, 0.25);
+    --glow-yellow: 0 4px 16px rgba(255, 230, 109, 0.45);
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     overflow: hidden;
-    font-family: "Inter", sans-serif;
-    background-color: #FDFCFF;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
 }
 
-.header {
-    position: absolute;
-    top: 0px;
-    right: 0px;
+.appContainer {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     width: 100vw;
-    background: #FFFFFF;
-    height: 80px;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--bg-app);
+}
+
+/* =========================================================
+   1. SOL SIDEBAR (BEYAZ / PLAYFUL FLAT STİL)
+   ========================================================= */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--bg-sidebar);
+    border-right: 1.5px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: transform var(--transition-smooth), width var(--transition-smooth), margin-left var(--transition-smooth), opacity var(--transition-fast);
+    position: relative;
+    user-select: none;
+}
+
+.sidebar.collapsed {
+    margin-left: calc(-1 * var(--sidebar-width));
+    transform: translateX(-100%);
+}
+
+.sidebarHeader {
+    display: flex;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-    border-bottom: 1px solid #EFEFEF;
+    justify-content: space-between;
+    padding: 20px 18px 16px 20px;
 }
 
-.headerName {
-    margin-left: 3vw;
-    color: #7B61FF;
-    font-size: xx-large;
-    font-weight: 700;
-    font-family: "Inter", sans-serif;
-    letter-spacing: -0.5px;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.headerButtonContainer {
-    margin-right: 3vw;
+.brandLogo {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(108, 92, 231, 0.15);
+    border: 1.5px solid var(--border-color);
+    padding: 3px;
+    overflow: hidden;
 }
 
-.logoutButton {
-    background-color: #A594F9;
-    color: white;
+.brandIconImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.brandText {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--primary-purple);
+    letter-spacing: -0.4px;
+}
+
+.sidebarCloseBtn {
+    background: transparent;
     border: none;
-    border-radius: 20px;
-    padding: 8px 20px;
-    font-family: "Inter", sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    margin-right: 20px;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(165, 148, 249, 0.3);
-    transition: all 0.25s ease;
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
 }
 
-.logoutButton:hover {
-    background-color: #8E79F3;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(142, 121, 243, 0.4);
+.sidebarCloseBtn:hover {
+    background-color: var(--bg-sidebar-hover);
+    color: var(--primary-purple);
+    transform: scale(1.08);
+}
+
+/* 1. Üst Kısım: Yeni Sohbet Butonu (Flat Renk + Glow) */
+.newChatSection {
+    padding: 0 16px 14px 16px;
+}
+
+.newChatBtn {
+    width: 100%;
+    background-color: var(--primary-purple);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 12px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: var(--glow-purple);
+    transition: all var(--transition-fast);
+}
+
+.newChatBtn:hover {
+    background-color: var(--primary-purple-dark);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: var(--glow-purple-hover);
+}
+
+.newChatBtn:active {
+    transform: translateY(0);
+}
+
+.newChatIcon {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent-yellow);
+    line-height: 1;
+    display: inline-block;
+}
+
+/* 2. Arama Kutusu (UI Placeholder) */
+.searchSection {
+    padding: 0 16px 12px 16px;
+}
+
+.searchInputWrapper {
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    gap: 8px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.searchInputWrapper:focus-within {
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+}
+
+.searchIcon {
+    color: var(--text-light);
+    flex-shrink: 0;
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: var(--text-main);
+}
+
+.searchInput::placeholder {
+    color: var(--text-light);
+}
+
+/* 3. Geçmiş Sohbetler Listesi */
+.chatHistorySection {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.chatHistorySection::-webkit-scrollbar {
+    width: 5px;
+}
+
+.chatHistorySection::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chatHistorySection::-webkit-scrollbar-thumb {
+    background: #DDD8F7;
+    border-radius: var(--radius-full);
+}
+
+.historyGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.groupTitle {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--text-light);
+    padding: 4px 10px;
+}
+
+.historyItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1.5px solid transparent;
+}
+
+.historyItem:hover {
+    background-color: var(--bg-sidebar-hover);
+    color: var(--primary-purple);
+    transform: translateX(2px);
+}
+
+/* Aktif sohbet: Canlı Mor #6C5CE7 vurgusu + Border */
+.historyItem.active {
+    background-color: #FFFFFF;
+    color: var(--primary-purple);
+    font-weight: 700;
+    border-color: var(--primary-purple-light);
+    border-left: 4px solid var(--primary-purple);
+    box-shadow: 0 2px 10px rgba(108, 92, 231, 0.1);
+}
+
+.historyDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #DDD8F7;
+    flex-shrink: 0;
+}
+
+.historyItem.active .historyDot {
+    background-color: var(--primary-purple);
+}
+
+.historyTitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 4. Alt Kısım: Profil & Logout */
+.sidebarFooter {
+    padding: 14px 16px;
+    border-top: 1.5px solid var(--border-color);
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.userProfile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.userAvatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: var(--primary-teal);
+    color: #FFFFFF;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--glow-teal);
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.userName {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userEmail {
+    font-size: 11.5px;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logoutLink {
+    text-decoration: none;
+}
+
+.logoutBtn {
+    background-color: var(--accent-red-bg);
+    border: 1.5px solid var(--accent-red-border);
+    color: var(--accent-red);
+    border-radius: var(--radius-md);
+    padding: 7px 11px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    transition: all var(--transition-fast);
+}
+
+.logoutBtn:hover {
+    background-color: #FFE2E2;
+    color: #E02424;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.25);
+}
+
+.logoutIcon {
+    stroke: var(--accent-red);
+}
+
+/* Sidebar Açma Butonu (Kapalıyken Görünür) */
+.sidebarOpenBtn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-md);
+    background-color: #FFFFFF;
+    border: 1.5px solid var(--border-color);
+    color: var(--primary-purple);
+    box-shadow: 0 4px 14px rgba(108, 92, 231, 0.15);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    transition: all var(--transition-fast);
+}
+
+.sidebarOpenBtn.visible {
+    display: flex;
+}
+
+.sidebarOpenBtn:hover {
+    background-color: var(--bg-sidebar);
+    transform: scale(1.08);
+    border-color: var(--primary-purple);
+}
+
+.sidebarBackdrop {
+    display: none;
+}
+
+/* =========================================================
+   2. ANA CHAT ALANI
+   ========================================================= */
+.mainChat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--bg-chat);
+    min-width: 0;
+    position: relative;
 }
 
 .chatContainer {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 80px);
-    margin-top: 80px;
+    height: 100vh;
+    max-width: 840px;
+    width: 100%;
+    margin: 0 auto;
+    min-height: 0;
+    position: relative;
 }
 
-.chatArea {
+/* =========================================================
+   3. YENİ DİKEY & YATAY ORTALANMIŞ KARŞILAMA EKRANI
+   ========================================================= */
+.welcomeCenteredGroup {
     flex: 1;
-    padding: 24px;
-    overflow-y: auto;
-    background-color: #FDFCFF;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 24px;
+    animation: bounceInHero 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    width: 100%;
+}
+
+.welcomeMascot {
+    margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    animation: gentleFloat 3.2s ease-in-out infinite;
+}
+
+.mascotIconImg {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 20px rgba(108, 92, 231, 0.22));
+    transition: transform 0.3s ease;
+}
+
+.mascotIconImg:hover {
+    transform: scale(1.08) rotate(3deg);
+}
+
+@keyframes gentleFloat {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.welcomeHeroTitle {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.7px;
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+}
+
+.welcomeHeroSubtitle {
+    font-size: 17px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin: 0 0 28px 0;
+    line-height: 1.5;
+    max-width: 520px;
+}
+
+@keyframes bounceInHero {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* =========================================================
+   4. CHAT MESAJLARI AKIŞ ALANI
+   ========================================================= */
+.chatArea {
+    flex: 1;
+    padding: 32px 24px 16px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
     min-height: 0;
 }
 
@@ -79,53 +579,53 @@ body {
 }
 
 .chatArea::-webkit-scrollbar-track {
-    background: #F3EEFF;
+    background: transparent;
 }
 
 .chatArea::-webkit-scrollbar-thumb {
-    background: #D5C7FF;
-    border-radius: 3px;
+    background: #E0DCF7;
+    border-radius: var(--radius-full);
 }
 
+/* Mesaj Balonları (Flat + Yumuşak Köşeler & Glow) */
 .welcomeMessage {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 20px;
+    gap: 12px;
+    animation: messageSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .aiAvatar {
-    margin-right: 12px;
-    margin-top: 2px;
+    flex-shrink: 0;
 }
 
 .smileyIcon {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 2px solid #C9BFFF;
+    border: 2px solid var(--accent-yellow-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 19px;
-    background-color: #FAF8FF;
-    box-shadow: 0 2px 8px rgba(184, 174, 255, 0.2);
+    font-size: 21px;
+    background-color: var(--accent-yellow-light);
+    box-shadow: var(--glow-yellow);
 }
 
 .aiMessageBubble {
-    background-color: #F2F4F8;
-    color: #2D2D3E;
-    padding: 14px 18px;
-    border-radius: 20px;
-    border-top-left-radius: 4px;
-    max-width: 65%;
-    font-size: 14.5px;
-    font-family: "Inter", sans-serif;
-    line-height: 1.45;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
-    border: 1px solid #E5E8F0;
+    background-color: var(--bubble-ai-bg);
+    color: var(--bubble-ai-text);
+    padding: 16px 22px;
+    border-radius: var(--radius-lg);
+    border-top-left-radius: 6px;
+    max-width: 78%;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.6;
+    box-shadow: 0 4px 16px rgba(225, 205, 100, 0.14);
+    border: 1.5px solid var(--bubble-ai-border);
     word-break: break-word;
     white-space: pre-wrap;
-    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 }
 
 .aiMessageBubble.fadeContent {
@@ -135,7 +635,7 @@ body {
 @keyframes smoothContentReveal {
     0% {
         opacity: 0.85;
-        transform: translateY(2px);
+        transform: translateY(3px);
     }
     100% {
         opacity: 1;
@@ -146,47 +646,69 @@ body {
 .userMessage {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 20px;
+    animation: messageSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .userMessageBubble {
-    background: linear-gradient(135deg, #C9BFFF 0%, #B4A7F5 100%);
-    color: #1A1344;
-    padding: 14px 18px;
-    border-radius: 20px;
-    border-top-right-radius: 4px;
-    max-width: 65%;
-    font-size: 14.5px;
-    font-weight: 500;
-    line-height: 1.45;
-    box-shadow: 0 4px 14px rgba(180, 167, 245, 0.3);
+    background-color: var(--bubble-user-bg);
+    color: var(--bubble-user-text);
+    padding: 16px 22px;
+    border-radius: var(--radius-lg);
+    border-top-right-radius: 6px;
+    max-width: 75%;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    box-shadow: var(--glow-purple);
+    border: 1.5px solid var(--bubble-user-border);
+    word-break: break-word;
 }
 
+@keyframes messageSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* =========================================================
+   5. MESAJ GİRİŞ BARI & YUMUŞAK GÖNDER BUTONU
+   ========================================================= */
 .messageInputContainer {
-    padding: 16px 24px 20px 24px;
-    background-color: #FDFCFF;
-    border-top: 1px solid #F0EBFF;
+    padding: 14px 24px 24px 24px;
+    background-color: var(--bg-chat);
     flex-shrink: 0;
-    position: sticky;
-    bottom: 0;
-    z-index: 100;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+/* Boş ekranda (Hero modunda) mesaj barı ortalanmış grup içinde yer alır */
+.messageInputContainer.heroMode {
+    padding: 0;
+    max-width: 680px;
+    margin: 0 auto;
 }
 
 .messageInputWrapper {
-    border: 1.5px solid #E2D9FF;
+    border: 2px solid #E0DBF8;
     display: flex;
     align-items: center;
-    background-color: #F6F3FE;
-    border-radius: 28px;
-    padding: 6px 10px 6px 16px;
-    box-shadow: 0 4px 15px rgba(165, 148, 249, 0.08);
-    transition: all 0.25s ease;
+    background-color: #FFFFFF;
+    border-radius: var(--radius-xl);
+    padding: 8px 10px 8px 22px;
+    box-shadow: 0 4px 22px rgba(108, 92, 231, 0.08);
+    transition: all var(--transition-fast);
 }
 
 .messageInputWrapper:focus-within {
-    border-color: #A594F9;
+    border-color: var(--primary-purple);
     background-color: #FFFFFF;
-    box-shadow: 0 4px 18px rgba(165, 148, 249, 0.2);
+    box-shadow: 0 6px 26px rgba(108, 92, 231, 0.22);
+    transform: translateY(-1px);
 }
 
 .messageInput {
@@ -194,45 +716,77 @@ body {
     border: none;
     outline: none;
     background: transparent;
-    padding: 8px 8px;
-    font-size: 14.5px;
-    font-family: "Inter", sans-serif;
-    color: #2D2D3E;
+    padding: 10px 8px;
+    font-size: 15.5px;
+    font-family: inherit;
+    color: var(--text-main);
+    font-weight: 500;
 }
 
 .messageInput::placeholder {
-    color: #9C95BA;
+    color: var(--text-light);
 }
 
+/* 5. Gönder Butonu: Dolgun, Kalın Ok, Yumuşak Köşeli & Glow */
 .sendButton {
-    background-color: #A594F9;
+    background-color: var(--primary-purple);
     border: none;
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    color: #FFFFFF;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(165, 148, 249, 0.4);
+    transition: all var(--transition-fast);
+    box-shadow: var(--glow-purple);
+    flex-shrink: 0;
+}
+
+.sendIcon {
+    width: 20px;
+    height: 20px;
+    stroke: #FFFFFF;
+    stroke-width: 3.2;
+    transition: transform var(--transition-fast);
 }
 
 .sendButton:hover {
-    background-color: #8E79F3;
-    transform: scale(1.05);
+    background-color: var(--primary-purple-dark);
+    transform: scale(1.08);
+    box-shadow: var(--glow-purple-hover);
+}
+
+.sendButton:hover .sendIcon {
+    transform: translateY(-2px);
+}
+
+.sendButton:active {
+    transform: scale(0.96);
 }
 
 .sendButton:disabled {
-    background-color: #D3CBF8;
+    background-color: #E2E0F2;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
-/* Loading Animation */
+.sendButton:disabled .sendIcon {
+    stroke: #A8A4C4;
+    transform: none;
+}
+
+.inputHint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+/* Loading & Typing Dots */
 .loadingBubble {
     display: flex;
     align-items: center;
@@ -241,23 +795,24 @@ body {
 
 .loadingText {
     font-style: italic;
-    color: #6E6789;
-    font-size: 13px;
+    color: var(--text-muted);
+    font-size: 13.5px;
+    font-weight: 600;
 }
 
 .typingDots {
     display: flex;
-    gap: 4px;
+    gap: 5px;
     align-items: center;
 }
 
 .dot {
-    width: 6px;
-    height: 6px;
-    background-color: #A594F9;
+    width: 7px;
+    height: 7px;
+    background-color: var(--primary-purple);
     border-radius: 50%;
     opacity: 0.3;
-    animation: pulse 1.5s infinite ease-in-out;
+    animation: pulse 1.4s infinite ease-in-out;
 }
 
 .dot:nth-child(2) {
@@ -271,10 +826,71 @@ body {
 @keyframes pulse {
     0%, 100% {
         opacity: 0.3;
-        transform: scale(0.8);
+        transform: scale(0.85);
     }
     50% {
-        opacity: 0.8;
-        transform: scale(1.1);
+        opacity: 1;
+        transform: scale(1.2);
+        background-color: var(--accent-yellow);
+    }
+}
+
+/* =========================================================
+   6. RESPONSIVE TASARIM (MOBİL VE TABLET)
+   ========================================================= */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        box-shadow: 4px 0 24px rgba(30, 27, 75, 0.15);
+    }
+
+    .sidebar.collapsed {
+        margin-left: 0;
+        transform: translateX(-100%);
+    }
+
+    .sidebarBackdrop.active {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(30, 27, 75, 0.45);
+        backdrop-filter: blur(3px);
+        z-index: 999;
+    }
+
+    .sidebarOpenBtn {
+        display: flex;
+    }
+
+    .welcomeCenteredGroup {
+        padding: 40px 16px 20px 16px;
+    }
+
+    .welcomeHeroTitle {
+        font-size: 26px;
+    }
+
+    .welcomeHeroSubtitle {
+        font-size: 15px;
+        margin-bottom: 20px;
+    }
+
+    .chatArea {
+        padding: 50px 14px 14px 14px;
+    }
+
+    .aiMessageBubble, .userMessageBubble {
+        max-width: 88%;
+        font-size: 14.5px;
+    }
+
+    .messageInputContainer {
+        padding: 10px 14px 16px 14px;
     }
 }
