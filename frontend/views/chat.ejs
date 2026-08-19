@@ -112,7 +112,7 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = 'welcomeMessage'; // Using existing AI message style
             const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = 'aiMessageBubble';
+            bubbleDiv.className = 'aiMessageBubble typingReveal';
             
             messageDiv.innerHTML = `
                 <div class="aiAvatar">
@@ -125,17 +125,49 @@
             activeTypingBubble = bubbleDiv;
             activeTypingFullText = message;
 
-            let charIndex = 0;
-            activeTypingInterval = setInterval(() => {
-                charIndex++;
-                bubbleDiv.textContent = message.substring(0, charIndex);
-                chatArea.scrollTop = chatArea.scrollHeight;
+            // Metni kelimelere böl: İlk 3-4 kelimeyi daktilo efektiyle yaz, ardından kalanı akıcı şekilde tamamla
+            const words = message.trim().split(/\s+/);
+            
+            // Eğer mesaj çok kısaysa (<= 4 kelime) normal karakter karakter yazdır
+            if (words.length <= 4) {
+                let charIndex = 0;
+                activeTypingInterval = setInterval(() => {
+                    charIndex++;
+                    bubbleDiv.textContent = message.substring(0, charIndex);
+                    chatArea.scrollTop = chatArea.scrollHeight;
 
-                if (charIndex >= message.length) {
+                    if (charIndex >= message.length) {
+                        clearInterval(activeTypingInterval);
+                        activeTypingInterval = null;
+                        activeTypingBubble = null;
+                        activeTypingFullText = '';
+                    }
+                }, TYPING_SPEED_MS);
+                return;
+            }
+
+            // İlk 3 kelimenin bittiği karakter indeksini bul
+            const firstWords = words.slice(0, 3).join(' ') + ' ';
+            const targetCharCount = firstWords.length;
+            let charIndex = 0;
+
+            // 1. Aşama: İlk 3-4 kelimeyi hızlı ve canlı daktilo efektiyle yaz
+            activeTypingInterval = setInterval(() => {
+                charIndex += 2; // Akıcı ve seri başlangıç
+                if (charIndex >= targetCharCount) {
                     clearInterval(activeTypingInterval);
                     activeTypingInterval = null;
+                    
+                    // 2. Aşama: İlk 3-4 kelimeden hemen sonra tüm cevabı şık ve profesyonel bir fade/slide geçişiyle göster
+                    bubbleDiv.textContent = message;
+                    bubbleDiv.classList.add('fadeContent');
+                    chatArea.scrollTop = chatArea.scrollHeight;
+
                     activeTypingBubble = null;
                     activeTypingFullText = '';
+                } else {
+                    bubbleDiv.textContent = message.substring(0, charIndex);
+                    chatArea.scrollTop = chatArea.scrollHeight;
                 }
             }, TYPING_SPEED_MS);
         }

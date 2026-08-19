@@ -1,5 +1,9 @@
-// backend/chatHistorian.js
-const db = require("./db");
+/**
+ * Chat Repository
+ * Handles all direct SQLite database queries for chat history, messages, and retention policies.
+ */
+
+const db = require("../db");
 
 /**
  * Saves a message to the database and applies retention policy.
@@ -70,6 +74,9 @@ function getRecentMessages(userId, limit = 10) {
 /**
  * Ensures a user's chat history does not exceed the limit.
  * If > 200 messages, deletes the oldest 50.
+ * 
+ * @param {number} userId - Target user ID
+ * @returns {Promise<void>}
  */
 async function applyRetention(userId) {
     return new Promise((resolve, reject) => {
