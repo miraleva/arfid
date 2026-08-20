@@ -1,0 +1,309 @@
+/* =========================================================
+   SETTINGS MODAL (CLAUDE STYLE TWO-PANEL POP-UP)
+   ========================================================= */
+
+/* Modal Arkaplan Overlay */
+.settingsModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(20, 112, 79, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease-out;
+}
+
+.settingsModalOverlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* Modal Kutusu */
+.settingsModal {
+    background-color: #FFFFFF;
+    width: 90%;
+    max-width: 680px;
+    height: 480px;
+    max-height: 85vh;
+    border-radius: var(--radius-box, 24px);
+    box-shadow: 0 20px 45px rgba(0, 160, 181, 0.2), 0 4px 15px rgba(0, 0, 0, 0.06);
+    border: 2px solid #E2E8F0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    transform: scale(0.94) translateY(10px);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.settingsModalOverlay.active .settingsModal {
+    transform: scale(1) translateY(0);
+}
+
+/* Modal Header (Üst Bar) */
+.settingsModalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1.5px solid #F1F5F9;
+    background-color: #FAFAFA;
+}
+
+.settingsModalTitle {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-bell-pepper, #14704f);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settingsCloseBtn {
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted, #64748B);
+    transition: all 0.2s ease;
+}
+
+.settingsCloseBtn:hover {
+    background-color: #FEE2E2;
+    color: var(--color-error, #FF3B30);
+    transform: rotate(90deg);
+}
+
+/* Modal Body (Claude Style 2 Panel) */
+.settingsModalBody {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Sol Panel (Dar Dikey Menü) */
+.settingsSidebar {
+    width: 190px;
+    min-width: 190px;
+    background-color: #FAFCF8;
+    border-right: 1.5px solid #F1F5F9;
+    padding: 18px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.settingsTabItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text-muted, #64748B);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s ease;
+}
+
+.settingsTabItem:hover {
+    background-color: #F0FDF4;
+    color: var(--color-bell-pepper, #14704f);
+}
+
+.settingsTabItem.active {
+    background-color: var(--color-banana, #ffef5a);
+    color: var(--color-bell-pepper, #14704f);
+    box-shadow: 0 2px 8px rgba(255, 239, 90, 0.4);
+}
+
+.settingsTabIcon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Sağ Panel (Geniş İçerik Alanı) */
+.settingsContent {
+    flex: 1;
+    padding: 24px 30px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.settingsSectionTitle {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-dark, #1E293B);
+    margin: 0 0 6px 0;
+}
+
+.settingsSectionDesc {
+    font-size: 13.5px;
+    color: var(--text-muted, #64748B);
+    margin: 0 0 22px 0;
+}
+
+/* Profil Avatar Önizleme */
+.settingsAvatarRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding: 12px 16px;
+    background-color: #F8FAFC;
+    border-radius: 16px;
+    border: 1px solid #E2E8F0;
+}
+
+.settingsAvatarLarge {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: var(--color-ocean-blue, #00a0b5);
+    color: #FFFFFF;
+    font-size: 22px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 160, 181, 0.25);
+    flex-shrink: 0;
+}
+
+.settingsAvatarInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.settingsAvatarLabel {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text-dark, #1E293B);
+}
+
+.settingsAvatarSub {
+    font-size: 12px;
+    color: var(--text-muted, #64748B);
+}
+
+/* Form Grupları */
+.settingsFormGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.settingsLabel {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--color-bell-pepper, #14704f);
+}
+
+.settingsInput {
+    height: 44px;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 14px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--text-dark, #1E293B);
+    background-color: #FFFFFF;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.settingsInput:focus {
+    border-color: var(--color-ocean-blue, #00a0b5);
+    box-shadow: 0 0 0 3px rgba(0, 160, 181, 0.15);
+}
+
+.settingsInput[readonly] {
+    background-color: #F1F5F9;
+    color: #64748B;
+    cursor: not-allowed;
+    border-color: #E2E8F0;
+}
+
+/* Kaydet Butonu Satırı */
+.settingsActions {
+    margin-top: auto;
+    padding-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.settingsSaveBtn {
+    background-color: var(--color-ocean-blue, #00a0b5);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-pill, 9999px);
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 160, 181, 0.3);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.settingsSaveBtn:hover {
+    background-color: var(--color-ocean-blue-hover, #008a9c);
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 18px rgba(0, 160, 181, 0.4);
+}
+
+.settingsSaveBtn:active {
+    transform: translateY(0);
+}
+
+.settingsNoticeText {
+    font-size: 11.5px;
+    color: var(--text-muted, #64748B);
+    font-style: italic;
+}
+
+/* Responsive Düzen */
+@media (max-width: 640px) {
+    .settingsModal {
+        width: 95%;
+        height: auto;
+        max-height: 90vh;
+    }
+
+    .settingsModalBody {
+        flex-direction: column;
+    }
+
+    .settingsSidebar {
+        width: 100%;
+        min-width: 100%;
+        border-right: none;
+        border-bottom: 1.5px solid #F1F5F9;
+        padding: 10px 14px;
+        flex-direction: row;
+    }
+
+    .settingsContent {
+        padding: 18px 20px;
+    }
+}

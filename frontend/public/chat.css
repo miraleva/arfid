@@ -1,48 +1,45 @@
 :root {
-    /* 🎨 1. WHIMSICAL & PLAYFUL CARTOON / STORYBOOK RENK PALETİ */
-    --primary-purple: #6C5CE7;
-    --primary-purple-dark: #5844D8;
-    --primary-purple-light: #EBE8FD;
-    
-    --primary-cyan: #00B8D9;
-    --primary-cyan-dark: #009FB8;
-    --primary-teal: #00D1B2;
-    --primary-teal-dark: #00B89C;
-    --primary-green: #7AE582;
-    --primary-green-dark: #5AC963;
-    
-    --accent-yellow: #FFE66D;
-    --accent-yellow-light: #FFFDE6;
-    --accent-yellow-border: #FCE672;
-    
-    /* Vurgu & Aksiyon Detayları */
-    --accent-orchid: #C77DFF;
+    /* 🎨 1. YENİ ARFID PLAYFUL / FOODIE RENK PALETİ */
+    --color-bubblegum: #f478b0;
+    --color-tangerine: #ffa934;
+    --color-ocean-blue: #00a0b5;
+    --color-ocean-blue-hover: #008a9c;
+    --color-banana: #ffef5a;
+    --color-avocado: #98c54e;
+    --color-bell-pepper: #14704f;
+    --color-bell-pepper-dark: #0f543b;
+
+    /* Ana Aksiyon / Vurgu Renkleri */
+    --primary-action: #00a0b5; /* Ocean Blue */
+    --primary-action-hover: #008a9c;
+    --accent-highlight: #ffa934; /* Tangerine */
+    --accent-pop: #f478b0; /* Bubblegum */
     
     /* Yalnızca minik detaylar/çıkış/uyarı için kırmızı */
-    --accent-red: #FF6B6B;
+    --accent-red: #FF4757;
     --accent-red-bg: #FFF0F0;
     --accent-red-border: #FFD1D1;
 
     /* 2. Arkaplanlar: Beyaz, Temiz & Masalsı */
     --bg-app: #FFFFFF;
     --bg-sidebar: #FAFAFD;
-    --bg-sidebar-hover: #F1EFFE;
+    --bg-sidebar-hover: #F0FDF4;
     --bg-chat: #FFFFFF;
     
     /* Mesaj Balonları (Flat + Soft Border/Glow) */
     --bubble-ai-bg: #FFFEEA;
     --bubble-ai-border: #F7EDA3;
-    --bubble-ai-text: #202E2B;
+    --bubble-ai-text: #1E293B;
     
-    --bubble-user-bg: #6C5CE7;
-    --bubble-user-border: #5844D8;
+    --bubble-user-bg: #00a0b5; /* Ocean Blue */
+    --bubble-user-border: #008a9c;
     --bubble-user-text: #FFFFFF;
     
     /* Tipografi ve Kenarlıklar */
-    --text-main: #1E1B4B;
-    --text-muted: #5B5882;
-    --text-light: #8E8AA8;
-    --border-color: #ECEAF8;
+    --text-main: #1E293B;
+    --text-muted: #5B6B79;
+    --text-light: #8E9EA8;
+    --border-color: #E2E8F0;
 
     --radius-sm: 10px;
     --radius-md: 16px;
@@ -55,11 +52,10 @@
     --transition-smooth: 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
     
     /* Flat Glow & Deep Shadow Tanımları (Gradyansız Derinlik) */
-    --glow-purple: 0 4px 18px rgba(108, 92, 231, 0.28);
-    --glow-purple-hover: 0 6px 24px rgba(108, 92, 231, 0.42);
-    --glow-teal: 0 4px 18px rgba(0, 209, 178, 0.28);
-    --glow-cyan: 0 4px 18px rgba(0, 184, 217, 0.25);
-    --glow-yellow: 0 4px 16px rgba(255, 230, 109, 0.45);
+    --glow-ocean: 0 4px 18px rgba(0, 160, 181, 0.28);
+    --glow-ocean-hover: 0 6px 24px rgba(0, 160, 181, 0.42);
+    --glow-tangerine: 0 4px 18px rgba(255, 169, 52, 0.3);
+    --glow-banana: 0 4px 16px rgba(255, 239, 90, 0.45);
 }
 
 * {
@@ -130,7 +126,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 10px rgba(108, 92, 231, 0.15);
+    box-shadow: 0 2px 10px rgba(0, 160, 181, 0.15);
     border: 1.5px solid var(--border-color);
     padding: 3px;
     overflow: hidden;
@@ -146,7 +142,7 @@ body {
 .brandText {
     font-size: 19px;
     font-weight: 800;
-    color: var(--primary-purple);
+    color: var(--color-bell-pepper);
     letter-spacing: -0.4px;
 }
 
@@ -166,18 +162,18 @@ body {
 
 .sidebarCloseBtn:hover {
     background-color: var(--bg-sidebar-hover);
-    color: var(--primary-purple);
+    color: var(--color-ocean-blue);
     transform: scale(1.08);
 }
 
-/* 1. Üst Kısım: Yeni Sohbet Butonu (Flat Renk + Glow) */
+/* 1. Üst Kısım: Yeni Sohbet Butonu (Ocean Blue Flat Renk + Glow) */
 .newChatSection {
     padding: 0 16px 14px 16px;
 }
 
 .newChatBtn {
     width: 100%;
-    background-color: var(--primary-purple);
+    background-color: var(--color-ocean-blue);
     color: #FFFFFF;
     border: none;
     border-radius: var(--radius-md);
@@ -190,14 +186,14 @@ body {
     justify-content: center;
     gap: 10px;
     cursor: pointer;
-    box-shadow: var(--glow-purple);
+    box-shadow: var(--glow-ocean);
     transition: all var(--transition-fast);
 }
 
 .newChatBtn:hover {
-    background-color: var(--primary-purple-dark);
+    background-color: var(--color-ocean-blue-hover);
     transform: translateY(-2px) scale(1.01);
-    box-shadow: var(--glow-purple-hover);
+    box-shadow: var(--glow-ocean-hover);
 }
 
 .newChatBtn:active {
@@ -207,7 +203,7 @@ body {
 .newChatIcon {
     font-size: 20px;
     font-weight: 800;
-    color: var(--accent-yellow);
+    color: var(--color-banana);
     line-height: 1;
     display: inline-block;
 }
@@ -229,8 +225,8 @@ body {
 }
 
 .searchInputWrapper:focus-within {
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+    border-color: var(--color-ocean-blue);
+    box-shadow: 0 0 0 3px rgba(0, 160, 181, 0.18);
 }
 
 .searchIcon {
@@ -271,7 +267,7 @@ body {
 }
 
 .chatHistorySection::-webkit-scrollbar-thumb {
-    background: #DDD8F7;
+    background: #CBD5E1;
     border-radius: var(--radius-full);
 }
 
@@ -307,30 +303,30 @@ body {
 
 .historyItem:hover {
     background-color: var(--bg-sidebar-hover);
-    color: var(--primary-purple);
+    color: var(--color-bell-pepper);
     transform: translateX(2px);
 }
 
-/* Aktif sohbet: Canlı Mor #6C5CE7 vurgusu + Border */
+/* Aktif sohbet: Tangerine / Banana Vurgusu + Border */
 .historyItem.active {
     background-color: #FFFFFF;
-    color: var(--primary-purple);
+    color: var(--color-bell-pepper);
     font-weight: 700;
-    border-color: var(--primary-purple-light);
-    border-left: 4px solid var(--primary-purple);
-    box-shadow: 0 2px 10px rgba(108, 92, 231, 0.1);
+    border-color: #E2E8F0;
+    border-left: 4px solid var(--color-tangerine);
+    box-shadow: 0 2px 10px rgba(0, 160, 181, 0.08);
 }
 
 .historyDot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background-color: #DDD8F7;
+    background-color: #CBD5E1;
     flex-shrink: 0;
 }
 
 .historyItem.active .historyDot {
-    background-color: var(--primary-purple);
+    background-color: var(--color-tangerine);
 }
 
 .historyTitle {
@@ -338,7 +334,7 @@ body {
     text-overflow: ellipsis;
 }
 
-/* 4. Alt Kısım: Profil & Logout */
+/* 4. Alt Kısım: Profil, Ayarlar & Logout */
 .sidebarFooter {
     padding: 14px 16px;
     border-top: 1.5px solid var(--border-color);
@@ -346,7 +342,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
 }
 
 .userProfile {
@@ -358,10 +354,10 @@ body {
 }
 
 .userAvatar {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background-color: var(--primary-teal);
+    background-color: var(--color-avocado);
     color: #FFFFFF;
     font-weight: 800;
     font-size: 15px;
@@ -369,7 +365,7 @@ body {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: var(--glow-teal);
+    box-shadow: 0 3px 10px rgba(152, 197, 78, 0.35);
 }
 
 .userInfo {
@@ -387,12 +383,32 @@ body {
     text-overflow: ellipsis;
 }
 
-.userEmail {
-    font-size: 11.5px;
-    color: var(--text-light);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.sidebarActions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Ayarlar Butonu */
+.settingsBtn {
+    background-color: #F8FAFC;
+    border: 1.5px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: var(--radius-md);
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.settingsBtn:hover {
+    background-color: #F1F5F9;
+    color: var(--color-ocean-blue);
+    border-color: var(--color-ocean-blue);
+    transform: rotate(30deg) scale(1.05);
 }
 
 .logoutLink {
@@ -404,13 +420,13 @@ body {
     border: 1.5px solid var(--accent-red-border);
     color: var(--accent-red);
     border-radius: var(--radius-md);
-    padding: 7px 11px;
+    padding: 6px 9px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 700;
     transition: all var(--transition-fast);
 }
@@ -419,7 +435,7 @@ body {
     background-color: #FFE2E2;
     color: #E02424;
     transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.25);
+    box-shadow: 0 2px 8px rgba(255, 71, 87, 0.25);
 }
 
 .logoutIcon {
@@ -436,8 +452,8 @@ body {
     border-radius: var(--radius-md);
     background-color: #FFFFFF;
     border: 1.5px solid var(--border-color);
-    color: var(--primary-purple);
-    box-shadow: 0 4px 14px rgba(108, 92, 231, 0.15);
+    color: var(--color-ocean-blue);
+    box-shadow: 0 4px 14px rgba(0, 160, 181, 0.15);
     display: none;
     align-items: center;
     justify-content: center;
@@ -453,7 +469,7 @@ body {
 .sidebarOpenBtn:hover {
     background-color: var(--bg-sidebar);
     transform: scale(1.08);
-    border-color: var(--primary-purple);
+    border-color: var(--color-ocean-blue);
 }
 
 .sidebarBackdrop {
@@ -512,7 +528,7 @@ body {
     width: 96px;
     height: 96px;
     object-fit: contain;
-    filter: drop-shadow(0 8px 20px rgba(108, 92, 231, 0.22));
+    filter: drop-shadow(0 8px 20px rgba(0, 160, 181, 0.22));
     transition: transform 0.3s ease;
 }
 
@@ -583,7 +599,7 @@ body {
 }
 
 .chatArea::-webkit-scrollbar-thumb {
-    background: #E0DCF7;
+    background: #CBD5E1;
     border-radius: var(--radius-full);
 }
 
@@ -608,7 +624,7 @@ body {
     height: 38px;
     object-fit: contain;
     display: block;
-    filter: drop-shadow(0 2px 8px rgba(108, 92, 231, 0.2));
+    filter: drop-shadow(0 2px 8px rgba(0, 160, 181, 0.2));
 }
 
 .aiMessageBubble {
@@ -621,7 +637,7 @@ body {
     font-size: 15px;
     font-weight: 500;
     line-height: 1.6;
-    box-shadow: 0 4px 16px rgba(225, 205, 100, 0.14);
+    box-shadow: 0 4px 16px rgba(255, 239, 90, 0.18);
     border: 1.5px solid var(--bubble-ai-border);
     word-break: break-word;
     white-space: pre-wrap;
@@ -637,7 +653,7 @@ body {
     max-width: 240px;
     display: inline-flex;
     align-items: center;
-    box-shadow: 0 3px 12px rgba(225, 205, 100, 0.12);
+    box-shadow: 0 3px 12px rgba(255, 239, 90, 0.15);
 }
 
 .aiMessageBubble.fadeContent {
@@ -671,7 +687,7 @@ body {
     font-size: 15px;
     font-weight: 600;
     line-height: 1.5;
-    box-shadow: var(--glow-purple);
+    box-shadow: var(--glow-ocean);
     border: 1.5px solid var(--bubble-user-border);
     word-break: break-word;
 }
@@ -706,20 +722,20 @@ body {
 }
 
 .messageInputWrapper {
-    border: 2px solid #E0DBF8;
+    border: 2px solid #CBD5E1;
     display: flex;
     align-items: center;
     background-color: #FFFFFF;
     border-radius: var(--radius-xl);
     padding: 8px 10px 8px 22px;
-    box-shadow: 0 4px 22px rgba(108, 92, 231, 0.08);
+    box-shadow: 0 4px 22px rgba(0, 160, 181, 0.08);
     transition: all var(--transition-fast);
 }
 
 .messageInputWrapper:focus-within {
-    border-color: var(--primary-purple);
+    border-color: var(--color-ocean-blue);
     background-color: #FFFFFF;
-    box-shadow: 0 6px 26px rgba(108, 92, 231, 0.22);
+    box-shadow: 0 6px 26px rgba(0, 160, 181, 0.22);
     transform: translateY(-1px);
 }
 
@@ -739,9 +755,9 @@ body {
     color: var(--text-light);
 }
 
-/* 5. Gönder Butonu: Dolgun, Kalın Ok, Yumuşak Köşeli & Glow */
+/* Gönder Butonu: Dolgun Ocean Blue, Kalın Ok, Yumuşak Köşeli & Glow */
 .sendButton {
-    background-color: var(--primary-purple);
+    background-color: var(--color-ocean-blue);
     border: none;
     color: #FFFFFF;
     width: 44px;
@@ -752,7 +768,7 @@ body {
     align-items: center;
     justify-content: center;
     transition: all var(--transition-fast);
-    box-shadow: var(--glow-purple);
+    box-shadow: var(--glow-ocean);
     flex-shrink: 0;
 }
 
@@ -765,9 +781,9 @@ body {
 }
 
 .sendButton:hover {
-    background-color: var(--primary-purple-dark);
+    background-color: var(--color-ocean-blue-hover);
     transform: scale(1.08);
-    box-shadow: var(--glow-purple-hover);
+    box-shadow: var(--glow-ocean-hover);
 }
 
 .sendButton:hover .sendIcon {
@@ -779,14 +795,14 @@ body {
 }
 
 .sendButton:disabled {
-    background-color: #E2E0F2;
+    background-color: #E2E8F0;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
 .sendButton:disabled .sendIcon {
-    stroke: #A8A4C4;
+    stroke: #94A3B8;
     transform: none;
 }
 
@@ -821,7 +837,7 @@ body {
 .dot {
     width: 7px;
     height: 7px;
-    background-color: var(--primary-purple);
+    background-color: var(--color-ocean-blue);
     border-radius: 50%;
     opacity: 0.3;
     animation: pulse 1.4s infinite ease-in-out;
@@ -843,7 +859,7 @@ body {
     50% {
         opacity: 1;
         transform: scale(1.2);
-        background-color: var(--accent-yellow);
+        background-color: var(--color-banana);
     }
 }
 
@@ -856,7 +872,7 @@ body {
         left: 0;
         top: 0;
         bottom: 0;
-        box-shadow: 4px 0 24px rgba(30, 27, 75, 0.15);
+        box-shadow: 4px 0 24px rgba(20, 112, 79, 0.15);
     }
 
     .sidebar.collapsed {
@@ -871,7 +887,7 @@ body {
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(30, 27, 75, 0.45);
+        background: rgba(20, 112, 79, 0.45);
         backdrop-filter: blur(3px);
         z-index: 999;
     }
