@@ -126,6 +126,12 @@ function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, r
     Aşağıda sağlanan "İLGİLİ TARİF / KİTAP BİLGİSİ" alanını SADECE kullanıcının mesajıyla gerçekten ilgiliyse ve faydalı bir tarif/öneri sunabileceksen kullan. Eğer bilgi kullanıcı mesajıyla alakasızsa tamamen görmezden gel ve normal diyetisyen tavsiyeni ver.
     ${formatRagSection(ragContext)}
 
+    TOOL USE & CALORIE GUIDELINES (CRITICAL):
+    1. Kullanıcı belirli malzemelerin kalori veya besin değerini sorduğunda, kafadan tahmin etmek yerine 'calculateCalories' aracını kullan.
+    2. Eğer kullanıcı malzeme belirtmeden 'kalori hesapla' gibi eksik/belirsiz bir talepte bulunursa, aracı boş parametreyle çağırma; kullanıcıya nazikçe hangi malzemeleri ve miktarları hesaplamak istediğini sor.
+    3. Hesaplanan değerler için kullanıcıya bunların ortalama/yaklaşık değerler olduğunu belirt (örn. süt, yoğurt gibi ürünlerde tam yağlı standart değerlerin baz alındığını ifade et).
+    4. Eğer hesaplama aracından 'unmatched' (eşleşmeyen) malzeme dönerse, ASLA o malzeme için uydurma/tahmini kalori uydurma; dürüstçe bu malzemenin veritabanında bulunmadığını kullanıcıya açıkça ifade et.
+
     The following are the last messages between the user and you (assistant). Keep the response tone consistant with this chat history
     -BEGINNING OF CHAT HISTORY- 
     ${formatChatHistory(recentChatContext)}

@@ -152,9 +152,14 @@ async function applyMemoryUpdates(userId, updates, originalMessage) {
                 try {
                     const foodId = await ensureMasterRecord('foods', item.name, originalMessage);
                     if (foodId) {
-                        db.run(`INSERT OR REPLACE INTO user_food_preferences (user_id, food_id, is_safe) VALUES (?, ?, ?)`,
-                            [userId, foodId, item.is_safe]);
-                        console.log(`[Memory] Updated food pref: ${item.name} -> safe=${item.is_safe}`);
+                        await new Promise((resolveRun, rejectRun) => {
+                            db.run(`INSERT OR REPLACE INTO user_food_preferences (user_id, food_id, is_safe) VALUES (?, ?, ?)`,
+                                [userId, foodId, item.is_safe], (runErr) => {
+                                    if (runErr) return rejectRun(runErr);
+                                    console.log(`[Memory] Updated food pref: ${item.name} -> safe=${item.is_safe}`);
+                                    resolveRun();
+                                });
+                        });
                     }
                 } catch (e) {
                     console.error(`[Memory Error] Food update failed for ${item.name}:`, e.message);
@@ -170,9 +175,14 @@ async function applyMemoryUpdates(userId, updates, originalMessage) {
                 try {
                     const attrId = await ensureMasterRecord('sensory_attributes', item.name, originalMessage);
                     if (attrId) {
-                        db.run(`INSERT OR REPLACE INTO user_sensory_triggers (user_id, attribute_id, is_problematic) VALUES (?, ?, ?)`,
-                            [userId, attrId, item.is_problematic]);
-                        console.log(`[Memory] Updated sensory trigger: ${item.name} -> prob=${item.is_problematic}`);
+                        await new Promise((resolveRun, rejectRun) => {
+                            db.run(`INSERT OR REPLACE INTO user_sensory_triggers (user_id, attribute_id, is_problematic) VALUES (?, ?, ?)`,
+                                [userId, attrId, item.is_problematic], (runErr) => {
+                                    if (runErr) return rejectRun(runErr);
+                                    console.log(`[Memory] Updated sensory trigger: ${item.name} -> prob=${item.is_problematic}`);
+                                    resolveRun();
+                                });
+                        });
                     }
                 } catch (e) {
                     console.error(`[Memory Error] Sensory update failed for ${item.name}:`, e.message);
@@ -188,9 +198,14 @@ async function applyMemoryUpdates(userId, updates, originalMessage) {
                 try {
                     const condId = await ensureMasterRecord('conditions', item.name, originalMessage);
                     if (condId) {
-                        db.run(`INSERT OR REPLACE INTO user_conditions (user_id, condition_id, has_condition) VALUES (?, ?, ?)`,
-                            [userId, condId, item.has_condition]);
-                        console.log(`[Memory] Updated condition: ${item.name} -> has=${item.has_condition}`);
+                        await new Promise((resolveRun, rejectRun) => {
+                            db.run(`INSERT OR REPLACE INTO user_conditions (user_id, condition_id, has_condition) VALUES (?, ?, ?)`,
+                                [userId, condId, item.has_condition], (runErr) => {
+                                    if (runErr) return rejectRun(runErr);
+                                    console.log(`[Memory] Updated condition: ${item.name} -> has=${item.has_condition}`);
+                                    resolveRun();
+                                });
+                        });
                     }
                 } catch (e) {
                     console.error(`[Memory Error] Condition update failed for ${item.name}:`, e.message);
