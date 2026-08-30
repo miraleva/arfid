@@ -18,7 +18,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 async function geminiResponse(contents, config = {}) {
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.6-flash",
             contents: contents,
             config: config
         });
@@ -40,7 +40,7 @@ async function geminiResponse(contents, config = {}) {
 async function geminiRawCall(contents, config = {}) {
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.6-flash",
             contents: contents,
             config: config
         });
