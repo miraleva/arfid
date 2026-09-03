@@ -95,8 +95,8 @@ function findFoodMatch(rawName) {
     if (!normalized) return null;
 
     // 1. Doğrudan kesin eşleşme (ID, Name veya Tam Alias)
-    const direct = calorieDatabase.find(f => 
-        normalizeName(f.id) === normalized || 
+    const direct = calorieDatabase.find(f =>
+        normalizeName(f.id) === normalized ||
         normalizeName(f.name) === normalized ||
         (f.aliases && f.aliases.some(a => normalizeName(a) === normalized))
     );
@@ -113,7 +113,7 @@ function findFoodMatch(rawName) {
     const words = normalized.split(/\s+/).filter(w => w.length >= 3);
     for (const word of words) {
         // Kelime doğrudan bir alias ile eşleşiyor mu?
-        const wordDirect = calorieDatabase.find(f => 
+        const wordDirect = calorieDatabase.find(f =>
             f.aliases && f.aliases.some(a => normalizeName(a) === word)
         );
         if (wordDirect) return wordDirect;
