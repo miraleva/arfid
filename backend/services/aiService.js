@@ -8,6 +8,8 @@ const { GoogleGenAI } = require("@google/genai");
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
+const DEFAULT_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+
 /**
  * Sends a text prompt or content structure to Google Gemini model and returns the raw response text.
  * 
@@ -18,7 +20,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 async function geminiResponse(contents, config = {}) {
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-3.6-flash",
+            model: config.model || DEFAULT_MODEL,
             contents: contents,
             config: config
         });
@@ -40,7 +42,7 @@ async function geminiResponse(contents, config = {}) {
 async function geminiRawCall(contents, config = {}) {
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-3.6-flash",
+            model: config.model || DEFAULT_MODEL,
             contents: contents,
             config: config
         });
