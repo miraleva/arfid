@@ -4,6 +4,7 @@
  */
 
 const { calorieDatabase } = require("./data/calorieDatabase");
+const { normalizeString, createFuzzyMatcher } = require("./utils/fuzzyMatch");
 
 const toolDeclaration = {
     name: "calculateCalories",
@@ -38,67 +39,34 @@ const toolDeclaration = {
     }
 };
 
-/**
- * Normalizes strings for alias matching
- */
-function normalizeName(str) {
-    if (!str) return "";
-    return str
-        .toLowerCase()
-        .replace(/ı/g, "i")
-        .replace(/ğ/g, "g")
-        .replace(/ü/g, "u")
-        .replace(/ş/g, "s")
-        .replace(/ö/g, "o")
-        .replace(/ç/g, "c")
-        .replace(/[^a-z0-9 ]/g, "")
-        .trim();
-}
-
-const Fuse = require("fuse.js");
-
-// Fuse.js index ve arama yapılandırması
-const fuseOptions = {
-    keys: [
-        { name: "name", weight: 0.4 },
-        { name: "aliases", weight: 0.6 }
-    ],
-    threshold: 0.35, // Makul fuzzy eşiği: typo toleransı ve kısmi eşleşmeler için uygun
-    ignoreLocation: true,
-    minMatchCharLength: 2,
-    includeScore: true
-};
-
 // Normalize edilmiş verilerle Fuse arama instance'ı oluşturma
 const normalizedDatabase = calorieDatabase.map(entry => ({
     ...entry,
-    normalizedName: normalizeName(entry.name),
-    normalizedAliases: (entry.aliases || []).map(a => normalizeName(a))
+    normalizedName: normalizeString(entry.name),
+    normalizedAliases: (entry.aliases || []).map(a => normalizeString(a))
 }));
 
-const fuseInstance = new Fuse(normalizedDatabase, {
-    keys: [
+const fuseInstance = createFuzzyMatcher(
+    normalizedDatabase,
+    [
         { name: "normalizedName", weight: 0.4 },
         { name: "normalizedAliases", weight: 0.6 }
     ],
-    threshold: 0.35,
-    ignoreLocation: true,
-    minMatchCharLength: 2,
-    includeScore: true
-});
+    { threshold: 0.35 }
+);
 
 /**
  * Finds a matching food entry in the calorie database using exact, alias, and Fuse.js fuzzy matching.
  */
 function findFoodMatch(rawName) {
-    const normalized = normalizeName(rawName);
+    const normalized = normalizeString(rawName);
     if (!normalized) return null;
 
     // 1. Doğrudan kesin eşleşme (ID, Name veya Tam Alias)
-    const direct = calorieDatabase.find(f =>
-        normalizeName(f.id) === normalized ||
-        normalizeName(f.name) === normalized ||
-        (f.aliases && f.aliases.some(a => normalizeName(a) === normalized))
+    const direct = calorieDatabase.find(f => 
+        normalizeString(f.id) === normalized || 
+        normalizeString(f.name) === normalized ||
+        (f.aliases && f.aliases.some(a => normalizeString(a) === normalized))
     );
     if (direct) return direct;
 
@@ -109,16 +77,13 @@ function findFoodMatch(rawName) {
     }
 
     // 3. Çok kelimeli girdiler için (örn: "hindi göğsü" -> "hindi" alias'ını yakalama)
-    // Cümle/tamlamadaki kelimeleri tekil olarak arayarak en yüksek doğruluklu fuzzy eşleşmeyi bul
     const words = normalized.split(/\s+/).filter(w => w.length >= 3);
     for (const word of words) {
-        // Kelime doğrudan bir alias ile eşleşiyor mu?
-        const wordDirect = calorieDatabase.find(f =>
-            f.aliases && f.aliases.some(a => normalizeName(a) === word)
+        const wordDirect = calorieDatabase.find(f => 
+            f.aliases && f.aliases.some(a => normalizeString(a) === word)
         );
         if (wordDirect) return wordDirect;
 
-        // Kelime Fuse.js ile yakın eşleşiyor mu?
         const wordResults = fuseInstance.search(word);
         if (wordResults && wordResults.length > 0 && wordResults[0].score <= 0.25) {
             return calorieDatabase.find(f => f.id === wordResults[0].item.id) || wordResults[0].item;

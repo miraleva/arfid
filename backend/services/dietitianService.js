@@ -124,7 +124,7 @@ async function getDietitianResponse(userText, userId) {
             for (const call of functionCalls) {
                 const toolName = call.name;
                 const toolArgs = call.args || {};
-                const executionOutput = await executeTool(toolName, toolArgs);
+                const executionOutput = await executeTool(toolName, toolArgs, { userId });
                 toolExecutionResults.push({
                     toolName,
                     args: toolArgs,

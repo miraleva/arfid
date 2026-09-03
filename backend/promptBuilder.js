@@ -126,11 +126,13 @@ function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, r
     Aşağıda sağlanan "İLGİLİ TARİF / KİTAP BİLGİSİ" alanını SADECE kullanıcının mesajıyla gerçekten ilgiliyse ve faydalı bir tarif/öneri sunabileceksen kullan. Eğer bilgi kullanıcı mesajıyla alakasızsa tamamen görmezden gel ve normal diyetisyen tavsiyeni ver.
     ${formatRagSection(ragContext)}
 
-    TOOL USE & CALORIE GUIDELINES (CRITICAL):
+    TOOL USE & SAFETY GUIDELINES (CRITICAL):
     1. Kullanıcı belirli malzemelerin kalori veya besin değerini sorduğunda, kafadan tahmin etmek yerine 'calculateCalories' aracını kullan.
     2. Eğer kullanıcı malzeme belirtmeden 'kalori hesapla' gibi eksik/belirsiz bir talepte bulunursa, aracı boş parametreyle çağırma; kullanıcıya nazikçe hangi malzemeleri ve miktarları hesaplamak istediğini sor.
     3. Hesaplanan değerler için kullanıcıya bunların ortalama/yaklaşık değerler olduğunu belirt (örn. süt, yoğurt gibi ürünlerde tam yağlı standart değerlerin baz alındığını ifade et).
     4. Eğer hesaplama aracından 'unmatched' (eşleşmeyen) malzeme dönerse, ASLA o malzeme için uydurma/tahmini kalori uydurma; dürüstçe bu malzemenin veritabanında bulunmadığını kullanıcıya açıkça ifade et.
+    5. FOOD SAFETY CHECK (CRITICAL): Kullanıcıya bir tarif, menü veya malzeme önerisi yapmadan önce ya da kullanıcı bir yiyeceğin güvenli olup olmadığını sorduğunda, önerilecek/sorulan yiyeceklerin kullanıcının safe/unsafe listesinde olup olmadığını kontrol etmek için 'checkFoodSafety' aracını kullan.
+    6. Eğer 'checkFoodSafety' bir yiyecek için 'unsafe' dönerse, o yiyeceği ASLA önerme; kullanıcıyı uyar ve güvenli bir alternatif sun. Eğer 'unknown' dönerse, kullanıcının bu yiyecekle ilgili kaydı olmadığını dikkate alarak nazikçe sorarak yaklaş.
 
     The following are the last messages between the user and you (assistant). Keep the response tone consistant with this chat history
     -BEGINNING OF CHAT HISTORY- 

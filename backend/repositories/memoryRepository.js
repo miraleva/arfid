@@ -262,9 +262,34 @@ function getMasterLists() {
     });
 }
 
+/**
+ * Fetches user's raw food preferences list (safe/unsafe).
+ * 
+ * @param {number} userId - Target user ID
+ * @returns {Promise<Array<{name: string, is_safe: number}>>}
+ */
+function getUserFoodPreferences(userId) {
+    return new Promise((resolve, reject) => {
+        if (!userId) return resolve([]);
+
+        const sql = `
+            SELECT f.name, ufp.is_safe 
+            FROM user_food_preferences ufp
+            JOIN foods f ON ufp.food_id = f.id
+            WHERE ufp.user_id = ?
+        `;
+
+        db.all(sql, [userId], (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows || []);
+        });
+    });
+}
+
 module.exports = {
     getUserConstraints,
     applyMemoryUpdates,
     getMasterLists,
-    ensureMasterRecord
+    ensureMasterRecord,
+    getUserFoodPreferences
 };
