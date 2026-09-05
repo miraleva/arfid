@@ -1,14 +1,15 @@
 /**
  * Dietitian Service
  * Business logic coordinator for ARFID dietary consultations, patient card generation,
- * RAG retrieval, memory constraints, and chat history.
+ * RAG retrieval, memory constraints, chat history, and Gemini Tool Use (Function Calling).
  */
 
-const { geminiResponse } = require("./aiService");
+const { geminiResponse, geminiRawCall } = require("./aiService");
 const memoryRepository = require("../repositories/memoryRepository");
 const chatRepository = require("../repositories/chatRepository");
 const { buildSystemPrompt, jsonSchemaConfig } = require("../promptBuilder");
 const { getRagContext } = require("../rag/ragClient");
+const { functionDeclarations, executeTool } = require("../tools");
 
 /**
  * Generates a short "Patient Card" summary using a second Gemini call.
@@ -54,8 +55,9 @@ async function generatePatientCard(userId) {
 }
 
 /**
- * Main coordinator function that processes user messages, queries RAG, 
- * generates structured dietitian responses, and applies memory updates.
+ * Main coordinator function that processes user messages, queries RAG,
+ * resolves Gemini Tool Calls (max 2 rounds), generates structured dietitian responses,
+ * and applies memory updates.
  * 
  * @param {string} userText - User message
  * @param {number} [userId] - Optional user ID for logged-in sessions
@@ -95,7 +97,7 @@ async function getDietitianResponse(userText, userId) {
     // 1.2 Fetch RAG Context (Knowledge Base)
     const ragContext = await getRagContext(userText);
 
-    // 2. Construct V2.6 Prompt with Semantic Mapping
+    // 2. Construct System Prompt
     const systemPrompt = buildSystemPrompt({
         userText,
         masterLists,
@@ -105,8 +107,48 @@ async function getDietitianResponse(userText, userId) {
     });
 
     try {
-        // 3. Single Gemini Call with Native JSON Mode
-        const rawText = await geminiResponse(systemPrompt, jsonSchemaConfig);
+        let rawText = "";
+
+        // 3. Round 1: Check if Gemini requests a tool call (with tools enabled)
+        const initialResponse = await geminiRawCall(systemPrompt, {
+            tools: [{ functionDeclarations }]
+        });
+
+        const functionCalls = initialResponse.functionCalls;
+
+        if (functionCalls && functionCalls.length > 0) {
+            console.log(`[Dietitian Service] Tool call requested by Gemini (${functionCalls.length} calls)`);
+
+            // Execute requested tools safely
+            const toolExecutionResults = [];
+            for (const call of functionCalls) {
+                const toolName = call.name;
+                const toolArgs = call.args || {};
+                const executionOutput = await executeTool(toolName, toolArgs, { userId });
+                toolExecutionResults.push({
+                    toolName,
+                    args: toolArgs,
+                    output: executionOutput
+                });
+            }
+
+            // Round 2 (Final Generation with Structured Output Schema and Tool Results)
+            const finalPrompt = `
+${systemPrompt}
+
+TOOL EXECUTION RESULTS (Use these exact calculations in your response):
+${JSON.stringify(toolExecutionResults, null, 2)}
+`;
+
+            rawText = await geminiResponse(finalPrompt, jsonSchemaConfig);
+        } else {
+            // Model did not request any tools, get structured output directly
+            if (initialResponse.text && initialResponse.text.trim().startsWith("{")) {
+                rawText = initialResponse.text;
+            } else {
+                rawText = await geminiResponse(systemPrompt, jsonSchemaConfig);
+            }
+        }
 
         // 4. Direct JSON Parsing with Defensive Fallback
         let parsedData;
