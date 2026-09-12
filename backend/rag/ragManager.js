@@ -112,7 +112,17 @@ async function startRagService() {
     ragProcess.stderr.on("data", (data) => {
         const lines = data.toString().trim().split("\n");
         lines.forEach(line => {
-            if (line.trim()) console.log(`[RAG ERROR] ${line.trim()}`);
+            const trimmed = line.trim();
+            if (!trimmed) return;
+
+            const lower = trimmed.toLowerCase();
+            const isActualError = lower.includes("error") || lower.includes("exception") || lower.includes("traceback") || lower.includes("failed");
+
+            if (isActualError) {
+                console.error(`[RAG ERROR] ${trimmed}`);
+            } else {
+                console.log(`[RAG] ${trimmed}`);
+            }
         });
     });
 

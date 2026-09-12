@@ -155,7 +155,6 @@ function closeDb() {
 }
 
 // Graceful shutdown listeners
-process.on("exit", () => closeDb());
 process.on("SIGINT", () => {
     closeDb();
     process.exit(0);

@@ -1,65 +1,50 @@
 :root {
-    /* 🎨 1. WHIMSICAL & PLAYFUL CARTOON / STORYBOOK RENK PALETİ */
-    --primary-purple: #6C5CE7;
-    --primary-purple-dark: #5844D8;
-    --primary-purple-light: #EBE8FD;
-    
-    --primary-cyan: #00B8D9;
-    --primary-cyan-dark: #009FB8;
-    --primary-teal: #00D1B2;
-    --primary-teal-dark: #00B89C;
-    --primary-green: #7AE582;
-    --primary-green-dark: #5AC963;
-    
-    --accent-yellow: #FFE66D;
-    --accent-yellow-light: #FFFDE6;
-    --accent-yellow-border: #FCE672;
-    
-    /* Vurgu & Aksiyon Detayları */
-    --accent-orchid: #C77DFF;
-    
-    /* Yalnızca minik detaylar/çıkış/uyarı için kırmızı */
-    --accent-red: #FF6B6B;
-    --accent-red-bg: #FFF0F0;
-    --accent-red-border: #FFD1D1;
+    /* 🎨 1. ARFID MEELO-STYLE PLAYFUL & WARM PALETİ */
+    --color-tangerine: #FFA934;
+    --color-tangerine-soft: #FFEBD1;
+    --color-bubblegum: #F478B0;
+    --color-bubblegum-soft: #FDE6F0;
+    --color-ocean-blue: #00A0B5;
+    --color-ocean-blue-hover: #008a9c;
+    --color-ocean-blue-soft: #D6F4F8;
+    --color-banana: #FFEF5A;
+    --color-banana-soft: #FFFBD0;
+    --color-avocado: #98C54E;
+    --color-avocado-pastel: #A8D46C;
+    --color-avocado-soft: #EBF7D9;
+    --color-bell-pepper: #14704F;
+    --color-bell-pepper-soft: #D5EDE4;
+    --color-purple: #6C5CE7;
+    --color-purple-soft: #EAE6FB;
 
-    /* 2. Arkaplanlar: Beyaz, Temiz & Masalsı */
-    --bg-app: #FFFFFF;
-    --bg-sidebar: #FAFAFD;
-    --bg-sidebar-hover: #F1EFFE;
-    --bg-chat: #FFFFFF;
-    
-    /* Mesaj Balonları (Flat + Soft Border/Glow) */
-    --bubble-ai-bg: #FFFEEA;
-    --bubble-ai-border: #F7EDA3;
-    --bubble-ai-text: #202E2B;
-    
-    --bubble-user-bg: #6C5CE7;
-    --bubble-user-border: #5844D8;
+    /* 2. Meelo Sıcak Krem & Bej Arkaplanlar */
+    --bg-page-warm: #FAF3E7;       /* Sıcak Krem Bej Zemin */
+    --bg-sidebar-warm: #F4ECE0;    /* Sıcak Bej Sol Menü */
+    --bg-card-cream: #FFFDF9;      /* Krem Kart ve Mesaj Balonları */
+    --border-warm: #EADBCC;        /* Bej Tonlu Yumuşak Çizgiler */
+    --border-dark: #2B2118;        /* Meelo 3px / 2.5px Koyu Karakteristik Hatları */
+
+    /* Metin Renkleri */
+    --text-title-dark: #2B2118;
+    --text-primary: #372E27;
+    --text-muted: #6B5D52;
+    --text-light: #9B8D82;
+
+    /* Mesaj Balonları */
+    --bubble-ai-bg: #FFFDF9;       /* Krem Beyaz Balon */
+    --bubble-ai-text: #2B2118;
+    --bubble-user-bg: #00A0B5;      /* Ocean Blue Kullanıcı Balonu */
     --bubble-user-text: #FFFFFF;
-    
-    /* Tipografi ve Kenarlıklar */
-    --text-main: #1E1B4B;
-    --text-muted: #5B5882;
-    --text-light: #8E8AA8;
-    --border-color: #ECEAF8;
 
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --radius-xl: 32px;
+    --radius-sm: 14px;
+    --radius-md: 20px;
+    --radius-lg: 28px;
+    --radius-xl: 36px;
     --radius-full: 9999px;
-    
-    --sidebar-width: 280px;
-    --transition-fast: 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --sidebar-width: 290px;
+    --transition-fast: 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     --transition-smooth: 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
-    
-    /* Flat Glow & Deep Shadow Tanımları (Gradyansız Derinlik) */
-    --glow-purple: 0 4px 18px rgba(108, 92, 231, 0.28);
-    --glow-purple-hover: 0 6px 24px rgba(108, 92, 231, 0.42);
-    --glow-teal: 0 4px 18px rgba(0, 209, 178, 0.28);
-    --glow-cyan: 0 4px 18px rgba(0, 184, 217, 0.25);
-    --glow-yellow: 0 4px 16px rgba(255, 230, 109, 0.45);
 }
 
 * {
@@ -72,9 +57,9 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--bg-app);
-    color: var(--text-main);
+    font-family: 'Fredoka', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-page-warm);
+    color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -84,22 +69,22 @@ body {
     height: 100vh;
     overflow: hidden;
     position: relative;
-    background-color: var(--bg-app);
+    background-color: var(--bg-page-warm);
 }
 
 /* =========================================================
-   1. SOL SIDEBAR (BEYAZ / PLAYFUL FLAT STİL)
+   1. SOL SIDEBAR (MEELO SICAK BEJ / FLAT STİL)
    ========================================================= */
 .sidebar {
     width: var(--sidebar-width);
     min-width: var(--sidebar-width);
     height: 100vh;
-    background-color: var(--bg-sidebar);
-    border-right: 1.5px solid var(--border-color);
+    background-color: var(--bg-sidebar-warm);
+    border-right: 3px solid var(--border-dark);
     display: flex;
     flex-direction: column;
     z-index: 1000;
-    transition: transform var(--transition-smooth), width var(--transition-smooth), margin-left var(--transition-smooth), opacity var(--transition-fast);
+    transition: transform var(--transition-smooth), width var(--transition-smooth), margin-left var(--transition-smooth);
     position: relative;
     user-select: none;
 }
@@ -113,25 +98,25 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 18px 16px 20px;
+    padding: 22px 20px 16px 22px;
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .brandLogo {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-md);
-    background-color: #FFFFFF;
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    background-color: var(--color-banana);
+    border: 2.5px solid var(--border-dark);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 10px rgba(108, 92, 231, 0.15);
-    border: 1.5px solid var(--border-color);
+    box-shadow: 0 4px 0 var(--border-dark);
     padding: 3px;
     overflow: hidden;
 }
@@ -144,19 +129,20 @@ body {
 }
 
 .brandText {
-    font-size: 19px;
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 22px;
     font-weight: 800;
-    color: var(--primary-purple);
-    letter-spacing: -0.4px;
+    color: var(--border-dark);
+    letter-spacing: -0.02em;
 }
 
 .sidebarCloseBtn {
     background: transparent;
-    border: none;
+    border: 2px solid transparent;
     cursor: pointer;
     color: var(--text-muted);
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
@@ -165,76 +151,79 @@ body {
 }
 
 .sidebarCloseBtn:hover {
-    background-color: var(--bg-sidebar-hover);
-    color: var(--primary-purple);
+    background-color: #EADBCC;
+    border-color: var(--border-dark);
+    color: var(--border-dark);
     transform: scale(1.08);
 }
 
-/* 1. Üst Kısım: Yeni Sohbet Butonu (Flat Renk + Glow) */
+/* 1. Üst Kısım: Yeni Sohbet Butonu (Meelo Pastel Avocado / Canlı) */
 .newChatSection {
-    padding: 0 16px 14px 16px;
+    padding: 0 18px 14px 18px;
 }
 
 .newChatBtn {
     width: 100%;
-    background-color: var(--primary-purple);
-    color: #FFFFFF;
-    border: none;
+    background-color: var(--color-avocado-pastel);
+    color: var(--border-dark);
+    border: 2.5px solid var(--border-dark);
     border-radius: var(--radius-md);
-    padding: 12px 18px;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: inherit;
+    padding: 13px 18px;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Fredoka', cursive, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     cursor: pointer;
-    box-shadow: var(--glow-purple);
+    box-shadow: 0 4px 0 var(--border-dark);
     transition: all var(--transition-fast);
 }
 
 .newChatBtn:hover {
-    background-color: var(--primary-purple-dark);
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: var(--glow-purple-hover);
+    background-color: var(--color-avocado-pastel-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--border-dark);
 }
 
 .newChatBtn:active {
-    transform: translateY(0);
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--border-dark);
 }
 
 .newChatIcon {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--accent-yellow);
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--border-dark);
     line-height: 1;
     display: inline-block;
 }
 
-/* 2. Arama Kutusu (UI Placeholder) */
+/* 2. Arama Kutusu */
 .searchSection {
-    padding: 0 16px 12px 16px;
+    padding: 0 18px 14px 18px;
 }
 
 .searchInputWrapper {
     display: flex;
     align-items: center;
-    background-color: #FFFFFF;
-    border: 1.5px solid var(--border-color);
+    background-color: var(--bg-card-cream);
+    border: 2px solid var(--border-dark);
     border-radius: var(--radius-md);
-    padding: 8px 12px;
-    gap: 8px;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    padding: 8px 14px;
+    gap: 10px;
+    box-shadow: 0 3px 0 var(--border-dark);
+    transition: all var(--transition-fast);
 }
 
 .searchInputWrapper:focus-within {
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+    border-color: var(--color-ocean-blue);
+    box-shadow: 0 3px 0 var(--color-ocean-blue);
 }
 
 .searchIcon {
-    color: var(--text-light);
+    color: var(--text-muted);
     flex-shrink: 0;
 }
 
@@ -243,9 +232,10 @@ body {
     outline: none;
     background: transparent;
     width: 100%;
-    font-size: 13.5px;
+    font-size: 14px;
     font-family: inherit;
-    color: var(--text-main);
+    font-weight: 600;
+    color: var(--border-dark);
 }
 
 .searchInput::placeholder {
@@ -256,14 +246,14 @@ body {
 .chatHistorySection {
     flex: 1;
     overflow-y: auto;
-    padding: 8px 12px;
+    padding: 8px 14px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
 .chatHistorySection::-webkit-scrollbar {
-    width: 5px;
+    width: 6px;
 }
 
 .chatHistorySection::-webkit-scrollbar-track {
@@ -271,21 +261,21 @@ body {
 }
 
 .chatHistorySection::-webkit-scrollbar-thumb {
-    background: #DDD8F7;
+    background: #D8CBBD;
     border-radius: var(--radius-full);
 }
 
 .historyGroup {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .groupTitle {
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 800;
     letter-spacing: 0.8px;
-    color: var(--text-light);
+    color: var(--text-muted);
     padding: 4px 10px;
 }
 
@@ -293,44 +283,42 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px;
+    padding: 11px 14px;
     border-radius: var(--radius-md);
-    font-size: 13.5px;
-    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
     cursor: pointer;
     transition: all var(--transition-fast);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    border: 1.5px solid transparent;
+    border: 2px solid transparent;
 }
 
 .historyItem:hover {
-    background-color: var(--bg-sidebar-hover);
-    color: var(--primary-purple);
-    transform: translateX(2px);
+    background-color: var(--bg-card-cream);
+    border-color: var(--border-dark);
+    color: var(--border-dark);
+    transform: translateX(3px);
 }
 
-/* Aktif sohbet: Canlı Mor #6C5CE7 vurgusu + Border */
+/* Aktif sohbet */
 .historyItem.active {
-    background-color: #FFFFFF;
-    color: var(--primary-purple);
-    font-weight: 700;
-    border-color: var(--primary-purple-light);
-    border-left: 4px solid var(--primary-purple);
-    box-shadow: 0 2px 10px rgba(108, 92, 231, 0.1);
+    background-color: var(--color-banana-soft);
+    color: var(--border-dark);
+    font-weight: 800;
+    border: 2px solid var(--border-dark);
+    box-shadow: 0 3px 0 var(--border-dark);
 }
 
 .historyDot {
-    width: 7px;
-    height: 7px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    background-color: #DDD8F7;
+    background-color: var(--color-tangerine);
+    border: 1.5px solid var(--border-dark);
     flex-shrink: 0;
-}
-
-.historyItem.active .historyDot {
-    background-color: var(--primary-purple);
 }
 
 .historyTitle {
@@ -338,15 +326,42 @@ body {
     text-overflow: ellipsis;
 }
 
-/* 4. Alt Kısım: Profil & Logout */
+.historyEmptyState {
+    padding: 24px 14px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    background-color: var(--bg-card-cream);
+    border: 2px dashed var(--border-dark);
+    border-radius: var(--radius-md);
+    margin: 10px 4px;
+}
+
+.historyEmptyState .emptyIcon {
+    font-size: 26px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.historyNotFound {
+    padding: 16px 12px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* 4. Alt Kısım: Profil, Ayarlar & Logout */
 .sidebarFooter {
-    padding: 14px 16px;
-    border-top: 1.5px solid var(--border-color);
-    background-color: #FFFFFF;
+    padding: 16px 18px;
+    border-top: 2.5px solid var(--border-dark);
+    background-color: var(--bg-card-cream);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
 }
 
 .userProfile {
@@ -360,16 +375,17 @@ body {
 .userAvatar {
     width: 38px;
     height: 38px;
-    border-radius: 50%;
-    background-color: var(--primary-teal);
-    color: #FFFFFF;
-    font-weight: 800;
-    font-size: 15px;
+    border-radius: 14px;
+    background-color: var(--color-tangerine);
+    border: 2px solid var(--border-dark);
+    color: var(--border-dark);
+    font-weight: 900;
+    font-size: 17px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: var(--glow-teal);
+    box-shadow: 0 3px 0 var(--border-dark);
 }
 
 .userInfo {
@@ -379,20 +395,39 @@ body {
 }
 
 .userName {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text-main);
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--border-dark);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.userEmail {
-    font-size: 11.5px;
-    color: var(--text-light);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.sidebarActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Ayarlar Butonu */
+.settingsBtn {
+    background-color: #FAF3E7;
+    border: 2px solid var(--border-dark);
+    color: var(--border-dark);
+    border-radius: var(--radius-sm);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 0 var(--border-dark);
+    transition: all var(--transition-fast);
+}
+
+.settingsBtn:hover {
+    background-color: var(--color-banana);
+    transform: rotate(30deg) scale(1.05);
 }
 
 .logoutLink {
@@ -400,44 +435,44 @@ body {
 }
 
 .logoutBtn {
-    background-color: var(--accent-red-bg);
-    border: 1.5px solid var(--accent-red-border);
-    color: var(--accent-red);
-    border-radius: var(--radius-md);
+    background-color: #FDE6F0;
+    border: 2px solid var(--border-dark);
+    color: #C5377B;
+    border-radius: var(--radius-sm);
     padding: 7px 11px;
     display: flex;
     align-items: center;
     gap: 5px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 2px 0 var(--border-dark);
     transition: all var(--transition-fast);
 }
 
 .logoutBtn:hover {
-    background-color: #FFE2E2;
-    color: #E02424;
+    background-color: #F478B0;
+    color: var(--border-dark);
     transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.25);
 }
 
 .logoutIcon {
-    stroke: var(--accent-red);
+    stroke: currentColor;
 }
 
-/* Sidebar Açma Butonu (Kapalıyken Görünür) */
+/* Sidebar Açma Butonu */
 .sidebarOpenBtn {
     position: fixed;
-    top: 16px;
-    left: 16px;
-    width: 42px;
-    height: 42px;
+    top: 18px;
+    left: 18px;
+    width: 46px;
+    height: 46px;
     border-radius: var(--radius-md);
-    background-color: #FFFFFF;
-    border: 1.5px solid var(--border-color);
-    color: var(--primary-purple);
-    box-shadow: 0 4px 14px rgba(108, 92, 231, 0.15);
+    background-color: var(--bg-card-cream);
+    border: 2.5px solid var(--border-dark);
+    color: var(--border-dark);
+    box-shadow: 0 4px 0 var(--border-dark);
     display: none;
     align-items: center;
     justify-content: center;
@@ -451,9 +486,9 @@ body {
 }
 
 .sidebarOpenBtn:hover {
-    background-color: var(--bg-sidebar);
-    transform: scale(1.08);
-    border-color: var(--primary-purple);
+    background-color: var(--color-banana);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--border-dark);
 }
 
 .sidebarBackdrop {
@@ -461,14 +496,14 @@ body {
 }
 
 /* =========================================================
-   2. ANA CHAT ALANI
+   2. ANA CHAT ALANI (MEELO WARM BEIGE)
    ========================================================= */
 .mainChat {
     flex: 1;
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: var(--bg-chat);
+    background-color: var(--bg-page-warm);
     min-width: 0;
     position: relative;
 }
@@ -478,7 +513,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    max-width: 840px;
+    max-width: 880px;
     width: 100%;
     margin: 0 auto;
     min-height: 0;
@@ -486,7 +521,7 @@ body {
 }
 
 /* =========================================================
-   3. YENİ DİKEY & YATAY ORTALANMIŞ KARŞILAMA EKRANI
+   3. MEELO DİKEY & YATAY ORTALANMIŞ KARŞILAMA EKRANI
    ========================================================= */
 .welcomeCenteredGroup {
     flex: 1;
@@ -495,70 +530,64 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 20px 24px;
+    padding: 24px;
     animation: bounceInHero 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     width: 100%;
 }
 
 .welcomeMascot {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    animation: gentleFloat 3.2s ease-in-out infinite;
+    animation: gentleFloat 3.6s ease-in-out infinite;
+    position: relative;
 }
 
 .mascotIconImg {
-    width: 96px;
-    height: 96px;
+    width: 110px;
+    height: 110px;
     object-fit: contain;
-    filter: drop-shadow(0 8px 20px rgba(108, 92, 231, 0.22));
+    border-radius: 32px;
+    background-color: var(--color-banana);
+    border: 3.5px solid var(--border-dark);
+    padding: 8px;
+    box-shadow: 0 8px 0 var(--border-dark);
     transition: transform 0.3s ease;
 }
 
 .mascotIconImg:hover {
-    transform: scale(1.08) rotate(3deg);
+    transform: scale(1.08) rotate(4deg);
 }
 
 @keyframes gentleFloat {
-    0% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-    100% {
-        transform: translateY(0px);
-    }
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }
 
 .welcomeHeroTitle {
-    font-size: 36px;
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 42px;
     font-weight: 800;
-    color: var(--text-main);
-    letter-spacing: -0.7px;
+    color: var(--border-dark);
+    letter-spacing: -0.02em;
     margin: 0 0 10px 0;
-    line-height: 1.2;
+    line-height: 1.15;
 }
 
 .welcomeHeroSubtitle {
-    font-size: 17px;
+    font-size: 18px;
     color: var(--text-muted);
-    font-weight: 500;
-    margin: 0 0 28px 0;
+    font-weight: 600;
+    margin: 0 0 34px 0;
     line-height: 1.5;
-    max-width: 520px;
+    max-width: 560px;
 }
 
 @keyframes bounceInHero {
-    0% {
-        opacity: 0;
-        transform: translateY(20px) scale(0.96);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* =========================================================
@@ -566,11 +595,11 @@ body {
    ========================================================= */
 .chatArea {
     flex: 1;
-    padding: 32px 24px 16px 24px;
+    padding: 34px 24px 16px 24px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 24px;
     min-height: 0;
 }
 
@@ -583,49 +612,65 @@ body {
 }
 
 .chatArea::-webkit-scrollbar-thumb {
-    background: #E0DCF7;
+    background: #D8CBBD;
     border-radius: var(--radius-full);
 }
 
-/* Mesaj Balonları (Flat + Yumuşak Köşeler & Glow) */
+/* Mesaj Balonları (Meelo Flat & 2.5px Koyu Kenarlıklar) */
 .welcomeMessage {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: 14px;
     animation: messageSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .aiAvatar {
     flex-shrink: 0;
-}
-
-.smileyIcon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--accent-yellow-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 21px;
-    background-color: var(--accent-yellow-light);
-    box-shadow: var(--glow-yellow);
+    margin-top: 2px;
+}
+
+.aiAvatarIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    background-color: var(--color-banana);
+    border: 2.5px solid var(--border-dark);
+    object-fit: contain;
+    padding: 4px;
+    display: block;
+    box-shadow: 0 3px 0 var(--border-dark);
 }
 
 .aiMessageBubble {
     background-color: var(--bubble-ai-bg);
     color: var(--bubble-ai-text);
-    padding: 16px 22px;
+    padding: 18px 24px;
     border-radius: var(--radius-lg);
     border-top-left-radius: 6px;
-    max-width: 78%;
-    font-size: 15px;
-    font-weight: 500;
+    max-width: 80%;
+    font-size: 16px;
+    font-weight: 600;
     line-height: 1.6;
-    box-shadow: 0 4px 16px rgba(225, 205, 100, 0.14);
-    border: 1.5px solid var(--bubble-ai-border);
+    border: 2.5px solid var(--border-dark);
+    box-shadow: 0 5px 0 var(--border-dark);
     word-break: break-word;
     white-space: pre-wrap;
+}
+
+/* Düşünürken çıkan baloncuk */
+.aiMessageBubble.aiLoadingBubble {
+    padding: 14px 22px;
+    border-radius: 20px;
+    border-top-left-radius: 6px;
+    min-width: 170px;
+    width: fit-content;
+    max-width: 260px;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 4px 0 var(--border-dark);
 }
 
 .aiMessageBubble.fadeContent {
@@ -633,14 +678,8 @@ body {
 }
 
 @keyframes smoothContentReveal {
-    0% {
-        opacity: 0.85;
-        transform: translateY(3px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    0% { opacity: 0.85; transform: translateY(3px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 .userMessage {
@@ -652,63 +691,55 @@ body {
 .userMessageBubble {
     background-color: var(--bubble-user-bg);
     color: var(--bubble-user-text);
-    padding: 16px 22px;
+    padding: 18px 24px;
     border-radius: var(--radius-lg);
     border-top-right-radius: 6px;
-    max-width: 75%;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 1.5;
-    box-shadow: var(--glow-purple);
-    border: 1.5px solid var(--bubble-user-border);
+    max-width: 78%;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.55;
+    border: 2.5px solid var(--border-dark);
+    box-shadow: 0 5px 0 var(--border-dark);
     word-break: break-word;
 }
 
 @keyframes messageSlideIn {
-    0% {
-        opacity: 0;
-        transform: translateY(10px) scale(0.97);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    0% { opacity: 0; transform: translateY(10px) scale(0.97); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* =========================================================
-   5. MESAJ GİRİŞ BARI & YUMUŞAK GÖNDER BUTONU
+   5. MESAJ GİRİŞ BARI & BUTONU (MEELO STYLE)
    ========================================================= */
 .messageInputContainer {
-    padding: 14px 24px 24px 24px;
-    background-color: var(--bg-chat);
+    padding: 16px 24px 28px 24px;
+    background-color: var(--bg-page-warm);
     flex-shrink: 0;
     transition: all 0.3s ease;
     width: 100%;
 }
 
-/* Boş ekranda (Hero modunda) mesaj barı ortalanmış grup içinde yer alır */
 .messageInputContainer.heroMode {
     padding: 0;
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
 }
 
 .messageInputWrapper {
-    border: 2px solid #E0DBF8;
+    border: 3px solid var(--border-dark);
     display: flex;
     align-items: center;
-    background-color: #FFFFFF;
+    background-color: var(--bg-card-cream);
     border-radius: var(--radius-xl);
-    padding: 8px 10px 8px 22px;
-    box-shadow: 0 4px 22px rgba(108, 92, 231, 0.08);
+    padding: 10px 12px 10px 24px;
+    box-shadow: 0 6px 0 var(--border-dark);
     transition: all var(--transition-fast);
 }
 
 .messageInputWrapper:focus-within {
-    border-color: var(--primary-purple);
-    background-color: #FFFFFF;
-    box-shadow: 0 6px 26px rgba(108, 92, 231, 0.22);
-    transform: translateY(-1px);
+    border-color: var(--color-ocean-blue);
+    box-shadow: 0 8px 0 var(--color-ocean-blue);
+    transform: translateY(-2px);
 }
 
 .messageInput {
@@ -717,45 +748,45 @@ body {
     outline: none;
     background: transparent;
     padding: 10px 8px;
-    font-size: 15.5px;
+    font-size: 16.5px;
     font-family: inherit;
-    color: var(--text-main);
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--border-dark);
 }
 
 .messageInput::placeholder {
     color: var(--text-light);
 }
 
-/* 5. Gönder Butonu: Dolgun, Kalın Ok, Yumuşak Köşeli & Glow */
+/* Gönder Butonu: Pastel Avocado / Ocean Blue Dolgun Meelo Buton */
 .sendButton {
-    background-color: var(--primary-purple);
-    border: none;
-    color: #FFFFFF;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-lg);
+    background-color: var(--color-avocado-pastel);
+    border: 2.5px solid var(--border-dark);
+    color: var(--border-dark);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all var(--transition-fast);
-    box-shadow: var(--glow-purple);
+    box-shadow: 0 3px 0 var(--border-dark);
     flex-shrink: 0;
 }
 
 .sendIcon {
-    width: 20px;
-    height: 20px;
-    stroke: #FFFFFF;
-    stroke-width: 3.2;
+    width: 22px;
+    height: 22px;
+    stroke: var(--border-dark);
+    stroke-width: 3.5;
     transition: transform var(--transition-fast);
 }
 
 .sendButton:hover {
-    background-color: var(--primary-purple-dark);
-    transform: scale(1.08);
-    box-shadow: var(--glow-purple-hover);
+    background-color: var(--color-avocado-pastel-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 var(--border-dark);
 }
 
 .sendButton:hover .sendIcon {
@@ -763,76 +794,67 @@ body {
 }
 
 .sendButton:active {
-    transform: scale(0.96);
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--border-dark);
 }
 
 .sendButton:disabled {
-    background-color: #E2E0F2;
+    background-color: #E2E8F0;
+    border-color: #CBD5E1;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
 .sendButton:disabled .sendIcon {
-    stroke: #A8A4C4;
+    stroke: #94A3B8;
     transform: none;
 }
 
 .inputHint {
     text-align: center;
-    font-size: 12px;
-    color: var(--text-light);
-    margin-top: 10px;
-    font-weight: 500;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 12px;
+    font-weight: 600;
 }
 
 /* Loading & Typing Dots */
 .loadingBubble {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .loadingText {
     font-style: italic;
     color: var(--text-muted);
-    font-size: 13.5px;
-    font-weight: 600;
+    font-size: 14.5px;
+    font-weight: 700;
 }
 
 .typingDots {
     display: flex;
-    gap: 5px;
+    gap: 6px;
     align-items: center;
 }
 
 .dot {
-    width: 7px;
-    height: 7px;
-    background-color: var(--primary-purple);
+    width: 9px;
+    height: 9px;
+    background-color: var(--color-ocean-blue);
     border-radius: 50%;
+    border: 1px solid var(--border-dark);
     opacity: 0.3;
     animation: pulse 1.4s infinite ease-in-out;
 }
 
-.dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.dot:nth-child(3) {
-    animation-delay: 0.4s;
-}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes pulse {
-    0%, 100% {
-        opacity: 0.3;
-        transform: scale(0.85);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.2);
-        background-color: var(--accent-yellow);
-    }
+    0%, 100% { opacity: 0.3; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1.2); background-color: var(--color-banana); }
 }
 
 /* =========================================================
@@ -844,7 +866,7 @@ body {
         left: 0;
         top: 0;
         bottom: 0;
-        box-shadow: 4px 0 24px rgba(30, 27, 75, 0.15);
+        box-shadow: 6px 0 0 var(--border-dark);
     }
 
     .sidebar.collapsed {
@@ -859,7 +881,7 @@ body {
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(30, 27, 75, 0.45);
+        background: rgba(43, 33, 24, 0.45);
         backdrop-filter: blur(3px);
         z-index: 999;
     }
@@ -869,28 +891,28 @@ body {
     }
 
     .welcomeCenteredGroup {
-        padding: 40px 16px 20px 16px;
+        padding: 40px 18px 20px 18px;
     }
 
     .welcomeHeroTitle {
-        font-size: 26px;
+        font-size: 30px;
     }
 
     .welcomeHeroSubtitle {
-        font-size: 15px;
-        margin-bottom: 20px;
+        font-size: 16px;
+        margin-bottom: 24px;
     }
 
     .chatArea {
-        padding: 50px 14px 14px 14px;
+        padding: 60px 16px 14px 16px;
     }
 
     .aiMessageBubble, .userMessageBubble {
-        max-width: 88%;
-        font-size: 14.5px;
+        max-width: 90%;
+        font-size: 15px;
     }
 
     .messageInputContainer {
-        padding: 10px 14px 16px 14px;
+        padding: 10px 16px 18px 16px;
     }
 }

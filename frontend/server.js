@@ -124,6 +124,19 @@ app.post("/chat", isAuthenticated, async (req, res) => {
     }
 });
 
+// Chat History GET - Proxy to Backend
+app.get("/chat/history", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+
+    try {
+        const result = await apiClient.getChatHistory(userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Chat history proxy hatası:", error);
+        res.status(500).json({ messages: [] });
+    }
+});
+
 // Logout route
 app.get("/logout", (req, res) => {
     req.session.destroy();

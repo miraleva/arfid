@@ -1,58 +1,480 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
   <head>
-    <title>Page Title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARFID Bilgilendirme ve Destek Platformu | Asistancım</title>
+    <meta name="description" content="ARFID (Kaçıngan/Kısıtlayıcı Gıda Alımı Bozukluğu) hakkında doğru ve güvenilir bilgiler, alt tipler, belirtiler ve akıllı asistan desteği." />
+    
+    <!-- Child-Friendly Rounded Typography (Fredoka & Quicksand) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="mainPage.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins"/>
   </head>
 
   <body>
-    <div class="wrapper">
-      <!-- Section 1: Intro -->
-      <section class="section section-1">
-        <div class="header">
-          <div class="headerName">Asistancım</div>
-          <div class="headerButtonContainer">
-            <a href="/signin"><button class="landingButtons" id="logInButton">Sign In</button></a>
-            <a href="/signup"><button class="landingButtons" id="signUpButton">Sign up</button></a>
-          </div>
-        </div>
+    <!-- Top Navigation Header -->
+    <header class="landing-header">
+      <a href="/" class="brand-link">
+        <div class="brand-icon">🥑</div>
+        <span class="brand-name">Asistancım</span>
+      </a>
 
-        <div class="hero-container">
-          <div class="hero-content">
-            <div class="backgroundTitle animate-fade-up"> WHAT IS ARFID?</div>
-            <div class="backgroundText animate-fade-up"> 
-              Avoidant/Restrictive Food Intake Disorder (ARFID) is an eating disorder characterized by a persistent difficulty with eating certain foods or maintaining an adequate and varied diet. <br>
-              Unlike other eating disorders, ARFID is not related to body image, weight concerns, or a desire to lose weight.<br>
-              
+      <nav class="nav-links">
+        <a href="#nedir">ARFID Nedir?</a>
+        <a href="#kimlerde-gorulur">Kimlerde Görülür?</a>
+        <a href="#belirtiler">Belirtiler</a>
+        <a href="#tedavi">Tedavi Süreci</a>
+        <a href="#asistan">Asistanımız</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="/signin" class="btn-header-signin">Giriş Yap</a>
+        <a href="/signup" class="btn-header-signup">
+          <span>Kayıt Ol</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </div>
+    </header>
+
+    <main class="landing-main">
+      <!-- HERO SECTION -->
+      <section class="hero-section">
+        <!-- Dekoratif Karakter SVG: Sevimli Gülen Güneş / Çiçek -->
+        <svg class="meelo-character char-hero-sun" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="42" fill="#FFEF5A" stroke="#2B2118" stroke-width="4"/>
+          <!-- İki nokta göz -->
+          <circle cx="38" cy="44" r="5" fill="#2B2118"/>
+          <circle cx="62" cy="44" r="5" fill="#2B2118"/>
+          <!-- Gülümseyen kavisli ağız -->
+          <path d="M40 56C44 63 56 63 60 56" stroke="#2B2118" stroke-width="4" stroke-linecap="round"/>
+          <!-- Pembe sevimli yanaklar -->
+          <circle cx="31" cy="53" r="4" fill="#F478B0"/>
+          <circle cx="69" cy="53" r="4" fill="#F478B0"/>
+        </svg>
+
+        <!-- Dekoratif Karakter SVG: Sevimli Şekil / Blob -->
+        <svg class="meelo-character char-hero-blob" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 12C68 12 85 25 87 45C89 65 75 88 50 88C25 88 11 65 13 45C15 25 32 12 50 12Z" fill="#FFA934" stroke="#2B2118" stroke-width="4"/>
+          <circle cx="39" cy="45" r="4.5" fill="#2B2118"/>
+          <circle cx="61" cy="45" r="4.5" fill="#2B2118"/>
+          <path d="M42 56C46 62 54 62 58 56" stroke="#2B2118" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- Minik kollar -->
+          <path d="M12 48C5 45 4 38 6 34" stroke="#2B2118" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M88 48C95 45 96 38 94 34" stroke="#2B2118" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+
+        <div class="container">
+          <div class="hero-grid">
+            <div class="hero-content">
+              <div class="hero-badge-container">
+                <span class="section-badge badge-blue">
+                  <span>✨</span> Beslenmede Sevgi ve Güvenle Adım
+                </span>
+              </div>
+              <h1 class="hero-title">
+                ARFID'i Anlamak, Güvenle <span class="highlight-text">Adım Atmak.</span>
+              </h1>
+              <p class="hero-subtitle">
+                Kaçıngan/Kısıtlayıcı Gıda Alımı Bozukluğu (ARFID) hakkında doğru tıbbi bilgileri keşfedin, günlük beslenme yolculuğunuzda kişiselleştirilmiş asistan desteğiyle tanışın.
+              </p>
+              <div class="hero-actions">
+                <a href="<%= user ? '/chat' : '/signin' %>" class="btn-primary-hero">
+                  <span>Asistanla Konuş</span>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+                <a href="#nedir" class="btn-secondary-hero">
+                  <span>Bilgi Edinin</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                </a>
+              </div>
+              <div class="hero-highlights">
+                <div class="highlight-item">
+                  <span class="dot" style="background-color: var(--color-ocean-blue);"></span>
+                  <span>DSM-5 Tanımlı</span>
+                </div>
+                <div class="highlight-item">
+                  <span class="dot" style="background-color: var(--color-avocado-pastel);"></span>
+                  <span>Duyusal Farkındalık</span>
+                </div>
+                <div class="highlight-item">
+                  <span class="dot" style="background-color: var(--color-tangerine);"></span>
+                  <span>Güvenli Tarifler</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hero Interactive Preview Card -->
+            <div class="hero-visual">
+              <div class="hero-card-stack">
+                <div class="hero-badge-floating">Kişisel Destek</div>
+                <div class="hero-visual-header">
+                  <div class="hero-avatar">🥣</div>
+                  <div class="hero-avatar-text">
+                    <h4>Beslenme Asistanı</h4>
+                    <p>Güvenli gıdalarınızı anlar</p>
+                  </div>
+                </div>
+                <div class="hero-chat-bubble">
+                  "Bugün menünde seni rahatsız etmeyecek yumuşak kıvamlı, güvenli gıdalardan oluşan lezzetli alternatifler hazırladım!"
+                </div>
+                <div class="hero-feature-pills">
+                  <span class="hero-pill">🌿 Güvenli Gıda Analizi</span>
+                  <span class="hero-pill">📖 ARFID Dostu Tarifler</span>
+                  <span class="hero-pill">🎯 Duyusal Uyum</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="hero-cta-box animate-fade-up">
-            <a href="<%= user ? '/chat' : '/signin' %>">
-              <button class="getStartedButton">Let's Get Started</button>
+        </div>
+      </section>
+
+      <!-- BÖLÜM 1: ARFID NEDİR? -->
+      <section id="nedir" class="section-padding section-alt">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge badge-blue">Bölüm 01</span>
+            <h2 class="section-title">ARFID Nedir?</h2>
+            <p class="section-desc">
+              Kaçıngan/Kısıtlayıcı Gıda Alımı Bozukluğu (Avoidant/Restrictive Food Intake Disorder) hakkında temel gerçekler.
+            </p>
+          </div>
+
+          <div class="what-is-grid">
+            <div class="definition-card">
+              <div>
+                <p class="definition-text">
+                  <strong>ARFID (Avoidant/Restrictive Food Intake Disorder)</strong>, kişinin yediği gıdaların miktarını ve/veya çeşitliliğini ciddi şekilde kısıtladığı bir yeme bozukluğudur.
+                </p>
+                <p class="definition-text">
+                  Basit bir yemek seçiciliğinin ötesinde; yetersiz beslenme, kilo kaybı veya sosyal hayatta belirgin aksamalara yol açabilen klinik bir durumdur.
+                </p>
+              </div>
+              <div>
+                <div class="dsm5-tag">
+                  <span>📘</span> DSM-5 (Ruhsal Bozukluklar Tanı Kılavuzu) Tanımlı Tanı
+                </div>
+              </div>
+            </div>
+
+            <div class="distinction-card">
+              <span class="distinction-badge">Önemli Fark</span>
+              <h3 class="distinction-title">Görünüm veya Kilo Kaygısı Değildir</h3>
+              <p class="distinction-text">
+                Anoreksiya veya bulimiden farklı olarak, ARFID'de besin kısıtlaması kesinlikle şu nedenlerle ilişkili değildir:
+              </p>
+              <ul class="distinction-list">
+                <li>
+                  <span class="cross-icon">✕</span>
+                  <span>Vücut algısı veya beden imajı kaygısı</span>
+                </li>
+                <li>
+                  <span class="cross-icon">✕</span>
+                  <span>Kilo alma veya şişmanlama korkusu</span>
+                </li>
+                <li>
+                  <span class="cross-icon">✕</span>
+                  <span>Dış görünümle ilgili takıntılar</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BÖLÜM 2: KİMLERDE GÖRÜLÜR? (MEELO 4 RENKLİ KART) -->
+      <section id="kimlerde-gorulur" class="section-padding">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge badge-purple">Bölüm 02</span>
+            <h2 class="section-title">Kimlerde Görülür?</h2>
+            <p class="section-desc">
+              ARFID her yaştan, farklı sağlık geçmişine sahip bireyleri etkileyebilir.
+            </p>
+          </div>
+
+          <div class="prevalence-grid">
+            <div class="prevalence-card card-color-1">
+              <div class="card-icon-wrap">
+                <span>🧒🧑</span>
+              </div>
+              <h3>Her Yaşta Görülebilir</h3>
+              <p>Çocuklarda ve yetişkinlerde görülebilir, sadece çocukluk dönemine özgü bir durum değildir.</p>
+            </div>
+
+            <div class="prevalence-card card-color-2">
+              <div class="card-icon-wrap">
+                <span>🧠</span>
+              </div>
+              <h3>Nörogelişimsel Durumlar</h3>
+              <p>Otizm spektrumu, DEHB ve anksiyete bozuklukları gibi durumlara sahip bireylerde daha sık görülür.</p>
+            </div>
+
+            <div class="prevalence-card card-color-3">
+              <div class="card-icon-wrap">
+                <span>🫄</span>
+              </div>
+              <h3>Gastrointestinal Rahatsızlıklar</h3>
+              <p>Sindirim sistemi sorunları yaşayan bireylerde (örneğin çölyak hastalığı gibi) görülme oranı daha yüksektir.</p>
+            </div>
+
+            <div class="prevalence-card card-color-4">
+              <div class="card-icon-wrap">
+                <span>👥</span>
+              </div>
+              <h3>Cinsiyet Dağılımı</h3>
+              <p>Erkeklerde veya farklı cinsiyet kimliklerinde de yaygın görüldüğü belirtilmektedir; tek bir cinsiyete özgü değildir.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BÖLÜM 3: BELİRTİLER (SEMPTOMLAR) -->
+      <section id="belirtiler" class="section-padding section-alt">
+        <!-- Dekoratif Yıldız Karakter -->
+        <svg class="meelo-character char-symptoms-star" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="50,5 64,36 98,38 72,60 80,94 50,75 20,94 28,60 2,38 36,36" fill="#F478B0" stroke="#2B2118" stroke-width="3.5"/>
+          <circle cx="43" cy="46" r="3.5" fill="#2B2118"/>
+          <circle cx="57" cy="46" r="3.5" fill="#2B2118"/>
+          <path d="M45 55C48 59 52 59 55 55" stroke="#2B2118" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge badge-tangerine">Bölüm 03</span>
+            <h2 class="section-title">Belirtiler ve Alt Tipler</h2>
+            <p class="section-desc">
+              ARFID genellikle 3 ana alt tip halinde gruplanır ve çeşitli fiziksel/sosyal belirtilerle kendini gösterir.
+            </p>
+          </div>
+
+          <div class="subtypes-grid">
+            <!-- Alt Tip 1 -->
+            <div class="subtype-card type-1">
+              <span class="subtype-tag">Alt Tip 1</span>
+              <h3>Düşük İştah & İlgisizlik</h3>
+              <p>Yemeye karşı genel bir ilgi duymama, açlık hissinin farkında olmama ve yemek yemeyi uzun sürede tamamlama hali.</p>
+              <ul class="subtype-bullets">
+                <li>Yemek yemeyi unutma veya erteleme</li>
+                <li>Porsiyonları bitirmede zorlanma</li>
+                <li>Yemeğe karşı isteksizlik ve az yeme</li>
+              </ul>
+            </div>
+
+            <!-- Alt Tip 2 -->
+            <div class="subtype-card type-2">
+              <span class="subtype-tag">Alt Tip 2</span>
+              <h3>Duyusal Hassasiyet</h3>
+              <p>Gıdaların dokuları, kokuları, renkleri ve tatlarına karşı aşırı duyarlılık nedeniyle belirgin yiyecek seçiciliği.</p>
+              <ul class="subtype-bullets">
+                <li>Belirli dokuları (pütürlü, yapışkan vb.) reddetme</li>
+                <li>Yemek kokularından yoğun rahatsızlık</li>
+                <li>Kısıtlı sayıda "güvenli gıda" ile beslenme</li>
+              </ul>
+            </div>
+
+            <!-- Alt Tip 3 -->
+            <div class="subtype-card type-3">
+              <span class="subtype-tag">Alt Tip 3</span>
+              <h3>Kaygı & Korku Tipi</h3>
+              <p>Geçmişte yaşanan olumsuz bir deneyimden (boğulma tehlikesi, kusma, alerjik reaksiyon vb.) kaynaklanan yeme kaçınması.</p>
+              <ul class="subtype-bullets">
+                <li>Boğulma veya kusma korkusu</li>
+                <li>Yeni veya katı yiyecekleri denemekten kaçınma</li>
+                <li>Yemek saatlerinde yoğun anksiyete</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Diğer Fiziksel & Sosyal Belirtiler -->
+          <div class="general-symptoms-box">
+            <h4>
+              <span>⚠️</span> Eşlik Edebilecek Diğer Genel Belirtiler
+            </h4>
+            <div class="symptoms-tags-container">
+              <div class="symptom-tag">📉 Kilo Kaybı</div>
+              <div class="symptom-tag">🌱 Büyüme Geriliği (Çocuklarda)</div>
+              <div class="symptom-tag">🩸 Beslenme Eksiklikleri (Anemi, Vitamin Eksikliği)</div>
+              <div class="symptom-tag">😰 Yemek Sırasında Yoğun Kaygı</div>
+              <div class="symptom-tag">🍽️ Sosyal İşlevsellikte Bozulma (Toplu Yemeklerden Kaçınma)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BÖLÜM 4: TEDAVİ VE TERAPİ SÜRECİ -->
+      <section id="tedavi" class="section-padding">
+        <!-- Dekoratif Bulut Karakter -->
+        <svg class="meelo-character char-treat-cloud" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25 65C18 65 12 59 12 52C12 46 16 41 22 40C24 30 33 22 44 22C54 22 62 28 66 36C70 34 74 34 77 36C84 40 88 46 88 53C88 60 82 65 75 65Z" fill="#00A0B5" stroke="#2B2118" stroke-width="3.5"/>
+          <circle cx="42" cy="46" r="3.5" fill="#FFFFFF"/>
+          <circle cx="56" cy="46" r="3.5" fill="#FFFFFF"/>
+          <path d="M44 54C47 57 51 57 54 54" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge badge-avocado">Bölüm 04</span>
+            <h2 class="section-title">Tedavi ve Terapi Süreci</h2>
+            <p class="section-desc">
+              ARFID tedavisinde tek tip bir formül yoktur; kişiye özel ve çok yönlü yaklaşımlar esastır.
+            </p>
+          </div>
+
+          <div class="treatment-grid">
+            <div class="treatment-card t-card-1">
+              <div class="treatment-card-icon">🧩</div>
+              <h3>Kombine & Kişiselleştirilmiş Yaklaşım</h3>
+              <p>Kesin veya tek bir tedavi yöntemi yoktur; çoğu kişi ihtiyaçlarına göre uyarlanmış kombine yaklaşımlarla ilerleme kaydeder.</p>
+            </div>
+
+            <div class="treatment-card t-card-2">
+              <div class="treatment-card-icon">🧠</div>
+              <h3>Bilişsel Davranışçı Terapi (CBT-AR)</h3>
+              <p>Ana tedavi yöntemi Bilişsel Davranışçı Terapi'dir. ARFID'e özel geliştirilmiş CBT-AR versiyonu duyusal ve kaygı odaklı süreçleri hedefler.</p>
+            </div>
+
+            <div class="treatment-card t-card-3">
+              <div class="treatment-card-icon">🩺</div>
+              <h3>Çok Disiplinli Uzman Ekibi</h3>
+              <p>Süreçte doktorlar, uzman diyetisyenler ve psikolog/psikiyatristler birlikte koordineli şekilde çalışır.</p>
+            </div>
+
+            <div class="treatment-card t-card-4">
+              <div class="treatment-card-icon">👨‍👩‍👧</div>
+              <h3>Aile Temelli Terapi</h3>
+              <p>Özellikle çocukluk ve ergenlik döneminde aile temelli terapi yaklaşımlarının oldukça etkili olduğu bulunmuştur.</p>
+            </div>
+
+            <div class="treatment-card t-card-5">
+              <div class="treatment-card-icon">⏳</div>
+              <h3>Sabır ve Süreklilik</h3>
+              <p>Tedavi süreci kişiden kişiye değişiklik gösterir; profesyonel destekle adım adım, sabırla ilerlenmesi gerekir.</p>
+            </div>
+
+            <div class="treatment-card t-card-6">
+              <div class="treatment-card-icon">🎯</div>
+              <h3>Güvenli Adımlarla Genişleme</h3>
+              <p>Zorlama olmaksızın, duyusal tolerans sınırları gözetilerek güvenli besin yelpazesinin yavaşça genişletilmesi amaçlanır.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BÖLÜM 5: KESİN TANI (HASSAS ALAN / DOKTOR UYARISI) -->
+      <section class="section-padding" style="padding-top: 20px; padding-bottom: 60px;">
+        <div class="container">
+          <div class="diagnosis-banner">
+            <div class="diagnosis-icon-wrap">
+              <span>🩺</span>
+            </div>
+            <div class="diagnosis-text-content">
+              <h3 class="diagnosis-title">
+                <span>Önemli Bilgilendirme: Kesin Tanı Süreci</span>
+              </h3>
+              <p class="diagnosis-text">
+                "ARFID tanısı yalnızca bir sağlık profesyoneli (doktor, psikiyatrist veya psikolog) tarafından, kapsamlı bir değerlendirme sonrası konulabilir. Bu platform bir tanı aracı değildir."
+              </p>
+              <p class="diagnosis-subtext">
+                Herhangi bir yeme veya beslenme güçlüğü şüphesinde lütfen vakit kaybetmeden yetkili bir sağlık kuruluşuna ve uzman hekime başvurunuz.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BÖLÜM 6: ASİSTAN NASIL YARDIMCI OLUR? -->
+      <section id="asistan" class="section-padding section-alt">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge badge-bubblegum">Bölüm 06</span>
+            <h2 class="section-title">Asistanımız Nasıl Yardımcı Olur?</h2>
+            <p class="section-desc">
+              Günlük beslenme yolculuğunuzu kolaylaştırmak için tasarlanmış destekleyici dijital yol arkadaşı.
+            </p>
+          </div>
+
+          <div class="assistant-features-grid">
+            <div class="assistant-card a-card-1">
+              <div class="assistant-card-icon">
+                <span>🛡️</span>
+              </div>
+              <h3>Kişiselleştirilmiş Öğrenme</h3>
+              <p>Kullanıcının güvenli ve güvensiz gıdalarını, duyusal tetikleyicilerini (koku, doku, tat) zaman içinde öğrenip buna uygun kişiselleştirilmiş öneriler sunar.</p>
+            </div>
+
+            <div class="assistant-card a-card-2">
+              <div class="assistant-card-icon">
+                <span>🍲</span>
+              </div>
+              <h3>ARFID Dostu Tarifler</h3>
+              <p>RAG destekli güvenilir tarif kaynağından, duyusal hassasiyetlerinize ve güvenli yiyecek listenize tam uyumlu lezzetli alternatifler önerir.</p>
+            </div>
+
+            <div class="assistant-card a-card-3">
+              <div class="assistant-card-icon">
+                <span>⚖️</span>
+              </div>
+              <h3>Pratik Beslenme Araçları</h3>
+              <p>Günlük kalori ve porsiyon hesaplama, gıda güvenliği kontrolü ve tetikleyici gıda sorgulama gibi pratik araçlarla yanınızdadır.</p>
+            </div>
+          </div>
+
+          <!-- Asistan Sorumluluk Reddi (Zorunlu Uyarı) -->
+          <div class="assistant-disclaimer-box">
+            <div class="disclaimer-icon">💡</div>
+            <div class="disclaimer-text">
+              <strong>Önemli Hatırlatma:</strong> Bu asistan bir diyetisyen veya doktorun yerini <strong>TUTMAZ</strong>, tıbbi tanı koymaz — sadece günlük beslenme sürecinde destekleyici bir araçtır.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTTOM CALL TO ACTION (CTA) -->
+      <section class="bottom-cta-section">
+        <div class="container cta-container">
+          <span class="cta-badge">🚀 Beslenme Yolculuğunuza Destek Olun</span>
+          <h2 class="cta-title">Kendi Hızınızda, Güvenli Bir Şekilde Başlayın</h2>
+          <p class="cta-desc">
+            ARFID dostu tarifler keşfetmek, güvenli gıdalarınızı kaydetmek ve yapay zeka asistanımızla konuşmak için aramıza katılın.
+          </p>
+          <div class="cta-buttons-wrap">
+            <a href="<%= user ? '/chat' : '/signin' %>" class="btn-cta-primary">
+              <span>Hemen Başla (Asistanla Konuş)</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+            <a href="/signup" class="btn-cta-secondary">
+              <span>Ücretsiz Hesap Oluştur</span>
             </a>
           </div>
         </div>
       </section>
+    </main>
 
-      <!-- Section 2: Details -->
-      <section class="section section-2">
-        <div class="content-box">
-          <div class="backgroundText">
-            ARFID, klasik “iştahsızlık” ya da “seçici yeme” durumlarından farklıdır;<br>
-            çünkü bu durum yalnızca tercih değil, aynı zamanda yoğun kaygı, <br>
-            duyusal hassasiyet veya olumsuz deneyim korkusuyla ilişkilidir.
+    <!-- FOOTER -->
+    <footer class="landing-footer">
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="brand-icon">🥑</div>
+            <span class="footer-brand-name">Asistancım</span>
+          </div>
+          <div class="footer-nav">
+            <a href="#nedir">ARFID Nedir?</a>
+            <a href="#kimlerde-gorulur">Kimlerde Görülür?</a>
+            <a href="#belirtiler">Belirtiler</a>
+            <a href="#tedavi">Tedavi</a>
+            <a href="#asistan">Asistanımız</a>
+            <a href="/signin">Giriş Yap</a>
           </div>
         </div>
-      </section>
-
-      <!-- Section 3: Call to Action -->
-      <section class="section section-3">
-        <div class="content-box">
-          <a href="/chat"><button class="getStartedButton">Let's Get Started</button></a>
+        <div class="footer-bottom">
+          <p>© 2026 Asistancım ARFID Destek Platformu. Tüm hakları saklıdır. Bu sitede yer alan içerikler yalnızca bilgilendirme amaçlıdır ve tıbbi tavsiye niteliği taşımaz.</p>
         </div>
-      </section>
-    </div>
+      </div>
+    </footer>
   </body>
 </html>

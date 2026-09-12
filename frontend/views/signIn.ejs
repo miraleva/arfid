@@ -4,20 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SignIn</title>
-    <link rel="stylesheet" href="signIn.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"/>
+    <!-- Fonts: Fredoka & Quicksand (Meelo Style) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"/>
+    <link rel="stylesheet" href="signIn.css" />
 </head>
    
     <body>
         <div class="container">
-            <!-- Sol Taraf: Görsel Bölümü (Sol Tarafa Dayalı) -->
+            <!-- Sol Taraf: Duygulu ve Hareketli Geometrik Şekiller Sahnesi -->
             <div class="imageSection">
-                <img src="/image/signin_shapes_nobg.png" id="shapesImg" alt="ARFID Colorful Shapes">
+              <div class="shapesStage">
+                <!-- 1. Mutlu Kare (Bubblegum) -->
+                <svg class="geoShape shape-square-happy" viewBox="0 0 100 100" fill="none">
+                  <rect x="8" y="8" width="84" height="84" rx="22" fill="#F478B0" stroke="#2B2118" stroke-width="4.5"/>
+                  <circle cx="34" cy="44" r="5.5" fill="#2B2118"/>
+                  <circle cx="66" cy="44" r="5.5" fill="#2B2118"/>
+                  <circle cx="36" cy="42" r="1.8" fill="#FFFFFF"/>
+                  <circle cx="68" cy="42" r="1.8" fill="#FFFFFF"/>
+                  <path d="M42 58C46 65 54 65 58 58" stroke="#2B2118" stroke-width="4" stroke-linecap="round"/>
+                  <circle cx="27" cy="53" r="3.5" fill="#FFA934"/>
+                  <circle cx="73" cy="53" r="3.5" fill="#FFA934"/>
+                </svg>
+
+                <!-- 2. Zeki Gülen Altıgen (Ocean Blue) -->
+                <svg class="geoShape shape-hex-smile" viewBox="0 0 100 100" fill="none">
+                  <polygon points="50,6 88,27 88,73 50,94 12,73 12,27" fill="#00A0B5" stroke="#2B2118" stroke-width="4.5"/>
+                  <circle cx="37" cy="48" r="5" fill="#2B2118"/>
+                  <circle cx="63" cy="48" r="5" fill="#2B2118"/>
+                  <path d="M42 60C45 66 55 66 58 60" stroke="#2B2118" stroke-width="3.5" stroke-linecap="round"/>
+                  <circle cx="30" cy="56" r="3" fill="#FFEF5A"/>
+                  <circle cx="70" cy="56" r="3" fill="#FFEF5A"/>
+                </svg>
+
+                <!-- 3. Sakin / Uykucu Daire (Banana) -->
+                <svg class="geoShape shape-circle-sleepy" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="42" fill="#FFEF5A" stroke="#2B2118" stroke-width="4.5"/>
+                  <path d="M30 46C34 50 38 50 42 46" stroke="#2B2118" stroke-width="3.5" stroke-linecap="round"/>
+                  <path d="M58 46C62 50 66 50 70 46" stroke="#2B2118" stroke-width="3.5" stroke-linecap="round"/>
+                  <path d="M45 58C48 61 52 61 55 58" stroke="#2B2118" stroke-width="3" stroke-linecap="round"/>
+                  <circle cx="28" cy="53" r="3.5" fill="#F478B0"/>
+                  <circle cx="72" cy="53" r="3.5" fill="#F478B0"/>
+                </svg>
+
+                <!-- 4. Heyecanlı Çiçek / Blob (Tangerine) -->
+                <svg class="geoShape shape-blob-excited" viewBox="0 0 100 100" fill="none">
+                  <path d="M50 10C68 10 90 28 90 50C90 72 68 90 50 90C32 90 10 72 10 50C10 28 32 10 50 10Z" fill="#FFA934" stroke="#2B2118" stroke-width="4.5"/>
+                  <circle cx="36" cy="45" r="5.5" fill="#2B2118"/>
+                  <circle cx="64" cy="45" r="5.5" fill="#2B2118"/>
+                  <!-- Şaşkın ağız -->
+                  <circle cx="50" cy="62" r="6" fill="#2B2118"/>
+                  <circle cx="26" cy="52" r="3.5" fill="#FFEF5A"/>
+                  <circle cx="74" cy="52" r="3.5" fill="#FFEF5A"/>
+                </svg>
+
+                <!-- 5. Göz Kırpan Yıldız (Banana/Yellow) -->
+                <svg class="geoShape shape-star-wink" viewBox="0 0 100 100" fill="none">
+                  <polygon points="50,6 63,36 96,38 71,60 79,92 50,75 21,92 29,60 4,38 37,36" fill="#FFEF5A" stroke="#2B2118" stroke-width="4"/>
+                  <!-- Sol göz kırpıyor -->
+                  <path d="M36 46L44 50" stroke="#2B2118" stroke-width="4" stroke-linecap="round"/>
+                  <!-- Sağ göz açık -->
+                  <circle cx="62" cy="47" r="5" fill="#2B2118"/>
+                  <circle cx="64" cy="45" r="1.6" fill="#FFFFFF"/>
+                  <path d="M43 59C47 64 53 64 57 59" stroke="#2B2118" stroke-width="3.5" stroke-linecap="round"/>
+                  <circle cx="32" cy="55" r="3.5" fill="#F478B0"/>
+                  <circle cx="68" cy="55" r="3.5" fill="#F478B0"/>
+                </svg>
+
+                <!-- 6. Sevimli Cesur Üçgen (Bubblegum/Coral) -->
+                <svg class="geoShape shape-triangle-cool" viewBox="0 0 100 100" fill="none">
+                  <path d="M50 12L88 84C90 88 86 92 82 92L18 92C14 92 10 88 12 84L50 12Z" fill="#F478B0" stroke="#2B2118" stroke-width="4.5"/>
+                  <circle cx="40" cy="58" r="5" fill="#2B2118"/>
+                  <circle cx="60" cy="58" r="5" fill="#2B2118"/>
+                  <path d="M45 70C48 74 52 74 55 70" stroke="#2B2118" stroke-width="3.5" stroke-linecap="round"/>
+                </svg>
+
+                <!-- 7. Merkezdeki Sevimli Beşgen (Purple) -->
+                <svg class="geoShape shape-penta-joy" viewBox="0 0 100 100" fill="none">
+                  <polygon points="50,10 90,40 75,88 25,88 10,40" fill="#6C5CE7" stroke="#2B2118" stroke-width="4.5"/>
+                  <circle cx="39" cy="50" r="5" fill="#FFFFFF"/>
+                  <circle cx="61" cy="50" r="5" fill="#FFFFFF"/>
+                  <circle cx="41" cy="50" r="2.5" fill="#2B2118"/>
+                  <circle cx="63" cy="50" r="2.5" fill="#2B2118"/>
+                  <path d="M44 64C47 69 53 69 56 64" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+                </svg>
+
+                <!-- Eğlenceli Kıvılcım & Parıltılar -->
+                <svg class="sparkle sp-1" width="24" height="24" viewBox="0 0 24 24" fill="#FFEF5A">
+                  <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z"/>
+                </svg>
+                <svg class="sparkle sp-2" width="22" height="22" viewBox="0 0 24 24" fill="#FFA934">
+                  <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z"/>
+                </svg>
+                <svg class="sparkle sp-3" width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF">
+                  <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z"/>
+                </svg>
+                <svg class="sparkle sp-4" width="26" height="26" viewBox="0 0 24 24" fill="#F478B0">
+                  <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z"/>
+                </svg>
+              </div>
             </div>
 
             <!-- Sağ Taraf: Giriş Formu -->
             <div class="login">
-              <form id="loginForm">
+              <div class="formWidget">
+                <form id="loginForm">
                 <div class="title">Welcome Back!</div>
                 <div class="subtitle">Sign in to keep going on with you journey</div>
                 
@@ -53,7 +145,8 @@
                   <a class="signLink" href="/signup">Sign Up</a>
                 </p>
               </form> 
-            </div>   
+            </div>
+          </div>   
         </div>  
     
     <script>
