@@ -10,7 +10,7 @@
     <!-- Fonts: Fredoka & Quicksand (Meelo Style) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"/>
 </head>
 <body>
     <div class="appContainer">
@@ -837,20 +837,14 @@
                 const messageDiv = document.createElement('div');
                 if (msg.role === 'user') {
                     messageDiv.className = 'userMessage';
-                    messageDiv.innerHTML = `
-                        <div class="userMessageBubble">
-                            ${escapeHtml(msg.content)}
-                        </div>
-                    `;
+                    messageDiv.innerHTML = `<div class="userMessageBubble">${escapeHtml(msg.content.trim())}</div>`;
                 } else {
                     messageDiv.className = 'welcomeMessage';
                     messageDiv.innerHTML = `
                         <div class="aiAvatar">
                             <img src="/image/arfid_icon.png" class="aiAvatarIcon" alt="ARFID Asistanı">
                         </div>
-                        <div class="aiMessageBubble">
-                            ${escapeHtml(msg.content)}
-                        </div>
+                        <div class="aiMessageBubble">${escapeHtml(msg.content.trim())}</div>
                     `;
                 }
                 chatArea.appendChild(messageDiv);
@@ -957,11 +951,7 @@
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'userMessage';
-            messageDiv.innerHTML = `
-                <div class="userMessageBubble">
-                    ${escapeHtml(message)}
-                </div>
-            `;
+            messageDiv.innerHTML = `<div class="userMessageBubble">${escapeHtml(message.trim())}</div>`;
             chatArea.appendChild(messageDiv);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
@@ -975,6 +965,8 @@
         function addAiMessage(message) {
             removeLoading();
             finishActiveTyping();
+
+            const cleanMessage = (message || '').trim();
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'welcomeMessage';
@@ -990,20 +982,20 @@
             chatArea.appendChild(messageDiv);
 
             activeTypingBubble = bubbleDiv;
-            activeTypingFullText = message;
+            activeTypingFullText = cleanMessage;
 
             // Metni kelimelere böl: İlk 3-4 kelimeyi daktilo efektiyle yaz, ardından kalanı akıcı şekilde tamamla
-            const words = message.trim().split(/\s+/);
+            const words = cleanMessage.split(/\s+/);
             
             // Eğer mesaj çok kısaysa (<= 4 kelime) normal karakter karakter yazdır
             if (words.length <= 4) {
                 let charIndex = 0;
                 activeTypingInterval = setInterval(() => {
                     charIndex++;
-                    bubbleDiv.textContent = message.substring(0, charIndex);
+                    bubbleDiv.textContent = cleanMessage.substring(0, charIndex);
                     chatArea.scrollTop = chatArea.scrollHeight;
 
-                    if (charIndex >= message.length) {
+                    if (charIndex >= cleanMessage.length) {
                         clearInterval(activeTypingInterval);
                         activeTypingInterval = null;
                         activeTypingBubble = null;
@@ -1026,14 +1018,14 @@
                     activeTypingInterval = null;
                     
                     // 2. Aşama: İlk 3-4 kelimeden hemen sonra tüm cevabı şık ve profesyonel bir fade/slide geçişiyle göster
-                    bubbleDiv.textContent = message;
+                    bubbleDiv.textContent = cleanMessage;
                     bubbleDiv.classList.add('fadeContent');
                     chatArea.scrollTop = chatArea.scrollHeight;
 
                     activeTypingBubble = null;
                     activeTypingFullText = '';
                 } else {
-                    bubbleDiv.textContent = message.substring(0, charIndex);
+                    bubbleDiv.textContent = cleanMessage.substring(0, charIndex);
                     chatArea.scrollTop = chatArea.scrollHeight;
                 }
             }, TYPING_SPEED_MS);

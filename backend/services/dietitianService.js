@@ -174,7 +174,7 @@ ${JSON.stringify(toolExecutionResults, null, 2)}
             }
         }
 
-        const assistantResponse = parsedData.assistant_response || "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?";
+        const assistantResponse = (parsedData.assistant_response || "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?").trim();
 
         // 6. Generate Patient Card (Call #2) - Skip if fallback occurred
         let patientCard = "";
