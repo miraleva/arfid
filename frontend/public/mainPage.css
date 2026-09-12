@@ -1,236 +1,1358 @@
-.header {
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100vw;
-    background: #F9FAFB;
-    height: 80px;
-    align-items: center;
-    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.25);
-    z-index: 1000;
+/* =========================================================
+   ARFID MEELO-STYLE CHILD & FAMILY LANDING PAGE (mainPage.css)
+   Warm, Whimsical & Playful Aesthetic for Kids (Ages 5-12) & Parents
+   
+   Background:
+     Warm Cream / Beige: #FAF3E7 (Sıcak bej/krem)
+     Section Alternating / Tint: #F3EBDD
+   
+   Color Palette (Flat, No Gradients):
+     Pastel Avocado (CTA Primary): #A8D46C / #9BCB5E
+     Avocado: #98c54e
+     Bell Pepper (Deep Green): #14704f
+     Tangerine (Warm Orange): #FFA934
+     Bubblegum (Candy Pink): #F478B0
+     Ocean Blue (Friendly Cyan/Blue): #00A0B5
+     Banana (Sunny Yellow): #FFEF5A
+     Purple Accent: #6C5CE7
+     Dark Chocolate/Navy Text: #2D241E / #1E293B
+   ========================================================= */
+
+:root {
+    /* 1. Sıcak Arkaplanlar (Krem / Bej) */
+    --bg-page: #FAF3E7;        /* Meelo tarzı sıcak açık bej/krem */
+    --bg-page-alt: #F3EBDD;    /* Alternatif hafif koyu bej şerit */
+    --bg-card-neutral: #FFFDF9;/* Kartlar için yumuşak kırık beyaz */
+
+    /* 2. Flat Renk Paleti (Canlı Çocuk & Ebeveyn Odaklı) */
+    --color-tangerine: #FFA934;
+    --color-tangerine-soft: #FFEBD1;
+    
+    --color-bubblegum: #F478B0;
+    --color-bubblegum-soft: #FDE6F0;
+    
+    --color-ocean-blue: #00A0B5;
+    --color-ocean-blue-soft: #D6F4F8;
+    
+    --color-banana: #FFEF5A;
+    --color-banana-soft: #FFFBD0;
+    
+    --color-avocado: #98C54E;
+    --color-avocado-pastel: #A8D46C; /* 🟢 Belirlenen Pastel Avocado CTA Buton Rengi */
+    --color-avocado-pastel-hover: #97C758;
+    --color-avocado-soft: #EBF7D9;
+    
+    --color-bell-pepper: #14704F;
+    --color-bell-pepper-soft: #D5EDE4;
+    
+    --color-purple: #6C5CE7;
+    --color-purple-soft: #EAE6FB;
+
+    /* 3. Tipografi ve Kontrast */
+    --text-title: #2B2118;     /* Sıcak koyu kahverengi/antrasit başlık tonu */
+    --text-primary: #372E27;   /* Gövde metinleri */
+    --text-secondary: #63564D; /* Alt metinler */
+    --text-muted: #87786E;
+    --border-warm: #EADBCC;    /* Bej zeminle uyumlu yumuşak kenarlık */
+    --border-card: #E3D2BF;
+
+    /* 4. Çocuksu Organik Yuvarlaklıklar */
+    --radius-sm: 16px;
+    --radius-md: 24px;
+    --radius-lg: 32px;
+    --radius-xl: 40px;
+    --radius-full: 9999px;
+
+    /* 5. Flat Soft Gölgeler (Gradyansız) */
+    --shadow-soft: 0 8px 24px rgba(67, 48, 30, 0.06);
+    --shadow-card: 0 12px 28px rgba(67, 48, 30, 0.08);
+    --shadow-card-hover: 0 18px 36px rgba(67, 48, 30, 0.12);
+    --shadow-btn: 0 6px 16px rgba(168, 212, 108, 0.4);
+    --shadow-btn-hover: 0 10px 22px rgba(168, 212, 108, 0.5);
+
+    --transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.headerName {
-    margin-left: 3vw;
-    color: #9381FF;
-    font-size: xx-large;
-    font-weight: bold;
-    font-family: "Inter", sans-serif;
-}
-
-.headerButtonContainer {
-    margin-right: 3vw;
-}
-
-.landingButtons:hover {
-    transform: translateY(2px);
-    cursor: pointer;
-}
-
-.landingButtons {
-    transition: all 0.5s;
-    margin-right: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 3px 0 rgba(0, 0, 0, 0.25);
-    width: 8vw;
-    height: 35px;
-    min-width: 76px;
-}
-
-#logInButton:hover {
-    background-color: #d1d1d1;
-}
-
-#logInButton {
-    color: #676767;
-    font-family: "Inter", sans-serif;
-    font-weight: bold;
-    font-size: medium;
-    background-color: #F9FAFB;
-    border: 2px solid #bbbaba;
-}
-
-#signUpButton:hover {
-    background-color: #ef9f1d;
-}
-
-#signUpButton {
-    color: #ffffff;
-    font-family: "Inter", sans-serif;
-    font-weight: bold;
-    font-size: medium;
-    background-color: #FDBA4E;
-    border: 2px solid #eb9e22;
-}
-
-
-/* Base text styles used within content-box */
-.backgroundTitle {
-    font-size: 3.5rem;
-    font-family: "Inter", sans-serif;
-    color: #ffffff;
-    font-weight: 900;
-    margin-bottom: 20px;
-}
-
-.backgroundText {
-    font-size: 1.4rem;
-    font-family: "Poppins", sans-serif;
-    color: #ffffff;
-    font-weight: 500;
-    line-height: 1.6;
-}
-
-.getStartedButton {
-    width: 17vw;
-    height: 3.5vw;
-    margin-left: 10px;
-    margin-top: 35px;
-    font-size: 20px;
-    font-family: "Inter", sans-serif;
-    font-weight: 600;
-    color: white;
-    background-color: #7e87ea;
-    box-shadow: 0 4px 3px 0 rgba(0, 0, 0, 0.25);
-    border: none;
-    border-radius: 10px;
-    transition: all 0.5s;
-
-}
-
-.getStartedButton:hover {
-    background-color: rgb(77, 70, 147);
-    transform: translateY(2px);
-    cursor: pointer;
-}
-
-
-
-body,
-html {
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
 }
 
-.wrapper {
-    height: 100vh;
-    width: 100vw;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scroll-snap-type: y proximity;
-    /* Softened from mandatory */
+html {
     scroll-behavior: smooth;
-    scrollbar-width: none;
-    /* Firefox */
 }
 
-.wrapper::-webkit-scrollbar {
-    display: none;
-    /* Chrome, Safari, Opera */
+body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: 'Fredoka', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
-.section {
-    height: 100vh;
-    width: 100vw;
-    scroll-snap-align: start;
-    position: relative;
+/* =========================================================
+   HEADER / NAVIGATION (MEELO STYLE)
+   ========================================================= */
+.landing-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-size: cover;
-    /* Responsive scaling */
-    background-position: center;
-    /* Responsive centering */
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-}
-
-.section-1 {
-    background-image: url("image/gurl.jpg");
-}
-
-.section-2 {
-    background-image: url("image/pie.jpg");
-}
-
-.section-3 {
-    background-image: url("image/cook2gether.jpg");
-}
-
-.hero-container {
-    display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    width: 80%;
-    gap: 40px;
+    padding: 0 5vw;
+    background: rgba(250, 243, 231, 0.92); /* Sıcak bej transparan */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 2px solid var(--border-warm);
+    z-index: 1000;
+    transition: var(--transition);
 }
 
-.hero-content {
-    flex: 2;
-    background: none;
-    /* Step 1: Clean and unobstructed */
-    padding: 0;
-    backdrop-filter: none;
+.brand-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-banana);
+    border: 2.5px solid var(--text-title);
+    font-size: 26px;
+    box-shadow: 0 4px 0 var(--text-title);
+}
+
+.brand-name {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text-title);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+}
+
+.nav-links a:hover {
+    color: var(--text-title);
+    background-color: var(--bg-page-alt);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.btn-header-signin {
+    padding: 10px 22px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--border-warm);
+    background: var(--bg-card-neutral);
+    color: var(--text-title);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-header-signin:hover {
+    border-color: var(--text-title);
+    transform: translateY(-2px);
+}
+
+/* 🟢 KAYIT OL BUTONU (PASTEL AVOCADO YEŞİLİ - FLAT) */
+.btn-header-signup {
+    padding: 11px 26px;
+    border-radius: var(--radius-full);
+    border: 2.5px solid var(--text-title);
+    background-color: var(--color-avocado-pastel);
+    color: var(--text-title);
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 0 var(--text-title);
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-header-signup:hover {
+    background-color: var(--color-avocado-pastel-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--text-title);
+}
+
+.btn-header-signup:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--text-title);
+}
+
+/* =========================================================
+   CONTAINER & LAYOUT
+   ========================================================= */
+.landing-main {
+    padding-top: 80px;
+    position: relative;
+}
+
+.container {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.section-padding {
+    padding: 96px 0;
+    position: relative;
+}
+
+.section-alt {
+    background-color: var(--bg-page-alt);
+    border-top: 2px solid var(--border-warm);
+    border-bottom: 2px solid var(--border-warm);
+}
+
+/* Section Header */
+.section-header {
+    text-align: center;
+    max-width: 780px;
+    margin: 0 auto 56px auto;
+}
+
+.section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: var(--radius-full);
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    margin-bottom: 18px;
+    border: 2px solid var(--text-title);
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.badge-blue { background-color: var(--color-ocean-blue-soft); color: var(--color-ocean-blue); }
+.badge-purple { background-color: var(--color-purple-soft); color: var(--color-purple); }
+.badge-tangerine { background-color: var(--color-tangerine-soft); color: #C27008; }
+.badge-avocado { background-color: var(--color-avocado-soft); color: var(--color-bell-pepper); }
+.badge-bubblegum { background-color: var(--color-bubblegum-soft); color: #C5377B; }
+
+.section-title {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text-title);
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.section-desc {
+    font-size: 1.18rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+/* =========================================================
+   DEKORATİF ÇOCUKSU SVG KARAKTERLER (MEELO / MUDDY PUDDLES)
+   ========================================================= */
+.meelo-character {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+    animation: meeloBounce 4s ease-in-out infinite alternate;
+}
+
+@keyframes meeloBounce {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-12px) rotate(3deg); }
+}
+
+.char-hero-sun {
+    top: 60px;
+    right: 2%;
+    width: 90px;
+    height: 90px;
+    animation-duration: 5s;
+}
+
+.char-hero-blob {
+    bottom: -20px;
+    left: 2%;
+    width: 80px;
+    height: 80px;
+    animation-duration: 4.2s;
+}
+
+.char-symptoms-star {
+    top: 30px;
+    right: 15px;
+    width: 75px;
+    height: 75px;
+    animation-duration: 4.8s;
+}
+
+.char-treat-cloud {
+    bottom: 20px;
+    left: 20px;
+    width: 85px;
+    height: 85px;
+    animation-duration: 5.4s;
+}
+
+/* =========================================================
+   HERO SECTION (MEELO STYLE)
+   ========================================================= */
+.hero-section {
+    position: relative;
+    padding: 85px 0 95px 0;
+    overflow: hidden;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 48px;
+    align-items: center;
+}
+
+.hero-title {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 3.6rem;
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--text-title);
+    margin-bottom: 22px;
+}
+
+/* Flat Vurgu Rengi (Gradyan YOK) */
+.hero-title .highlight-text {
+    color: var(--color-tangerine);
+    position: relative;
+    display: inline-block;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 34px;
+    line-height: 1.65;
+    max-width: 580px;
+    font-weight: 500;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 38px;
+}
+
+/* 🟢 ANA HERO CTA BUTONU (PASTEL AVOCADO YEŞİLİ - BÜYÜK & YUVARLAK) */
+.btn-primary-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 40px;
+    border-radius: var(--radius-full);
+    border: 3px solid var(--text-title);
+    background-color: var(--color-avocado-pastel);
+    color: var(--text-title);
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 6px 0 var(--text-title);
+    transition: var(--transition);
+}
+
+.btn-primary-hero:hover {
+    background-color: var(--color-avocado-pastel-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 9px 0 var(--text-title);
+}
+
+.btn-primary-hero:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 var(--text-title);
+}
+
+.btn-secondary-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 17px 32px;
+    border-radius: var(--radius-full);
+    border: 2.5px solid var(--border-warm);
+    background: var(--bg-card-neutral);
+    color: var(--text-title);
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+}
+
+.btn-secondary-hero:hover {
+    border-color: var(--text-title);
+    transform: translateY(-2px);
+}
+
+.hero-highlights {
+    display: flex;
+    gap: 22px;
+    align-items: center;
+    padding-top: 22px;
+    border-top: 2px dashed var(--border-warm);
+}
+
+.highlight-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.highlight-item .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--text-title);
+}
+
+/* Hero Görsel Kart (Meelo Arch & Warm Card Style) */
+.hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.hero-card-stack {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    background-color: var(--color-tangerine-soft);
+    border: 3px solid var(--text-title);
+    border-radius: var(--radius-xl);
+    padding: 34px;
+    box-shadow: 0 10px 0 var(--text-title);
+}
+
+.hero-badge-floating {
+    position: absolute;
+    top: -18px;
+    right: 24px;
+    background-color: var(--color-tangerine);
+    border: 2.5px solid var(--text-title);
+    color: var(--text-title);
+    font-size: 0.9rem;
+    font-weight: 800;
+    padding: 6px 18px;
+    border-radius: var(--radius-full);
+    box-shadow: 0 4px 0 var(--text-title);
+    letter-spacing: 0.02em;
+}
+
+.hero-visual-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.hero-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 20px;
+    background-color: var(--color-banana);
+    border: 2.5px solid var(--text-title);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.hero-avatar-text h4 {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-title);
+}
+
+.hero-avatar-text p {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.hero-chat-bubble {
+    background-color: #FFFFFF;
+    border: 2.5px solid var(--text-title);
+    border-radius: 24px 24px 24px 6px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    line-height: 1.55;
+    font-weight: 600;
+}
+
+.hero-feature-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.hero-pill {
+    background-color: #FFFFFF;
+    border: 2px solid var(--border-warm);
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-title);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =========================================================
+   BÖLÜM 1: ARFID NEDİR? (HER KART FARKLI FLAT RENK)
+   ========================================================= */
+.what-is-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 32px;
+    align-items: stretch;
+}
+
+/* Kart 1: Yumuşak Krem/Nötr Kart */
+.definition-card {
+    background-color: var(--bg-card-neutral);
+    border: 3px solid var(--text-title);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: 0 8px 0 var(--text-title);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.definition-text {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    line-height: 1.7;
+    margin-bottom: 22px;
+    font-weight: 500;
+}
+
+.definition-text strong {
+    color: var(--text-title);
+    font-weight: 800;
+}
+
+.dsm5-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    background-color: var(--color-banana-soft);
+    border: 2px solid var(--text-title);
+    border-radius: var(--radius-md);
+    color: var(--text-title);
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+/* Kart 2: Bubblegum Pembe Flat Kart */
+.distinction-card {
+    background-color: var(--color-bubblegum-soft);
+    border: 3px solid var(--text-title);
+    border-radius: var(--radius-lg);
+    padding: 38px;
+    box-shadow: 0 8px 0 var(--text-title);
+    position: relative;
+}
+
+.distinction-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--color-bubblegum);
+    border: 2px solid var(--text-title);
+    color: var(--text-title);
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: var(--radius-full);
+    margin-bottom: 16px;
+}
+
+.distinction-title {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--text-title);
+    margin-bottom: 14px;
+}
+
+.distinction-text {
+    font-size: 1.08rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 22px;
+    font-weight: 600;
+}
+
+.distinction-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.distinction-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--text-title);
+}
+
+.cross-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+    border: 2px solid var(--text-title);
+    color: #E11D48;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   BÖLÜM 2: KİMLERDE GÖRÜLÜR? (MEELO 4 RENKLİ KART)
+   ========================================================= */
+.prevalence-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.prevalence-card {
+    border: 3px solid var(--text-title);
+    border-radius: var(--radius-lg);
+    padding: 34px 24px;
+    box-shadow: 0 8px 0 var(--text-title);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
     text-align: left;
 }
 
-.hero-cta-box {
-    flex: 1;
+.prevalence-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 0 var(--text-title);
+}
+
+/* Her karta özel Flat pastel zemin (Referans Meelo gibi) */
+.prevalence-card.card-color-1 { background-color: var(--color-banana-soft); }
+.prevalence-card.card-color-2 { background-color: var(--color-purple-soft); }
+.prevalence-card.card-color-3 { background-color: var(--color-avocado-soft); }
+.prevalence-card.card-color-4 { background-color: var(--color-ocean-blue-soft); }
+
+.card-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 22px;
+    border: 2.5px solid var(--text-title);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 0 var(--text-title);
+}
+
+.prevalence-card h3 {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-title);
+    margin-bottom: 12px;
+}
+
+.prevalence-card p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+/* =========================================================
+   BÖLÜM 3: BELİRTİLER (3 ALT TİP & GENEL BELİRTİLER)
+   ========================================================= */
+.subtypes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-bottom: 40px;
+}
+
+.subtype-card {
+    border: 3px solid var(--text-title);
+    border-radius: var(--radius-lg);
+    padding: 36px 30px;
+    box-shadow: 0 8px 0 var(--text-title);
+    transition: var(--transition);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.subtype-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 0 var(--text-title);
+}
+
+/* 3 Alt Tip Flat Renkleri */
+.subtype-card.type-1 { background-color: var(--color-tangerine-soft); }
+.subtype-card.type-2 { background-color: var(--color-bubblegum-soft); }
+.subtype-card.type-3 { background-color: var(--color-ocean-blue-soft); }
+
+.subtype-tag {
+    display: inline-block;
+    font-size: 0.88rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--text-title);
+    background-color: #FFFFFF;
+    color: var(--text-title);
+    width: fit-content;
+}
+
+.subtype-card h3 {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-title);
+    margin-bottom: 14px;
+}
+
+.subtype-card p {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.subtype-bullets {
+    list-style: none;
+    padding-top: 16px;
+    border-top: 2px dashed rgba(43, 33, 24, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.subtype-bullets li {
+    font-size: 0.95rem;
+    color: var(--text-title);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.subtype-bullets li::before {
+    content: "●";
+    color: var(--text-title);
+    font-size: 1rem;
+}
+
+/* Genel Belirtiler Şeridi */
+.general-symptoms-box {
+    background-color: var(--color-banana-soft);
+    border: 3px solid var(--text-title);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    box-shadow: 0 8px 0 var(--text-title);
+}
+
+.general-symptoms-box h4 {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-title);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.symptoms-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.symptom-tag {
+    background-color: #FFFFFF;
+    border: 2px solid var(--text-title);
+    padding: 10px 18px;
+    border-radius: var(--radius-full);
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--text-title);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+/* =========================================================
+   BÖLÜM 4: TEDAVİ VE TERAPİ SÜRECİ (MEELO KARTLAR)
+   ========================================================= */
+.treatment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+}
+
+.treatment-card {
+    border: 3px solid var(--text-title);
+    border-radius: var(--radius-lg);
+    padding: 34px 28px;
+    box-shadow: 0 8px 0 var(--text-title);
+    transition: var(--transition);
+}
+
+.treatment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 0 var(--text-title);
+}
+
+/* Farklı Kart Flat Renkleri */
+.treatment-card.t-card-1 { background-color: var(--color-banana-soft); }
+.treatment-card.t-card-2 { background-color: var(--color-purple-soft); }
+.treatment-card.t-card-3 { background-color: var(--color-ocean-blue-soft); }
+.treatment-card.t-card-4 { background-color: var(--color-avocado-soft); }
+.treatment-card.t-card-5 { background-color: var(--color-tangerine-soft); }
+.treatment-card.t-card-6 { background-color: var(--color-bubblegum-soft); }
+
+.treatment-card-icon {
+    font-size: 36px;
+    margin-bottom: 16px;
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: #FFFFFF;
+    border: 2px solid var(--text-title);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.treatment-card h3 {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-title);
+    margin-bottom: 12px;
+}
+
+.treatment-card p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+/* =========================================================
+   BÖLÜM 5: KESİN TANI (HASSAS ALAN - DOKTOR UYARISI)
+   ========================================================= */
+.diagnosis-banner {
+    background-color: var(--color-bell-pepper-soft);
+    border: 3.5px solid var(--color-bell-pepper);
+    border-radius: var(--radius-xl);
+    padding: 38px 44px;
+    box-shadow: 0 10px 0 var(--color-bell-pepper);
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.diagnosis-icon-wrap {
+    width: 76px;
+    height: 76px;
+    min-width: 76px;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+    border: 3px solid var(--color-bell-pepper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    box-shadow: 0 4px 0 var(--color-bell-pepper);
+}
+
+.diagnosis-text-content {
+    flex-grow: 1;
+}
+
+.diagnosis-title {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--color-bell-pepper);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.diagnosis-text {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0A432F;
+    line-height: 1.65;
+}
+
+.diagnosis-subtext {
+    font-size: 1rem;
+    color: #17543E;
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   BÖLÜM 6: ASİSTAN NASIL YARDIMCI OLUR? (MEELO KARTLAR)
+   ========================================================= */
+.assistant-features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-bottom: 40px;
+}
+
+.assistant-card {
+    border: 3px solid var(--text-title);
+    border-radius: var(--radius-lg);
+    padding: 36px 30px;
+    box-shadow: 0 8px 0 var(--text-title);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.assistant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 0 var(--text-title);
+}
+
+.assistant-card.a-card-1 { background-color: var(--color-banana-soft); }
+.assistant-card.a-card-2 { background-color: var(--color-ocean-blue-soft); }
+.assistant-card.a-card-3 { background-color: var(--color-avocado-soft); }
+
+.assistant-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    border: 2.5px solid var(--text-title);
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.assistant-card h3 {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--text-title);
+    margin-bottom: 12px;
+}
+
+.assistant-card p {
+    font-size: 1.02rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    font-weight: 500;
+}
+
+/* Sorumluluk Reddi / Destek Aracı Bilgilendirmesi */
+.assistant-disclaimer-box {
+    background-color: #FFFFFF;
+    border: 3px dashed var(--color-ocean-blue);
+    border-radius: var(--radius-lg);
+    padding: 26px 34px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    box-shadow: 0 6px 0 rgba(0, 160, 181, 0.2);
+}
+
+.disclaimer-icon {
+    font-size: 34px;
+}
+
+.disclaimer-text {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-weight: 600;
+}
+
+.disclaimer-text strong {
+    color: var(--color-ocean-blue);
+    font-weight: 800;
+}
+
+/* =========================================================
+   BOTTOM CALL TO ACTION (MEELO WARM BANNER)
+   ========================================================= */
+.bottom-cta-section {
+    position: relative;
+    padding: 100px 0;
+    background-color: var(--color-tangerine); /* Sıcak canlı turuncu düz zemin */
+    border-top: 4px solid var(--text-title);
+    color: var(--text-title);
+    text-align: center;
+    overflow: hidden;
+}
+
+.cta-container {
+    max-width: 820px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-badge {
+    display: inline-flex;
+    padding: 8px 22px;
+    background-color: #FFFFFF;
+    border: 2px solid var(--text-title);
+    border-radius: var(--radius-full);
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.cta-title {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 3.2rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--text-title);
+    margin-bottom: 20px;
+}
+
+.cta-desc {
+    font-size: 1.25rem;
+    color: #432E18;
+    line-height: 1.65;
+    margin-bottom: 42px;
+    font-weight: 600;
+}
+
+.cta-buttons-wrap {
     display: flex;
     justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* 🟢 ALT CTA ANA BUTON (PASTEL AVOCADO YEŞİLİ - BÜYÜK & YUVARLAK) */
+.btn-cta-primary {
+    padding: 20px 46px;
+    border-radius: var(--radius-full);
+    border: 3.5px solid var(--text-title);
+    background-color: var(--color-avocado-pastel);
+    color: var(--text-title);
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 8px 0 var(--text-title);
+    transition: var(--transition);
+    display: inline-flex;
     align-items: center;
+    gap: 12px;
 }
 
-/* Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.btn-cta-primary:hover {
+    background-color: var(--color-avocado-pastel-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 11px 0 var(--text-title);
 }
 
-.animate-fade-up {
-    opacity: 0;
-    animation: fadeInUp 1s ease-out forwards;
+.btn-cta-primary:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 var(--text-title);
 }
 
-.backgroundTitle.animate-fade-up {
-    animation-delay: 0.2s;
-    text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.6);
-    /* Soft shadow for readability on image */
+.btn-cta-secondary {
+    padding: 19px 38px;
+    border-radius: var(--radius-full);
+    border: 3px solid var(--text-title);
+    background-color: #FFFFFF;
+    color: var(--text-title);
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 6px 0 var(--text-title);
+    transition: var(--transition);
 }
 
-/* Synchronized Entrance: Text & CTA follow Title together */
-.backgroundText.animate-fade-up,
-.hero-cta-box.animate-fade-up {
-    animation-delay: 0.8s;
+.btn-cta-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 var(--text-title);
 }
 
-/* Section specific overrides for consistency */
-.section-2 .content-box,
-.section-3 .content-box {
-    background: rgba(0, 0, 0, 0.4);
-    padding: 40px;
-    border-radius: 20px;
-    backdrop-filter: blur(5px);
-    max-width: 80%;
+/* =========================================================
+   FOOTER (MEELO WARM STYLE)
+   ========================================================= */
+.landing-footer {
+    background-color: #2D241E; /* Sıcak çikolata / koyu bej-kahve tonu */
+    color: #D3C7BD;
+    padding: 65px 0 35px 0;
+    font-size: 0.95rem;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.footer-brand-name {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+
+.footer-nav {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.footer-nav a {
+    color: #D3C7BD;
+    text-decoration: none;
+    transition: var(--transition);
+    font-weight: 600;
+}
+
+.footer-nav a:hover {
+    color: #FFFFFF;
+}
+
+.footer-bottom {
     text-align: center;
+    color: #9B8D82;
+    font-size: 0.9rem;
+    line-height: 1.6;
 }
 
-/* Ensure header stays on top of section 1 */
-.section-1 .header {
-    background: rgba(249, 250, 251, 0.9);
+/* =========================================================
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   ========================================================= */
+@media (max-width: 992px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 2.8rem;
+    }
+
+    .hero-subtitle {
+        margin: 0 auto 30px auto;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .hero-highlights {
+        justify-content: center;
+    }
+
+    .hero-card-stack {
+        margin: 0 auto;
+    }
+
+    .what-is-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .prevalence-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .subtypes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .treatment-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .assistant-features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-links {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .landing-header {
+        padding: 0 20px;
+        height: 72px;
+    }
+
+    .landing-main {
+        padding-top: 72px;
+    }
+
+    .hero-title {
+        font-size: 2.3rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .section-padding {
+        padding: 65px 0;
+    }
+
+    .prevalence-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .treatment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .diagnosis-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+        gap: 18px;
+    }
+
+    .diagnosis-icon-wrap {
+        margin: 0 auto;
+    }
+
+    .diagnosis-title {
+        justify-content: center;
+    }
+
+    .assistant-disclaimer-box {
+        flex-direction: column;
+        text-align: center;
+        padding: 22px;
+    }
+
+    .cta-title {
+        font-size: 2.2rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-primary-hero, .btn-secondary-hero {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .footer-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
