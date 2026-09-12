@@ -43,6 +43,28 @@ async function handleChat(req, res) {
     }
 }
 
+/**
+ * Retrieves chat history for the authenticated user.
+ * 
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ */
+async function getHistory(req, res) {
+    try {
+        const userId = req.get('X-User-Id');
+        if (!userId) {
+            return res.json({ messages: [] });
+        }
+
+        const messages = await chatRepository.getUserChatHistory(userId, 200);
+        res.json({ messages });
+    } catch (error) {
+        console.error("Get chat history error:", error);
+        res.status(500).json({ error: "Geçmiş sohbetler alınamadı", messages: [] });
+    }
+}
+
 module.exports = {
-    handleChat
+    handleChat,
+    getHistory
 };

@@ -15,4 +15,10 @@ const { verifyInternalToken } = require("../middleware/internalAuth");
  */
 router.post("/chat", verifyInternalToken, chatController.handleChat);
 
+/**
+ * Route: Get user chat history endpoint
+ * Path: GET /chat/history
+ */
+router.get("/chat/history", verifyInternalToken, chatController.getHistory);
+
 module.exports = router;

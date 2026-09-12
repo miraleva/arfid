@@ -79,9 +79,51 @@ async function sendChatMessage(message, userId = null) {
     return callBackend("/chat", { message }, extraHeaders);
 }
 
+/**
+ * Retrieves chat history from the backend with trusted user ID header.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function getChatHistory(userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    const headers = {
+        "Content-Type": "application/json",
+        "X-Internal-Token": INTERNAL_SHARED_SECRET,
+        ...extraHeaders
+    };
+
+    try {
+        const response = await fetch(`${BACKEND_API_URL}/chat/history`, {
+            method: "GET",
+            headers
+        });
+
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            data = { messages: [] };
+        }
+
+        return {
+            ok: response.ok,
+            status: response.status,
+            data
+        };
+    } catch (err) {
+        return {
+            ok: false,
+            status: 500,
+            data: { messages: [] }
+        };
+    }
+}
+
 module.exports = {
     signin,
     signup,
     sendChatMessage,
+    getChatHistory,
     callBackend
 };

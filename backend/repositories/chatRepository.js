@@ -70,6 +70,36 @@ function getRecentMessages(userId, limit = 10) {
         );
     });
 }
+/**
+ * Retrieves full recent chat history for a user (up to limit, ordered chronologically).
+ * 
+ * @param {number} userId - Target user ID
+ * @param {number} [limit=200] - Max messages to retrieve
+ * @returns {Promise<Array<{ id: number, role: 'user' | 'assistant', content: string, created_at: number }>>}
+ */
+function getUserChatHistory(userId, limit = 200) {
+    return new Promise((resolve) => {
+        if (!userId) return resolve([]);
+
+        db.all(
+            `SELECT id, role, content, created_at FROM (
+                SELECT id, role, content, created_at 
+                FROM chat_messages 
+                WHERE user_id = ? 
+                ORDER BY id DESC 
+                LIMIT ?
+            ) ORDER BY id ASC`,
+            [userId, limit],
+            (err, rows) => {
+                if (err) {
+                    console.error("[Historian] Get user chat history failed:", err.message);
+                    return resolve([]);
+                }
+                resolve(rows || []);
+            }
+        );
+    });
+}
 
 /**
  * Ensures a user's chat history does not exceed the limit.
@@ -121,5 +151,6 @@ async function applyRetention(userId) {
 module.exports = {
     saveMessage,
     getRecentMessages,
+    getUserChatHistory,
     applyRetention
 };

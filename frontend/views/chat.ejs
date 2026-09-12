@@ -38,14 +38,14 @@
                 </button>
             </div>
 
-            <!-- 2. Arama Kutusu (UI Placeholder) -->
+            <!-- 2. Arama Kutusu (Client-side Başlık Arama) -->
             <div class="searchSection">
                 <div class="searchInputWrapper">
                     <svg class="searchIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" class="searchInput" placeholder="Sohbetlerde ara..." aria-label="Sohbetlerde ara" />
+                    <input type="text" class="searchInput" id="searchInput" placeholder="Sohbetlerde ara..." aria-label="Sohbetlerde ara" />
                 </div>
             </div>
 
@@ -327,12 +327,248 @@
                 checkWelcomeState();
                 messageInput.value = '';
                 messageInput.focus();
+
+                // 3. Kural: Önceden seçili olan sohbet kartındaki .active sınıfı KALDIRILSIN
+                document.querySelectorAll('.historyItem.active').forEach(item => {
+                    item.classList.remove('active');
+                });
+
                 // Mobilde sohbet başlatıldığında sidebar'ı kapat
                 if (window.innerWidth <= 768) {
                     closeSidebar();
                 }
             });
         }
+
+        // ==========================================
+        // GEÇMİŞ SOHBETLERİN YEREL GRUPLANMASI & YÖNETİMİ
+        // ==========================================
+        const chatHistorySection = document.getElementById('chatHistorySection');
+        const searchInput = document.getElementById('searchInput');
+        let allChatSessions = []; // İstemci tarafında tutulan oturumlar [{ id, title, timeLabel, messages: [] }]
+
+        // Tarih formatlama yardımcısı (Bugün, Dün, vb.)
+        function getDateCategory(timestampSeconds) {
+            const date = new Date(timestampSeconds * 1000);
+            const now = new Date();
+            
+            const isToday = date.toDateString() === now.toDateString();
+            if (isToday) return "Bugün";
+
+            const yesterday = new Date();
+            yesterday.setDate(now.getDate() - 1);
+            if (date.toDateString() === yesterday.toDateString()) return "Dün";
+
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(now.getDate() - 7);
+            if (date > sevenDaysAgo) return "Bu Hafta";
+
+            return "Daha Eski";
+        }
+
+        // 3 Saatlik (10.800 saniye) Zaman Boşluğuna Göre Gruplama
+        function groupMessagesIntoSessions(rawMessages) {
+            if (!rawMessages || rawMessages.length === 0) return [];
+
+            const THREE_HOURS_SECONDS = 3 * 3600; // 10.800 saniye
+            const sessions = [];
+            let currentSession = null;
+
+            for (let i = 0; i < rawMessages.length; i++) {
+                const msg = rawMessages[i];
+
+                if (!currentSession) {
+                    currentSession = {
+                        id: 'session_' + i,
+                        startTime: msg.created_at,
+                        category: getDateCategory(msg.created_at),
+                        messages: [msg],
+                        title: ''
+                    };
+                } else {
+                    const lastMsg = currentSession.messages[currentSession.messages.length - 1];
+                    const timeDiff = msg.created_at - lastMsg.created_at;
+
+                    if (timeDiff > THREE_HOURS_SECONDS) {
+                        // 3+ saat boşluk varsa önceki oturumu tamamla ve yeni grup başlat
+                        sessions.push(currentSession);
+                        currentSession = {
+                            id: 'session_' + i,
+                            startTime: msg.created_at,
+                            category: getDateCategory(msg.created_at),
+                            messages: [msg],
+                            title: ''
+                        };
+                    } else {
+                        currentSession.messages.push(msg);
+                    }
+                }
+            }
+
+            if (currentSession) {
+                sessions.push(currentSession);
+            }
+
+            // 1. Kural: Başlık Kullanıcının o gruptaki İLK mesajının ilk ~45 karakteri kırpılarak üretilsin (Sıfır LLM)
+            sessions.forEach(sess => {
+                const firstUserMsg = sess.messages.find(m => m.role === 'user');
+                const rawText = firstUserMsg ? firstUserMsg.content.trim() : (sess.messages[0] ? sess.messages[0].content.trim() : 'Yeni Sohbet');
+                sess.title = rawText.length > 45 ? rawText.slice(0, 45) + '...' : rawText;
+            });
+
+            // En yeni oturumlar üstte olacak şekilde ters sırala
+            return sessions.reverse();
+        }
+
+        // Sidebar'da Grupları Render Etme (2. Kural: Aynı gün içindekiler "Bugün" altında AYRI AYRI kartlar olur)
+        function renderSidebarHistory(filterQuery = '') {
+            if (!chatHistorySection) return;
+            chatHistorySection.innerHTML = '';
+
+            const q = filterQuery.toLowerCase().trim();
+
+            // 1. Kural: Arama SADECE sohbet başlıklarında (45 karakterlik kırpılmış metinde) çalışır
+            const filteredSessions = q
+                ? allChatSessions.filter(s => s.title.toLowerCase().includes(q))
+                : allChatSessions;
+
+            if (allChatSessions.length === 0) {
+                chatHistorySection.innerHTML = `
+                    <div class="historyEmptyState">
+                        <span class="emptyIcon">🥑</span>
+                        Henüz geçmiş bir sohbetiniz yok. Yeni bir soru sorarak başlayabilirsiniz!
+                    </div>
+                `;
+                return;
+            }
+
+            if (filteredSessions.length === 0) {
+                chatHistorySection.innerHTML = `
+                    <div class="historyNotFound">
+                        "${escapeHtml(filterQuery)}" ile eşleşen sohbet bulunamadı.
+                    </div>
+                `;
+                return;
+            }
+
+            // Kategorilere Göre Kümeleme ("Bugün", "Dün", "Bu Hafta", "Daha Eski")
+            const categories = {};
+            filteredSessions.forEach(sess => {
+                if (!categories[sess.category]) {
+                    categories[sess.category] = [];
+                }
+                categories[sess.category].push(sess);
+            });
+
+            Object.keys(categories).forEach(catName => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'historyGroup';
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'groupTitle';
+                titleDiv.textContent = catName;
+                groupDiv.appendChild(titleDiv);
+
+                categories[catName].forEach(sess => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'historyItem';
+                    itemDiv.dataset.sessionId = sess.id;
+                    itemDiv.title = sess.title;
+
+                    itemDiv.innerHTML = `
+                        <span class="historyDot"></span>
+                        <span class="historyTitle">${escapeHtml(sess.title)}</span>
+                    `;
+
+                    // Sohbete Tıklayınca Mesajları Yükleme
+                    itemDiv.addEventListener('click', () => {
+                        loadSessionToChat(sess, itemDiv);
+                    });
+
+                    groupDiv.appendChild(itemDiv);
+                });
+
+                chatHistorySection.appendChild(groupDiv);
+            });
+        }
+
+        // Tıklanan Oturumu Chat Ekranına Dökme
+        function loadSessionToChat(session, activeElement) {
+            finishActiveTyping();
+            removeLoading();
+
+            // .active sınıfını güncelle
+            document.querySelectorAll('.historyItem.active').forEach(el => el.classList.remove('active'));
+            if (activeElement) {
+                activeElement.classList.add('active');
+            }
+
+            // Ekranı temizle ve mesajları doldur
+            chatArea.innerHTML = '';
+            
+            if (welcomeCenteredGroup) welcomeCenteredGroup.style.display = 'none';
+            if (chatArea) chatArea.style.display = 'flex';
+            if (messageInputContainer) {
+                messageInputContainer.classList.remove('heroMode');
+                chatContainer.appendChild(messageInputContainer);
+            }
+
+            session.messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                if (msg.role === 'user') {
+                    messageDiv.className = 'userMessage';
+                    messageDiv.innerHTML = `
+                        <div class="userMessageBubble">
+                            ${escapeHtml(msg.content)}
+                        </div>
+                    `;
+                } else {
+                    messageDiv.className = 'welcomeMessage';
+                    messageDiv.innerHTML = `
+                        <div class="aiAvatar">
+                            <img src="/image/arfid_icon.png" class="aiAvatarIcon" alt="ARFID Asistanı">
+                        </div>
+                        <div class="aiMessageBubble">
+                            ${escapeHtml(msg.content)}
+                        </div>
+                    `;
+                }
+                chatArea.appendChild(messageDiv);
+            });
+
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+        }
+
+        // Backend'den Geçmiş Mesajları Çekip Başlatma (200 Mesaj Sınırı)
+        async function fetchAndInitializeHistory() {
+            try {
+                const response = await fetch('/chat/history');
+                if (response.ok) {
+                    const data = await response.json();
+                    allChatSessions = groupMessagesIntoSessions(data.messages || []);
+                    renderSidebarHistory();
+                } else {
+                    renderSidebarHistory();
+                }
+            } catch (err) {
+                console.error("Geçmiş sohbetler yüklenemedi:", err);
+                renderSidebarHistory();
+            }
+        }
+
+        // 5. Kural: Arama tamamen CLIENT-SIDE çalışsın, sadece başlıklarda filtrelesin
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                renderSidebarHistory(e.target.value);
+            });
+        }
+
+        // Sayfa açılışında geçmişi getir
+        fetchAndInitializeHistory();
 
         // ==========================================
         // MEVCUT MESAJLAŞMA & FONKSİYONEL JS MANTIĞI
@@ -506,6 +742,8 @@
                     if (response.ok) {
                         const data = await response.json();
                         addAiMessage(data.response);
+                        // Yeni mesaj atıldığında geçmiş sohbetler listesini anlık tazele
+                        fetchAndInitializeHistory();
                     } else {
                         const data = await response.json().catch(() => ({}));
                         addAiMessage(data.error || "Üzgünüm, şu an cevap veremiyorum. (Sunucu hatası)");
