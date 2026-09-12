@@ -64,7 +64,31 @@ async function getHistory(req, res) {
     }
 }
 
+/**
+ * Deletes a list of messages belonging to a chat session.
+ * 
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ */
+async function deleteSession(req, res) {
+    try {
+        const userId = req.get('X-User-Id');
+        const { messageIds } = req.body;
+
+        if (!userId || !Array.isArray(messageIds) || messageIds.length === 0) {
+            return res.status(400).json({ success: false, error: "Geçersiz parametreler" });
+        }
+
+        const success = await chatRepository.deleteMessagesByIds(userId, messageIds);
+        res.json({ success });
+    } catch (error) {
+        console.error("Delete session error:", error);
+        res.status(500).json({ success: false, error: "Sohbet silinirken hata oluştu" });
+    }
+}
+
 module.exports = {
     handleChat,
-    getHistory
+    getHistory,
+    deleteSession
 };

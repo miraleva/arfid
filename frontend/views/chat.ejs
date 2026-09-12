@@ -10,7 +10,7 @@
     <!-- Fonts: Fredoka & Quicksand (Meelo Style) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"/>
 </head>
 <body>
     <div class="appContainer">
@@ -152,6 +152,18 @@
                             <button type="button" class="settingsSaveBtn" id="settingsSaveBtn">Kaydet</button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sohbet Yeniden Adlandırma Modalı -->
+        <div class="renameModalOverlay" id="renameModalOverlay">
+            <div class="renameModal">
+                <div class="renameModalTitle">Sohbeti Yeniden Adlandır</div>
+                <input type="text" class="renameModalInput" id="renameModalInput" placeholder="Yeni sohbet başlığı..." maxlength="60">
+                <div class="renameModalActions">
+                    <button type="button" class="renameCancelBtn" id="renameCancelBtn">İptal</button>
+                    <button type="button" class="renameSaveBtn" id="renameSaveBtn">Kaydet</button>
                 </div>
             </div>
         </div>
@@ -329,6 +341,7 @@
                 messageInput.focus();
 
                 // 3. Kural: Önceden seçili olan sohbet kartındaki .active sınıfı KALDIRILSIN
+                activeSessionId = null;
                 document.querySelectorAll('.historyItem.active').forEach(item => {
                     item.classList.remove('active');
                 });
@@ -346,6 +359,44 @@
         const chatHistorySection = document.getElementById('chatHistorySection');
         const searchInput = document.getElementById('searchInput');
         let allChatSessions = []; // İstemci tarafında tutulan oturumlar [{ id, title, timeLabel, messages: [] }]
+        let activeSessionId = null;
+
+        // Kullanıcı kimliğine göre pin ve özel başlık yerel depolama anahtarları
+        const currentUserId = "<%= (typeof user !== 'undefined' && user && user.id) ? user.id : 'guest' %>";
+        const PIN_STORAGE_KEY = `arfid_pinned_sessions_${currentUserId}`;
+        const TITLE_STORAGE_KEY = `arfid_custom_titles_${currentUserId}`;
+
+        function getPinnedSessionIds() {
+            try {
+                return JSON.parse(localStorage.getItem(PIN_STORAGE_KEY) || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function setPinnedSessionIds(pins) {
+            try {
+                localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pins));
+            } catch (e) {
+                console.error("Pin kaydedilemedi:", e);
+            }
+        }
+
+        function getCustomTitles() {
+            try {
+                return JSON.parse(localStorage.getItem(TITLE_STORAGE_KEY) || '{}');
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function setCustomTitles(titles) {
+            try {
+                localStorage.setItem(TITLE_STORAGE_KEY, JSON.stringify(titles));
+            } catch (e) {
+                console.error("Özel başlık kaydedilemedi:", e);
+            }
+        }
 
         // Tarih formatlama yardımcısı (Bugün, Dün, vb.)
         function getDateCategory(timestampSeconds) {
@@ -379,11 +430,12 @@
 
                 if (!currentSession) {
                     currentSession = {
-                        id: 'session_' + i,
+                        id: 'session_' + (msg.id || i),
                         startTime: msg.created_at,
                         category: getDateCategory(msg.created_at),
                         messages: [msg],
-                        title: ''
+                        title: '',
+                        isPinned: false
                     };
                 } else {
                     const lastMsg = currentSession.messages[currentSession.messages.length - 1];
@@ -393,11 +445,12 @@
                         // 3+ saat boşluk varsa önceki oturumu tamamla ve yeni grup başlat
                         sessions.push(currentSession);
                         currentSession = {
-                            id: 'session_' + i,
+                            id: 'session_' + (msg.id || i),
                             startTime: msg.created_at,
                             category: getDateCategory(msg.created_at),
                             messages: [msg],
-                            title: ''
+                            title: '',
+                            isPinned: false
                         };
                     } else {
                         currentSession.messages.push(msg);
@@ -409,25 +462,33 @@
                 sessions.push(currentSession);
             }
 
+            const customTitles = getCustomTitles();
+            const pinnedIds = getPinnedSessionIds();
+
             // 1. Kural: Başlık Kullanıcının o gruptaki İLK mesajının ilk ~45 karakteri kırpılarak üretilsin (Sıfır LLM)
             sessions.forEach(sess => {
-                const firstUserMsg = sess.messages.find(m => m.role === 'user');
-                const rawText = firstUserMsg ? firstUserMsg.content.trim() : (sess.messages[0] ? sess.messages[0].content.trim() : 'Yeni Sohbet');
-                sess.title = rawText.length > 45 ? rawText.slice(0, 45) + '...' : rawText;
+                if (customTitles[sess.id]) {
+                    sess.title = customTitles[sess.id];
+                } else {
+                    const firstUserMsg = sess.messages.find(m => m.role === 'user');
+                    const rawText = firstUserMsg ? firstUserMsg.content.trim() : (sess.messages[0] ? sess.messages[0].content.trim() : 'Yeni Sohbet');
+                    sess.title = rawText.length > 45 ? rawText.slice(0, 45) + '...' : rawText;
+                }
+                sess.isPinned = pinnedIds.includes(sess.id);
             });
 
             // En yeni oturumlar üstte olacak şekilde ters sırala
             return sessions.reverse();
         }
 
-        // Sidebar'da Grupları Render Etme (2. Kural: Aynı gün içindekiler "Bugün" altında AYRI AYRI kartlar olur)
+        // Sidebar'da Grupları Render Etme (Sabitlenenler en üstte, diğerleri tarih gruplarında)
         function renderSidebarHistory(filterQuery = '') {
             if (!chatHistorySection) return;
             chatHistorySection.innerHTML = '';
 
             const q = filterQuery.toLowerCase().trim();
 
-            // 1. Kural: Arama SADECE sohbet başlıklarında (45 karakterlik kırpılmış metinde) çalışır
+            // 1. Kural: Arama SADECE sohbet başlıklarında (45 karakterlik kırpılmış veya özel metinde) çalışır
             const filteredSessions = q
                 ? allChatSessions.filter(s => s.title.toLowerCase().includes(q))
                 : allChatSessions;
@@ -451,51 +512,310 @@
                 return;
             }
 
-            // Kategorilere Göre Kümeleme ("Bugün", "Dün", "Bu Hafta", "Daha Eski")
+            // Sabitlenenleri ve normal kategorileri ayrıştır
+            const pinnedSessions = filteredSessions.filter(s => s.isPinned);
+            const regularSessions = filteredSessions.filter(s => !s.isPinned);
+
+            // 1. Varsa Sabitlenenler Grubu Render Et
+            if (pinnedSessions.length > 0) {
+                renderGroupCategory("📌 Sabitlenenler", pinnedSessions);
+            }
+
+            // 2. Normal Tarih Gruplarını Render Et ("Bugün", "Dün", "Bu Hafta", "Daha Eski")
             const categories = {};
-            filteredSessions.forEach(sess => {
+            regularSessions.forEach(sess => {
                 if (!categories[sess.category]) {
                     categories[sess.category] = [];
                 }
                 categories[sess.category].push(sess);
             });
 
+            // Bilinen sıralama düzeni
+            const categoryOrder = ["Bugün", "Dün", "Bu Hafta", "Daha Eski"];
+            categoryOrder.forEach(catName => {
+                if (categories[catName] && categories[catName].length > 0) {
+                    renderGroupCategory(catName, categories[catName]);
+                }
+            });
+
+            // Listede olmayan başka bir kategori varsa ekle
             Object.keys(categories).forEach(catName => {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'historyGroup';
+                if (!categoryOrder.includes(catName) && categories[catName].length > 0) {
+                    renderGroupCategory(catName, categories[catName]);
+                }
+            });
+        }
 
-                const titleDiv = document.createElement('div');
-                titleDiv.className = 'groupTitle';
-                titleDiv.textContent = catName;
-                groupDiv.appendChild(titleDiv);
+        // Tek bir kategori grubunu oluşturan yardımcı fonksiyon
+        function renderGroupCategory(groupTitleText, sessionList) {
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'historyGroup';
 
-                categories[catName].forEach(sess => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'historyItem';
-                    itemDiv.dataset.sessionId = sess.id;
-                    itemDiv.title = sess.title;
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'groupTitle';
+            titleDiv.textContent = groupTitleText;
+            groupDiv.appendChild(titleDiv);
 
-                    itemDiv.innerHTML = `
+            sessionList.forEach(sess => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'historyItem';
+                if (activeSessionId === sess.id) {
+                    itemDiv.classList.add('active');
+                }
+                itemDiv.dataset.sessionId = sess.id;
+                itemDiv.title = sess.title;
+
+                itemDiv.innerHTML = `
+                    <div class="historyItemLeft">
                         <span class="historyDot"></span>
+                        ${sess.isPinned ? '<span class="historyPinIcon" title="Sabitlendi">📌</span>' : ''}
                         <span class="historyTitle">${escapeHtml(sess.title)}</span>
-                    `;
+                    </div>
+                    <button type="button" class="historyItemMoreBtn" title="Seçenekler" aria-label="Seçenekler">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
+                            <circle cx="12" cy="19" r="2"></circle>
+                        </svg>
+                    </button>
+                    <div class="historyDropdownMenu">
+                        <button type="button" class="dropdownActionItem actionPin">
+                            <span class="dropdownActionIcon">${sess.isPinned ? '📍' : '📌'}</span>
+                            <span>${sess.isPinned ? 'Sabitlemeyi Kaldır' : 'Sohbeti Sabitle'}</span>
+                        </button>
+                        <button type="button" class="dropdownActionItem actionRename">
+                            <span class="dropdownActionIcon">✏️</span>
+                            <span>Yeniden Adlandır</span>
+                        </button>
+                        <button type="button" class="dropdownActionItem danger actionDelete">
+                            <span class="dropdownActionIcon">🗑️</span>
+                            <span>Sil</span>
+                        </button>
+                    </div>
+                `;
 
-                    // Sohbete Tıklayınca Mesajları Yükleme
-                    itemDiv.addEventListener('click', () => {
-                        loadSessionToChat(sess, itemDiv);
-                    });
-
-                    groupDiv.appendChild(itemDiv);
+                // Sohbete Tıklayınca Mesajları Yükleme
+                itemDiv.addEventListener('click', (e) => {
+                    // Eğer 3 nokta butonuna veya dropdown menüsüne tıklandıysa sohbet yükleme tetiklenmesin
+                    if (e.target.closest('.historyItemMoreBtn') || e.target.closest('.historyDropdownMenu')) {
+                        return;
+                    }
+                    loadSessionToChat(sess, itemDiv);
                 });
 
-                chatHistorySection.appendChild(groupDiv);
+                // 3 Nokta Butonu Etkileşimi
+                const moreBtn = itemDiv.querySelector('.historyItemMoreBtn');
+                const dropdownMenu = itemDiv.querySelector('.historyDropdownMenu');
+
+                moreBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isAlreadyOpen = dropdownMenu.classList.contains('show');
+                    closeAllDropdowns();
+                    if (!isAlreadyOpen) {
+                        dropdownMenu.classList.add('show');
+                        moreBtn.classList.add('menuOpen');
+                        itemDiv.classList.add('hasOpenMenu');
+                        document.body.classList.add('hasOpenHistoryMenu');
+                    }
+                });
+
+                // 1. Eylem: Sohbeti Sabitle / Sabitlemeyi Kaldır
+                const pinBtn = itemDiv.querySelector('.actionPin');
+                pinBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeAllDropdowns();
+                    togglePinSession(sess.id);
+                });
+
+                // 2. Eylem: Yeniden Adlandır
+                const renameBtn = itemDiv.querySelector('.actionRename');
+                renameBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeAllDropdowns();
+                    openRenameModalForSession(sess);
+                });
+
+                // 3. Eylem: Sil
+                const deleteBtn = itemDiv.querySelector('.actionDelete');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeAllDropdowns();
+                    deleteSessionConfirmed(sess);
+                });
+
+                groupDiv.appendChild(itemDiv);
             });
+
+            chatHistorySection.appendChild(groupDiv);
+        }
+
+        // Tüm açık dropdown menülerini kapat
+        function closeAllDropdowns() {
+            document.querySelectorAll('.historyDropdownMenu.show').forEach(menu => {
+                menu.classList.remove('show');
+            });
+            document.querySelectorAll('.historyItemMoreBtn.menuOpen').forEach(btn => {
+                btn.classList.remove('menuOpen');
+            });
+            document.querySelectorAll('.historyItem.hasOpenMenu').forEach(item => {
+                item.classList.remove('hasOpenMenu');
+            });
+            document.body.classList.remove('hasOpenHistoryMenu');
+        }
+
+        // Sayfada başka bir yere tıklandığında açık olan 3 nokta menülerini kapat
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.historyItemMoreBtn') && !e.target.closest('.historyDropdownMenu')) {
+                closeAllDropdowns();
+            }
+        });
+
+        // Sohbeti Sabitleme Mantığı
+        function togglePinSession(sessionId) {
+            let pinnedIds = getPinnedSessionIds();
+            const session = allChatSessions.find(s => s.id === sessionId);
+            if (!session) return;
+
+            if (pinnedIds.includes(sessionId)) {
+                pinnedIds = pinnedIds.filter(id => id !== sessionId);
+                session.isPinned = false;
+            } else {
+                pinnedIds.push(sessionId);
+                session.isPinned = true;
+            }
+
+            setPinnedSessionIds(pinnedIds);
+            renderSidebarHistory(searchInput ? searchInput.value : '');
+        }
+
+        // ==========================================
+        // YENİDEN ADLANDIRMA MODAL YÖNETİMİ
+        // ==========================================
+        const renameModalOverlay = document.getElementById('renameModalOverlay');
+        const renameModalInput = document.getElementById('renameModalInput');
+        const renameCancelBtn = document.getElementById('renameCancelBtn');
+        const renameSaveBtn = document.getElementById('renameSaveBtn');
+        let sessionToRename = null;
+
+        function openRenameModalForSession(sess) {
+            sessionToRename = sess;
+            if (renameModalInput) {
+                renameModalInput.value = sess.title;
+            }
+            if (renameModalOverlay) {
+                renameModalOverlay.classList.add('active');
+                setTimeout(() => {
+                    if (renameModalInput) {
+                        renameModalInput.focus();
+                        renameModalInput.select();
+                    }
+                }, 50);
+            }
+        }
+
+        function closeRenameModal() {
+            if (renameModalOverlay) {
+                renameModalOverlay.classList.remove('active');
+            }
+            sessionToRename = null;
+        }
+
+        function saveSessionRename() {
+            if (!sessionToRename || !renameModalInput) return;
+            const newTitle = renameModalInput.value.trim();
+            if (!newTitle) return;
+
+            sessionToRename.title = newTitle;
+
+            const customTitles = getCustomTitles();
+            customTitles[sessionToRename.id] = newTitle;
+            setCustomTitles(customTitles);
+
+            closeRenameModal();
+            renderSidebarHistory(searchInput ? searchInput.value : '');
+        }
+
+        if (renameCancelBtn) {
+            renameCancelBtn.addEventListener('click', closeRenameModal);
+        }
+        if (renameSaveBtn) {
+            renameSaveBtn.addEventListener('click', saveSessionRename);
+        }
+        if (renameModalOverlay) {
+            renameModalOverlay.addEventListener('click', (e) => {
+                if (e.target === renameModalOverlay) {
+                    closeRenameModal();
+                }
+            });
+        }
+        if (renameModalInput) {
+            renameModalInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveSessionRename();
+                }
+            });
+        }
+
+        // ==========================================
+        // SOHBETİ SİLME EYLEMİ
+        // ==========================================
+        async function deleteSessionConfirmed(session) {
+            const isConfirmed = confirm(`"${session.title}" adlı sohbeti silmek istediğinize emin misiniz?`);
+            if (!isConfirmed) return;
+
+            const messageIds = (session.messages || []).map(m => m.id).filter(id => id !== undefined && id !== null);
+
+            try {
+                const response = await fetch('/chat/session', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ messageIds })
+                });
+
+                if (response.ok) {
+                    // Oturumu istemci listesinden kaldır
+                    allChatSessions = allChatSessions.filter(s => s.id !== session.id);
+
+                    // Pin ve özel başlıktan temizle
+                    let pinnedIds = getPinnedSessionIds();
+                    if (pinnedIds.includes(session.id)) {
+                        setPinnedSessionIds(pinnedIds.filter(id => id !== session.id));
+                    }
+                    const customTitles = getCustomTitles();
+                    if (customTitles[session.id]) {
+                        delete customTitles[session.id];
+                        setCustomTitles(customTitles);
+                    }
+
+                    // Eğer silinen oturum o anda ekranda açıksa ekranı sıfırla
+                    if (activeSessionId === session.id) {
+                        activeSessionId = null;
+                        finishActiveTyping();
+                        removeLoading();
+                        chatArea.innerHTML = '';
+                        checkWelcomeState();
+                    }
+
+                    renderSidebarHistory(searchInput ? searchInput.value : '');
+                } else {
+                    const errData = await response.json().catch(() => ({}));
+                    alert(errData.error || "Sohbet silinirken bir hata oluştu.");
+                }
+            } catch (err) {
+                console.error("Sohbet silme hatası:", err);
+                alert("Sunucu ile iletişim kurulurken bir hata oluştu.");
+            }
         }
 
         // Tıklanan Oturumu Chat Ekranına Dökme
         function loadSessionToChat(session, activeElement) {
             finishActiveTyping();
             removeLoading();
+
+            activeSessionId = session.id;
 
             // .active sınıfını güncelle
             document.querySelectorAll('.historyItem.active').forEach(el => el.classList.remove('active'));
@@ -517,20 +837,14 @@
                 const messageDiv = document.createElement('div');
                 if (msg.role === 'user') {
                     messageDiv.className = 'userMessage';
-                    messageDiv.innerHTML = `
-                        <div class="userMessageBubble">
-                            ${escapeHtml(msg.content)}
-                        </div>
-                    `;
+                    messageDiv.innerHTML = `<div class="userMessageBubble">${escapeHtml(msg.content.trim())}</div>`;
                 } else {
                     messageDiv.className = 'welcomeMessage';
                     messageDiv.innerHTML = `
                         <div class="aiAvatar">
                             <img src="/image/arfid_icon.png" class="aiAvatarIcon" alt="ARFID Asistanı">
                         </div>
-                        <div class="aiMessageBubble">
-                            ${escapeHtml(msg.content)}
-                        </div>
+                        <div class="aiMessageBubble">${escapeHtml(msg.content.trim())}</div>
                     `;
                 }
                 chatArea.appendChild(messageDiv);
@@ -637,11 +951,7 @@
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'userMessage';
-            messageDiv.innerHTML = `
-                <div class="userMessageBubble">
-                    ${escapeHtml(message)}
-                </div>
-            `;
+            messageDiv.innerHTML = `<div class="userMessageBubble">${escapeHtml(message.trim())}</div>`;
             chatArea.appendChild(messageDiv);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
@@ -655,6 +965,8 @@
         function addAiMessage(message) {
             removeLoading();
             finishActiveTyping();
+
+            const cleanMessage = (message || '').trim();
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'welcomeMessage';
@@ -670,20 +982,20 @@
             chatArea.appendChild(messageDiv);
 
             activeTypingBubble = bubbleDiv;
-            activeTypingFullText = message;
+            activeTypingFullText = cleanMessage;
 
             // Metni kelimelere böl: İlk 3-4 kelimeyi daktilo efektiyle yaz, ardından kalanı akıcı şekilde tamamla
-            const words = message.trim().split(/\s+/);
+            const words = cleanMessage.split(/\s+/);
             
             // Eğer mesaj çok kısaysa (<= 4 kelime) normal karakter karakter yazdır
             if (words.length <= 4) {
                 let charIndex = 0;
                 activeTypingInterval = setInterval(() => {
                     charIndex++;
-                    bubbleDiv.textContent = message.substring(0, charIndex);
+                    bubbleDiv.textContent = cleanMessage.substring(0, charIndex);
                     chatArea.scrollTop = chatArea.scrollHeight;
 
-                    if (charIndex >= message.length) {
+                    if (charIndex >= cleanMessage.length) {
                         clearInterval(activeTypingInterval);
                         activeTypingInterval = null;
                         activeTypingBubble = null;
@@ -706,14 +1018,14 @@
                     activeTypingInterval = null;
                     
                     // 2. Aşama: İlk 3-4 kelimeden hemen sonra tüm cevabı şık ve profesyonel bir fade/slide geçişiyle göster
-                    bubbleDiv.textContent = message;
+                    bubbleDiv.textContent = cleanMessage;
                     bubbleDiv.classList.add('fadeContent');
                     chatArea.scrollTop = chatArea.scrollHeight;
 
                     activeTypingBubble = null;
                     activeTypingFullText = '';
                 } else {
-                    bubbleDiv.textContent = message.substring(0, charIndex);
+                    bubbleDiv.textContent = cleanMessage.substring(0, charIndex);
                     chatArea.scrollTop = chatArea.scrollHeight;
                 }
             }, TYPING_SPEED_MS);

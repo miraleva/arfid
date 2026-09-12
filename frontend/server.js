@@ -137,6 +137,20 @@ app.get("/chat/history", isAuthenticated, async (req, res) => {
     }
 });
 
+// Chat Session DELETE - Proxy to Backend
+app.delete("/chat/session", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { messageIds } = req.body;
+
+    try {
+        const result = await apiClient.deleteChatSession(messageIds, userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Delete session proxy hatası:", error);
+        res.status(500).json({ success: false });
+    }
+});
+
 // Logout route
 app.get("/logout", (req, res) => {
     req.session.destroy();

@@ -89,7 +89,8 @@ function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, r
     Kullanıcının mesajını hangi dilde yazdıysan (Türkçe, İngilizce, vs.) assistant_response alanını SADECE o dilde üret. Dil tespiti kullanıcının SON mesajına göre yapılır, önceki mesajlardaki dile göre değil. Varsayılan/belirsiz durumlarda Türkçe kullan.
 
     RESPONSE FORMAT INSTRUCTIONS (CRITICAL):
-    assistant_response alanı içindeki metinde ASLA çift tırnak işareti (") kullanma — vurgu yapmak istersen tek tırnak (') veya parantez kullan. Bu kural JSON'un bozulmaması için kritiktir.
+    1. assistant_response alanı içindeki metinde ASLA çift tırnak işareti (") kullanma — vurgu yapmak istersen tek tırnak (') veya parantez kullan. Bu kural JSON'un bozulmaması için kritiktir.
+    2. assistant_response metni başında asla gereksiz boşluk, tab, paragraf girintisi veya yeni satır (\n) bırakma; doğrudan ilk harfle başla.
     
     Structure:
     {

@@ -148,9 +148,37 @@ async function applyRetention(userId) {
     });
 }
 
+/**
+ * Deletes a list of message IDs belonging to a specific user.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {number[]} messageIds - Array of message IDs to delete
+ * @returns {Promise<boolean>}
+ */
+function deleteMessagesByIds(userId, messageIds) {
+    return new Promise((resolve) => {
+        if (!userId || !Array.isArray(messageIds) || messageIds.length === 0) {
+            return resolve(false);
+        }
+
+        const placeholders = messageIds.map(() => '?').join(',');
+        const query = `DELETE FROM chat_messages WHERE user_id = ? AND id IN (${placeholders})`;
+        const params = [userId, ...messageIds];
+
+        db.run(query, params, function (err) {
+            if (err) {
+                console.error("[Historian] Delete messages failed:", err.message);
+                return resolve(false);
+            }
+            resolve(true);
+        });
+    });
+}
+
 module.exports = {
     saveMessage,
     getRecentMessages,
     getUserChatHistory,
+    deleteMessagesByIds,
     applyRetention
 };

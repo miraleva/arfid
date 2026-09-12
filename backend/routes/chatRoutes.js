@@ -21,4 +21,10 @@ router.post("/chat", verifyInternalToken, chatController.handleChat);
  */
 router.get("/chat/history", verifyInternalToken, chatController.getHistory);
 
+/**
+ * Route: Delete chat session endpoint
+ * Path: DELETE /chat/session
+ */
+router.delete("/chat/session", verifyInternalToken, chatController.deleteSession);
+
 module.exports = router;
