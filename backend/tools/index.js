@@ -4,12 +4,10 @@
  */
 
 const calculateCalories = require("./calculateCalories");
-const checkFoodSafety = require("./checkFoodSafety");
 
 // List of all tool definitions
 const tools = [
-    calculateCalories,
-    checkFoodSafety
+    calculateCalories
 ];
 
 // Gemini SDK compatible functionDeclarations list

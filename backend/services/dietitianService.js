@@ -165,7 +165,7 @@ ${JSON.stringify(toolExecutionResults, null, 2)}
             };
         }
 
-        // 5. Apply Memory Updates (if valid)
+        // 5. Apply Memory Updates (Kullanıcının kendi beyanları olduğu için ihlal durumunda dahi güvenle işlenir)
         if (parsedData && parsedData.memory_updates && userId) {
             try {
                 await memoryRepository.applyMemoryUpdates(userId, parsedData.memory_updates, userText);
@@ -174,7 +174,7 @@ ${JSON.stringify(toolExecutionResults, null, 2)}
             }
         }
 
-        const assistantResponse = (parsedData.assistant_response || "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?").trim();
+        let assistantResponse = (parsedData.assistant_response || "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?").trim();
 
         // 6. Generate Patient Card (Call #2) - Skip if fallback occurred
         let patientCard = "";

@@ -4,7 +4,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests/tools.test.js",
+    "test:unit": "node tests/tools.test.js",
+    "test:all": "node tests/tools.test.js && node tests/patientCard.test.js"
   },
   "keywords": [],
   "author": "",
