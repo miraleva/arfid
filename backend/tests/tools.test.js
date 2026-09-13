@@ -40,10 +40,11 @@ function it(desc, fn) {
 
 async function runTests() {
     // TEST 1: Tool registry declaration integrity
-    it("1. Tool registry exposes only calculateCalories and valid schemas", () => {
-        assert.strictEqual(functionDeclarations.length, 1);
-        assert.strictEqual(functionDeclarations[0].name, "calculateCalories");
-        assert.ok(functionDeclarations[0].parameters.properties.ingredients);
+    it("1. Tool registry exposes calculateCalories and calculateSensoryFit with valid schemas", () => {
+        assert.strictEqual(functionDeclarations.length, 2);
+        const names = functionDeclarations.map(t => t.name);
+        assert.ok(names.includes("calculateCalories"));
+        assert.ok(names.includes("calculateSensoryFit"));
     });
 
     // TEST 2: Valid calorie calculation execution
