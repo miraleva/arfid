@@ -120,10 +120,7 @@ function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, r
     VALID MASTER LISTS (PRIORITIZE THESE NAMES):
     ${formatMasterLists(masterLists)}
 
-    CRITICAL DIETARY GUARDRAIL & USER CONSTRAINTS (NON-NEGOTIABLE):
-    Aşağıdaki 'AVOID FOODS' ve 'SENSORY TRIGGERS' kısıtlamaları kullanıcının kesin sağlık sınırlarıdır.
-    1. AVOID FOODS listesinde yer alan gıdaları ve türevlerini (örn: somon, mantar vs.) içeren HİÇBİR tarif, menü veya malzeme önerisi YAPAMAZSIN.
-    2. Kullanıcı bu gıdaları kendisi sorsa bile, bunun kaçındığı gıdalar arasında olduğunu nazikçe hatırlatarak güvenli alternatiflere yönlendirmelisin.
+    KNOWN USER CONSTRAINTS (RESPECT THESE):
     ${formatMemorySection(memoryContext)}
 
     RAG INSTRUCTION:

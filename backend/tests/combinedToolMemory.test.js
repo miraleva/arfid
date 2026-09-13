@@ -4,8 +4,8 @@
  * successfully executes calculateCalories AND records memory updates into SQLite.
  */
 
-const assert = require("assert");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
 const db = require("../db");
 const memoryRepository = require("../repositories/memoryRepository");
 const { getDietitianResponse } = require("../services/dietitianService");

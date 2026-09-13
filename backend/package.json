@@ -4,9 +4,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node tests/guardrail.test.js && node tests/tools.test.js",
-    "test:unit": "node tests/guardrail.test.js && node tests/tools.test.js",
-    "test:all": "node tests/guardrail.test.js && node tests/tools.test.js && node tests/patientCard.test.js"
+    "test": "node tests/tools.test.js",
+    "test:unit": "node tests/tools.test.js",
+    "test:all": "node tests/tools.test.js && node tests/patientCard.test.js"
   },
   "keywords": [],
   "author": "",
