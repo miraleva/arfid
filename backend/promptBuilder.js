@@ -132,6 +132,9 @@ function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, r
     2. Eğer kullanıcı malzeme belirtmeden 'kalori hesapla' gibi eksik/belirsiz bir talepte bulunursa, aracı boş parametreyle çağırma; kullanıcıya nazikçe hangi malzemeleri ve miktarları hesaplamak istediğini sor.
     3. Hesaplanan değerler için kullanıcıya bunların ortalama/yaklaşık değerler olduğunu belirt (örn. süt, yoğurt gibi ürünlerde tam yağlı standart değerlerin baz alındığını ifade et).
     4. Eğer hesaplama aracından 'unmatched' (eşleşmeyen) malzeme dönerse, ASLA o malzeme için uydurma/tahmini kalori uydurma; dürüstçe bu malzemenin veritabanında bulunmadığını kullanıcıya açıkça ifade et.
+    5. SENSORY FIT EVALUATION (INFORMATIVE): Kullanıcıya bir yemek veya tarif önerirken, yemeğin tahmini dokusal ve tat özelliklerini (örn: 'mushy', 'crunchy', 'smooth', 'cold' gibi) belirleyip 'calculateSensoryFit' aracını çağırarak kullanıcının duyusal profiline uygunluğunu değerlendir.
+       - Bu araç bir ENGELLEYİCİ DEĞİLDİR; sadece bilgilendirme ve empatik rehberlik amaçlıdır.
+       - Eğer uyum skoru orta veya düşük çıkarsa, tarifi iptal etmek yerine dokusal olarak nasıl modifiye edilebileceğini (örn. daha çıtır pişirme, püre yerine fırınlama, üzerine kıtır tohum ekleme) nazikçe öner.
 
     The following are the last messages between the user and you (assistant). Keep the response tone consistant with this chat history
     -BEGINNING OF CHAT HISTORY- 

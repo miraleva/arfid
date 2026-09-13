@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="<%= currentLocale %>">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ARFID Bilgilendirme ve Destek Platformu | Asistancım</title>
-    <meta name="description" content="ARFID (Kaçıngan/Kısıtlayıcı Gıda Alımı Bozukluğu) hakkında doğru ve güvenilir bilgiler, alt tipler, belirtiler ve akıllı asistan desteği." />
+    <title><%= t('meta.main_title') %></title>
+    <meta name="description" content="<%= t('meta.main_desc') %>" />
     
     <!-- Child-Friendly Rounded Typography (Fredoka & Quicksand) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,21 +20,22 @@
     <header class="landing-header">
       <a href="/" class="brand-link">
         <div class="brand-icon">🥑</div>
-        <span class="brand-name">Asistancım</span>
+        <span class="brand-name"><%= t('nav.brand') %></span>
       </a>
 
       <nav class="nav-links">
-        <a href="#nedir">ARFID Nedir?</a>
-        <a href="#kimlerde-gorulur">Kimlerde Görülür?</a>
-        <a href="#belirtiler">Belirtiler</a>
-        <a href="#tedavi">Tedavi Süreci</a>
-        <a href="#asistan">Asistanımız</a>
+        <a href="#nedir"><%= t('nav.what_is_arfid') %></a>
+        <a href="#kimlerde-gorulur"><%= t('nav.who_gets_it') %></a>
+        <a href="#belirtiler"><%= t('nav.symptoms') %></a>
+        <a href="#tedavi"><%= t('nav.treatment') %></a>
+        <a href="#asistan"><%= t('nav.assistant') %></a>
       </nav>
 
       <div class="header-actions">
-        <a href="/signin" class="btn-header-signin">Giriş Yap</a>
+        <%- include('partials/languageToggle') %>
+        <a href="/signin" class="btn-header-signin"><%= t('nav.signin') %></a>
         <a href="/signup" class="btn-header-signup">
-          <span>Kayıt Ol</span>
+          <span><%= t('nav.signup') %></span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </a>
       </div>
@@ -72,37 +73,37 @@
             <div class="hero-content">
               <div class="hero-badge-container">
                 <span class="section-badge badge-blue">
-                  <span>✨</span> Beslenmede Sevgi ve Güvenle Adım
+                  <span>✨</span> <%= t('hero.badge') %>
                 </span>
               </div>
               <h1 class="hero-title">
-                ARFID'i Anlamak, Güvenle <span class="highlight-text">Adım Atmak.</span>
+                <%= t('hero.title_part1') %> <span class="highlight-text"><%= t('hero.title_highlight') %></span>
               </h1>
               <p class="hero-subtitle">
-                Kaçıngan/Kısıtlayıcı Gıda Alımı Bozukluğu (ARFID) hakkında doğru tıbbi bilgileri keşfedin, günlük beslenme yolculuğunuzda kişiselleştirilmiş asistan desteğiyle tanışın.
+                <%= t('hero.subtitle') %>
               </p>
               <div class="hero-actions">
                 <a href="<%= user ? '/chat' : '/signin' %>" class="btn-primary-hero">
-                  <span>Asistanla Konuş</span>
+                  <span><%= t('hero.btn_chat') %></span>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </a>
                 <a href="#nedir" class="btn-secondary-hero">
-                  <span>Bilgi Edinin</span>
+                  <span><%= t('hero.btn_info') %></span>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
                 </a>
               </div>
               <div class="hero-highlights">
                 <div class="highlight-item">
                   <span class="dot" style="background-color: var(--color-ocean-blue);"></span>
-                  <span>DSM-5 Tanımlı</span>
+                  <span><%= t('hero.pill_dsm5') %></span>
                 </div>
                 <div class="highlight-item">
                   <span class="dot" style="background-color: var(--color-avocado-pastel);"></span>
-                  <span>Duyusal Farkındalık</span>
+                  <span><%= t('hero.pill_sensory') %></span>
                 </div>
                 <div class="highlight-item">
                   <span class="dot" style="background-color: var(--color-tangerine);"></span>
-                  <span>Güvenli Tarifler</span>
+                  <span><%= t('hero.pill_recipes') %></span>
                 </div>
               </div>
             </div>
@@ -110,21 +111,21 @@
             <!-- Hero Interactive Preview Card -->
             <div class="hero-visual">
               <div class="hero-card-stack">
-                <div class="hero-badge-floating">Kişisel Destek</div>
+                <div class="hero-badge-floating"><%= t('hero.card_support') %></div>
                 <div class="hero-visual-header">
                   <div class="hero-avatar">🥣</div>
                   <div class="hero-avatar-text">
-                    <h4>Beslenme Asistanı</h4>
-                    <p>Güvenli gıdalarınızı anlar</p>
+                    <h4><%= t('hero.card_title') %></h4>
+                    <p><%= t('hero.card_desc') %></p>
                   </div>
                 </div>
                 <div class="hero-chat-bubble">
-                  "Bugün menünde seni rahatsız etmeyecek yumuşak kıvamlı, güvenli gıdalardan oluşan lezzetli alternatifler hazırladım!"
+                  "<%= t('hero.card_bubble') %>"
                 </div>
                 <div class="hero-feature-pills">
-                  <span class="hero-pill">🌿 Güvenli Gıda Analizi</span>
-                  <span class="hero-pill">📖 ARFID Dostu Tarifler</span>
-                  <span class="hero-pill">🎯 Duyusal Uyum</span>
+                  <span class="hero-pill"><%= t('hero.pill_food_analysis') %></span>
+                  <span class="hero-pill"><%= t('hero.pill_friendly_recipes') %></span>
+                  <span class="hero-pill"><%= t('hero.pill_sensory_fit') %></span>
                 </div>
               </div>
             </div>
@@ -136,10 +137,10 @@
       <section id="nedir" class="section-padding section-alt">
         <div class="container">
           <div class="section-header">
-            <span class="section-badge badge-blue">Bölüm 01</span>
-            <h2 class="section-title">ARFID Nedir?</h2>
+            <span class="section-badge badge-blue"><%= t('what_is.badge') %></span>
+            <h2 class="section-title"><%= t('what_is.title') %></h2>
             <p class="section-desc">
-              Kaçıngan/Kısıtlayıcı Gıda Alımı Bozukluğu (Avoidant/Restrictive Food Intake Disorder) hakkında temel gerçekler.
+              <%= t('what_is.subtitle') %>
             </p>
           </div>
 
@@ -147,37 +148,37 @@
             <div class="definition-card">
               <div>
                 <p class="definition-text">
-                  <strong>ARFID (Avoidant/Restrictive Food Intake Disorder)</strong>, kişinin yediği gıdaların miktarını ve/veya çeşitliliğini ciddi şekilde kısıtladığı bir yeme bozukluğudur.
+                  <strong><%= t('what_is.def_bold') %></strong><%= t('what_is.def_p1') %>
                 </p>
                 <p class="definition-text">
-                  Basit bir yemek seçiciliğinin ötesinde; yetersiz beslenme, kilo kaybı veya sosyal hayatta belirgin aksamalara yol açabilen klinik bir durumdur.
+                  <%= t('what_is.def_p2') %>
                 </p>
               </div>
               <div>
                 <div class="dsm5-tag">
-                  <span>📘</span> DSM-5 (Ruhsal Bozukluklar Tanı Kılavuzu) Tanımlı Tanı
+                  <span>📘</span> <%= t('what_is.dsm5_tag') %>
                 </div>
               </div>
             </div>
 
             <div class="distinction-card">
-              <span class="distinction-badge">Önemli Fark</span>
-              <h3 class="distinction-title">Görünüm veya Kilo Kaygısı Değildir</h3>
+              <span class="distinction-badge"><%= t('what_is.distinction_badge') %></span>
+              <h3 class="distinction-title"><%= t('what_is.distinction_title') %></h3>
               <p class="distinction-text">
-                Anoreksiya veya bulimiden farklı olarak, ARFID'de besin kısıtlaması kesinlikle şu nedenlerle ilişkili değildir:
+                <%= t('what_is.distinction_intro') %>
               </p>
               <ul class="distinction-list">
                 <li>
                   <span class="cross-icon">✕</span>
-                  <span>Vücut algısı veya beden imajı kaygısı</span>
+                  <span><%= t('what_is.distinction_1') %></span>
                 </li>
                 <li>
                   <span class="cross-icon">✕</span>
-                  <span>Kilo alma veya şişmanlama korkusu</span>
+                  <span><%= t('what_is.distinction_2') %></span>
                 </li>
                 <li>
                   <span class="cross-icon">✕</span>
-                  <span>Dış görünümle ilgili takıntılar</span>
+                  <span><%= t('what_is.distinction_3') %></span>
                 </li>
               </ul>
             </div>
@@ -189,10 +190,10 @@
       <section id="kimlerde-gorulur" class="section-padding">
         <div class="container">
           <div class="section-header">
-            <span class="section-badge badge-purple">Bölüm 02</span>
-            <h2 class="section-title">Kimlerde Görülür?</h2>
+            <span class="section-badge badge-purple"><%= t('who.badge') %></span>
+            <h2 class="section-title"><%= t('who.title') %></h2>
             <p class="section-desc">
-              ARFID her yaştan, farklı sağlık geçmişine sahip bireyleri etkileyebilir.
+              <%= t('who.subtitle') %>
             </p>
           </div>
 
@@ -201,32 +202,32 @@
               <div class="card-icon-wrap">
                 <span>🧒🧑</span>
               </div>
-              <h3>Her Yaşta Görülebilir</h3>
-              <p>Çocuklarda ve yetişkinlerde görülebilir, sadece çocukluk dönemine özgü bir durum değildir.</p>
+              <h3><%= t('who.card1_title') %></h3>
+              <p><%= t('who.card1_desc') %></p>
             </div>
 
             <div class="prevalence-card card-color-2">
               <div class="card-icon-wrap">
                 <span>🧠</span>
               </div>
-              <h3>Nörogelişimsel Durumlar</h3>
-              <p>Otizm spektrumu, DEHB ve anksiyete bozuklukları gibi durumlara sahip bireylerde daha sık görülür.</p>
+              <h3><%= t('who.card2_title') %></h3>
+              <p><%= t('who.card2_desc') %></p>
             </div>
 
             <div class="prevalence-card card-color-3">
               <div class="card-icon-wrap">
                 <span>🫄</span>
               </div>
-              <h3>Gastrointestinal Rahatsızlıklar</h3>
-              <p>Sindirim sistemi sorunları yaşayan bireylerde (örneğin çölyak hastalığı gibi) görülme oranı daha yüksektir.</p>
+              <h3><%= t('who.card3_title') %></h3>
+              <p><%= t('who.card3_desc') %></p>
             </div>
 
             <div class="prevalence-card card-color-4">
               <div class="card-icon-wrap">
                 <span>👥</span>
               </div>
-              <h3>Cinsiyet Dağılımı</h3>
-              <p>Erkeklerde veya farklı cinsiyet kimliklerinde de yaygın görüldüğü belirtilmektedir; tek bir cinsiyete özgü değildir.</p>
+              <h3><%= t('who.card4_title') %></h3>
+              <p><%= t('who.card4_desc') %></p>
             </div>
           </div>
         </div>
@@ -244,47 +245,47 @@
 
         <div class="container">
           <div class="section-header">
-            <span class="section-badge badge-tangerine">Bölüm 03</span>
-            <h2 class="section-title">Belirtiler ve Alt Tipler</h2>
+            <span class="section-badge badge-tangerine"><%= t('symptoms.badge') %></span>
+            <h2 class="section-title"><%= t('symptoms.title') %></h2>
             <p class="section-desc">
-              ARFID genellikle 3 ana alt tip halinde gruplanır ve çeşitli fiziksel/sosyal belirtilerle kendini gösterir.
+              <%= t('symptoms.subtitle') %>
             </p>
           </div>
 
           <div class="subtypes-grid">
             <!-- Alt Tip 1 -->
             <div class="subtype-card type-1">
-              <span class="subtype-tag">Alt Tip 1</span>
-              <h3>Düşük İştah & İlgisizlik</h3>
-              <p>Yemeye karşı genel bir ilgi duymama, açlık hissinin farkında olmama ve yemek yemeyi uzun sürede tamamlama hali.</p>
+              <span class="subtype-tag"><%= t('symptoms.type1_tag') %></span>
+              <h3><%= t('symptoms.type1_title') %></h3>
+              <p><%= t('symptoms.type1_desc') %></p>
               <ul class="subtype-bullets">
-                <li>Yemek yemeyi unutma veya erteleme</li>
-                <li>Porsiyonları bitirmede zorlanma</li>
-                <li>Yemeğe karşı isteksizlik ve az yeme</li>
+                <li><%= t('symptoms.type1_b1') %></li>
+                <li><%= t('symptoms.type1_b2') %></li>
+                <li><%= t('symptoms.type1_b3') %></li>
               </ul>
             </div>
 
             <!-- Alt Tip 2 -->
             <div class="subtype-card type-2">
-              <span class="subtype-tag">Alt Tip 2</span>
-              <h3>Duyusal Hassasiyet</h3>
-              <p>Gıdaların dokuları, kokuları, renkleri ve tatlarına karşı aşırı duyarlılık nedeniyle belirgin yiyecek seçiciliği.</p>
+              <span class="subtype-tag"><%= t('symptoms.type2_tag') %></span>
+              <h3><%= t('symptoms.type2_title') %></h3>
+              <p><%= t('symptoms.type2_desc') %></p>
               <ul class="subtype-bullets">
-                <li>Belirli dokuları (pütürlü, yapışkan vb.) reddetme</li>
-                <li>Yemek kokularından yoğun rahatsızlık</li>
-                <li>Kısıtlı sayıda "güvenli gıda" ile beslenme</li>
+                <li><%= t('symptoms.type2_b1') %></li>
+                <li><%= t('symptoms.type2_b2') %></li>
+                <li><%= t('symptoms.type2_b3') %></li>
               </ul>
             </div>
 
             <!-- Alt Tip 3 -->
             <div class="subtype-card type-3">
-              <span class="subtype-tag">Alt Tip 3</span>
-              <h3>Kaygı & Korku Tipi</h3>
-              <p>Geçmişte yaşanan olumsuz bir deneyimden (boğulma tehlikesi, kusma, alerjik reaksiyon vb.) kaynaklanan yeme kaçınması.</p>
+              <span class="subtype-tag"><%= t('symptoms.type3_tag') %></span>
+              <h3><%= t('symptoms.type3_title') %></h3>
+              <p><%= t('symptoms.type3_desc') %></p>
               <ul class="subtype-bullets">
-                <li>Boğulma veya kusma korkusu</li>
-                <li>Yeni veya katı yiyecekleri denemekten kaçınma</li>
-                <li>Yemek saatlerinde yoğun anksiyete</li>
+                <li><%= t('symptoms.type3_b1') %></li>
+                <li><%= t('symptoms.type3_b2') %></li>
+                <li><%= t('symptoms.type3_b3') %></li>
               </ul>
             </div>
           </div>
@@ -292,14 +293,14 @@
           <!-- Diğer Fiziksel & Sosyal Belirtiler -->
           <div class="general-symptoms-box">
             <h4>
-              <span>⚠️</span> Eşlik Edebilecek Diğer Genel Belirtiler
+              <span>⚠️</span> <%= t('symptoms.general_title') %>
             </h4>
             <div class="symptoms-tags-container">
-              <div class="symptom-tag">📉 Kilo Kaybı</div>
-              <div class="symptom-tag">🌱 Büyüme Geriliği (Çocuklarda)</div>
-              <div class="symptom-tag">🩸 Beslenme Eksiklikleri (Anemi, Vitamin Eksikliği)</div>
-              <div class="symptom-tag">😰 Yemek Sırasında Yoğun Kaygı</div>
-              <div class="symptom-tag">🍽️ Sosyal İşlevsellikte Bozulma (Toplu Yemeklerden Kaçınma)</div>
+              <div class="symptom-tag"><%= t('symptoms.gen_1') %></div>
+              <div class="symptom-tag"><%= t('symptoms.gen_2') %></div>
+              <div class="symptom-tag"><%= t('symptoms.gen_3') %></div>
+              <div class="symptom-tag"><%= t('symptoms.gen_4') %></div>
+              <div class="symptom-tag"><%= t('symptoms.gen_5') %></div>
             </div>
           </div>
         </div>
@@ -317,48 +318,48 @@
 
         <div class="container">
           <div class="section-header">
-            <span class="section-badge badge-avocado">Bölüm 04</span>
-            <h2 class="section-title">Tedavi ve Terapi Süreci</h2>
+            <span class="section-badge badge-avocado"><%= t('treatment.badge') %></span>
+            <h2 class="section-title"><%= t('treatment.title') %></h2>
             <p class="section-desc">
-              ARFID tedavisinde tek tip bir formül yoktur; kişiye özel ve çok yönlü yaklaşımlar esastır.
+              <%= t('treatment.subtitle') %>
             </p>
           </div>
 
           <div class="treatment-grid">
             <div class="treatment-card t-card-1">
               <div class="treatment-card-icon">🧩</div>
-              <h3>Kombine & Kişiselleştirilmiş Yaklaşım</h3>
-              <p>Kesin veya tek bir tedavi yöntemi yoktur; çoğu kişi ihtiyaçlarına göre uyarlanmış kombine yaklaşımlarla ilerleme kaydeder.</p>
+              <h3><%= t('treatment.card1_title') %></h3>
+              <p><%= t('treatment.card1_desc') %></p>
             </div>
 
             <div class="treatment-card t-card-2">
               <div class="treatment-card-icon">🧠</div>
-              <h3>Bilişsel Davranışçı Terapi (CBT-AR)</h3>
-              <p>Ana tedavi yöntemi Bilişsel Davranışçı Terapi'dir. ARFID'e özel geliştirilmiş CBT-AR versiyonu duyusal ve kaygı odaklı süreçleri hedefler.</p>
+              <h3><%= t('treatment.card2_title') %></h3>
+              <p><%= t('treatment.card2_desc') %></p>
             </div>
 
             <div class="treatment-card t-card-3">
               <div class="treatment-card-icon">🩺</div>
-              <h3>Çok Disiplinli Uzman Ekibi</h3>
-              <p>Süreçte doktorlar, uzman diyetisyenler ve psikolog/psikiyatristler birlikte koordineli şekilde çalışır.</p>
+              <h3><%= t('treatment.card3_title') %></h3>
+              <p><%= t('treatment.card3_desc') %></p>
             </div>
 
             <div class="treatment-card t-card-4">
               <div class="treatment-card-icon">👨‍👩‍👧</div>
-              <h3>Aile Temelli Terapi</h3>
-              <p>Özellikle çocukluk ve ergenlik döneminde aile temelli terapi yaklaşımlarının oldukça etkili olduğu bulunmuştur.</p>
+              <h3><%= t('treatment.card4_title') %></h3>
+              <p><%= t('treatment.card4_desc') %></p>
             </div>
 
             <div class="treatment-card t-card-5">
               <div class="treatment-card-icon">⏳</div>
-              <h3>Sabır ve Süreklilik</h3>
-              <p>Tedavi süreci kişiden kişiye değişiklik gösterir; profesyonel destekle adım adım, sabırla ilerlenmesi gerekir.</p>
+              <h3><%= t('treatment.card5_title') %></h3>
+              <p><%= t('treatment.card5_desc') %></p>
             </div>
 
             <div class="treatment-card t-card-6">
               <div class="treatment-card-icon">🎯</div>
-              <h3>Güvenli Adımlarla Genişleme</h3>
-              <p>Zorlama olmaksızın, duyusal tolerans sınırları gözetilerek güvenli besin yelpazesinin yavaşça genişletilmesi amaçlanır.</p>
+              <h3><%= t('treatment.card6_title') %></h3>
+              <p><%= t('treatment.card6_desc') %></p>
             </div>
           </div>
         </div>
@@ -373,13 +374,13 @@
             </div>
             <div class="diagnosis-text-content">
               <h3 class="diagnosis-title">
-                <span>Önemli Bilgilendirme: Kesin Tanı Süreci</span>
+                <span><%= t('diagnosis.title') %></span>
               </h3>
               <p class="diagnosis-text">
-                "ARFID tanısı yalnızca bir sağlık profesyoneli (doktor, psikiyatrist veya psikolog) tarafından, kapsamlı bir değerlendirme sonrası konulabilir. Bu platform bir tanı aracı değildir."
+                <%= t('diagnosis.quote') %>
               </p>
               <p class="diagnosis-subtext">
-                Herhangi bir yeme veya beslenme güçlüğü şüphesinde lütfen vakit kaybetmeden yetkili bir sağlık kuruluşuna ve uzman hekime başvurunuz.
+                <%= t('diagnosis.subtext') %>
               </p>
             </div>
           </div>
@@ -390,10 +391,10 @@
       <section id="asistan" class="section-padding section-alt">
         <div class="container">
           <div class="section-header">
-            <span class="section-badge badge-bubblegum">Bölüm 06</span>
-            <h2 class="section-title">Asistanımız Nasıl Yardımcı Olur?</h2>
+            <span class="section-badge badge-bubblegum"><%= t('assistant_sec.badge') %></span>
+            <h2 class="section-title"><%= t('assistant_sec.title') %></h2>
             <p class="section-desc">
-              Günlük beslenme yolculuğunuzu kolaylaştırmak için tasarlanmış destekleyici dijital yol arkadaşı.
+              <%= t('assistant_sec.subtitle') %>
             </p>
           </div>
 
@@ -402,24 +403,24 @@
               <div class="assistant-card-icon">
                 <span>🛡️</span>
               </div>
-              <h3>Kişiselleştirilmiş Öğrenme</h3>
-              <p>Kullanıcının güvenli ve güvensiz gıdalarını, duyusal tetikleyicilerini (koku, doku, tat) zaman içinde öğrenip buna uygun kişiselleştirilmiş öneriler sunar.</p>
+              <h3><%= t('assistant_sec.card1_title') %></h3>
+              <p><%= t('assistant_sec.card1_desc') %></p>
             </div>
 
             <div class="assistant-card a-card-2">
               <div class="assistant-card-icon">
                 <span>🍲</span>
               </div>
-              <h3>ARFID Dostu Tarifler</h3>
-              <p>RAG destekli güvenilir tarif kaynağından, duyusal hassasiyetlerinize ve güvenli yiyecek listenize tam uyumlu lezzetli alternatifler önerir.</p>
+              <h3><%= t('assistant_sec.card2_title') %></h3>
+              <p><%= t('assistant_sec.card2_desc') %></p>
             </div>
 
             <div class="assistant-card a-card-3">
               <div class="assistant-card-icon">
                 <span>⚖️</span>
               </div>
-              <h3>Pratik Beslenme Araçları</h3>
-              <p>Günlük kalori ve porsiyon hesaplama, gıda güvenliği kontrolü ve tetikleyici gıda sorgulama gibi pratik araçlarla yanınızdadır.</p>
+              <h3><%= t('assistant_sec.card3_title') %></h3>
+              <p><%= t('assistant_sec.card3_desc') %></p>
             </div>
           </div>
 
@@ -427,7 +428,7 @@
           <div class="assistant-disclaimer-box">
             <div class="disclaimer-icon">💡</div>
             <div class="disclaimer-text">
-              <strong>Önemli Hatırlatma:</strong> Bu asistan bir diyetisyen veya doktorun yerini <strong>TUTMAZ</strong>, tıbbi tanı koymaz — sadece günlük beslenme sürecinde destekleyici bir araçtır.
+              <strong><%= t('assistant_sec.disclaimer_title') %></strong> <%= t('assistant_sec.disclaimer_text') %>
             </div>
           </div>
         </div>
@@ -436,18 +437,18 @@
       <!-- BOTTOM CALL TO ACTION (CTA) -->
       <section class="bottom-cta-section">
         <div class="container cta-container">
-          <span class="cta-badge">🚀 Beslenme Yolculuğunuza Destek Olun</span>
-          <h2 class="cta-title">Kendi Hızınızda, Güvenli Bir Şekilde Başlayın</h2>
+          <span class="cta-badge"><%= t('cta.badge') %></span>
+          <h2 class="cta-title"><%= t('cta.title') %></h2>
           <p class="cta-desc">
-            ARFID dostu tarifler keşfetmek, güvenli gıdalarınızı kaydetmek ve yapay zeka asistanımızla konuşmak için aramıza katılın.
+            <%= t('cta.desc') %>
           </p>
           <div class="cta-buttons-wrap">
             <a href="<%= user ? '/chat' : '/signin' %>" class="btn-cta-primary">
-              <span>Hemen Başla (Asistanla Konuş)</span>
+              <span><%= t('cta.btn_chat') %></span>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
             <a href="/signup" class="btn-cta-secondary">
-              <span>Ücretsiz Hesap Oluştur</span>
+              <span><%= t('cta.btn_signup') %></span>
             </a>
           </div>
         </div>
@@ -460,19 +461,19 @@
         <div class="footer-top">
           <div class="footer-brand">
             <div class="brand-icon">🥑</div>
-            <span class="footer-brand-name">Asistancım</span>
+            <span class="footer-brand-name"><%= t('nav.brand') %></span>
           </div>
           <div class="footer-nav">
-            <a href="#nedir">ARFID Nedir?</a>
-            <a href="#kimlerde-gorulur">Kimlerde Görülür?</a>
-            <a href="#belirtiler">Belirtiler</a>
-            <a href="#tedavi">Tedavi</a>
-            <a href="#asistan">Asistanımız</a>
-            <a href="/signin">Giriş Yap</a>
+            <a href="#nedir"><%= t('nav.what_is_arfid') %></a>
+            <a href="#kimlerde-gorulur"><%= t('nav.who_gets_it') %></a>
+            <a href="#belirtiler"><%= t('nav.symptoms') %></a>
+            <a href="#tedavi"><%= t('nav.treatment') %></a>
+            <a href="#asistan"><%= t('nav.assistant') %></a>
+            <a href="/signin"><%= t('nav.signin') %></a>
           </div>
         </div>
         <div class="footer-bottom">
-          <p>© 2026 Asistancım ARFID Destek Platformu. Tüm hakları saklıdır. Bu sitede yer alan içerikler yalnızca bilgilendirme amaçlıdır ve tıbbi tavsiye niteliği taşımaz.</p>
+          <p><%= t('footer.copyright') %></p>
         </div>
       </div>
     </footer>

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= currentLocale %>">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="ARFID Asistanı Kayıt Sayfası"
+      content="<%= t('meta.main_desc') %>"
     />
-    <title>SignUp</title>
+    <title><%= t('meta.signup_title') %></title>
 
     <!-- Fonts: Fredoka & Quicksand (Meelo Style) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,9 +17,22 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="signUp.css" />
+    <style>
+      .page-lang-toggle {
+        position: absolute;
+        top: 24px;
+        right: 28px;
+        z-index: 100;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
+      <!-- Sağ Üst Köşe Dil Değiştirici -->
+      <div class="page-lang-toggle">
+        <%- include('partials/languageToggle') %>
+      </div>
+
       <!-- Sol Taraf: Duygulu ve Hareketli Geometrik Şekiller Sahnesi -->
       <div class="imageSection">
         <div class="shapesStage">
@@ -112,24 +125,24 @@
       <div class="leftist">
         <div class="formWidget">
           <form id="signUpForm">
-          <div class="title">Create an account</div>
-          <div class="subtitle">Start your journey</div>
+          <div class="title"><%= t('auth.create_account') %></div>
+          <div class="subtitle"><%= t('auth.signup_subtitle') %></div>
 
-          <label for="email">Email</label>
+          <label for="email"><%= t('auth.email') %></label>
           <div class="inputWrapper">
-            <input type="text" id="email" name="email" placeholder="Enter your email" required />
+            <input type="text" id="email" name="email" placeholder="<%= t('auth.email_placeholder') %>" required />
           </div>
           <div id="emailWarning" class="warning"></div>
           
-          <label for="username">Username</label>
+          <label for="username"><%= t('auth.username') %></label>
           <div class="inputWrapper">
-            <input type="text" id="username" name="username" placeholder="Enter your username" required />
+            <input type="text" id="username" name="username" placeholder="<%= t('auth.username_placeholder') %>" required />
           </div>
           <div id="usernameWarning" class="warning"></div>
 
-          <label for="password">Password</label>
+          <label for="password"><%= t('auth.password') %></label>
           <div class="inputWrapper">
-            <input type="password" id="password" name="password" placeholder="Enter your password" required />
+            <input type="password" id="password" name="password" placeholder="<%= t('auth.password_placeholder') %>" required />
             <button type="button" class="togglePasswordBtn" id="togglePassword" aria-label="Toggle password visibility">
               <svg class="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
@@ -139,9 +152,9 @@
           </div>
           <div id="passwordWarning" class="warning"></div>
 
-          <label for="passwordAgain">Password Again</label>
+          <label for="passwordAgain"><%= t('auth.password_again') %></label>
           <div class="inputWrapper">
-            <input type="password" id="passwordAgain" name="passwordAgain" placeholder="Confirm your password" required />
+            <input type="password" id="passwordAgain" name="passwordAgain" placeholder="<%= t('auth.password_again_placeholder') %>" required />
             <button type="button" class="togglePasswordBtn" id="togglePasswordAgain" aria-label="Toggle password again visibility">
               <svg class="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
@@ -151,10 +164,10 @@
           </div>
           <div id="passwordAgainWarning" class="warning"></div>
 
-          <button type="submit" class="signButton">Sign up</button>
+          <button type="submit" class="signButton"><%= t('auth.btn_signup') %></button>
 
-          <p class="already">Already have an account? 
-            <a class="signLink" href="/signin">Sign In</a>
+          <p class="already"><%= t('auth.already_account') %> 
+            <a class="signLink" href="/signin"><%= t('auth.btn_signin') %></a>
           </p>
         </form>
       </div>
@@ -164,10 +177,20 @@
     <!-- JS: modül biçiminde modern yükleme -->
     <script type="module" src="/js/app.js"></script>
 
-    <!-- Eski tarayıcılar için (opsiyonel) -->
-    <!-- <script nomodule src="/js/legacy.js"></script> -->
-    
     <script>
+        // Internationalized Client-side Validation Messages
+        const i18nMessages = {
+            emailInvalid: "<%= t('auth.val_email_invalid') %>",
+            usernameShort: "<%= t('auth.val_username_short') %>",
+            usernameLong: "<%= t('auth.val_username_long') %>",
+            passwordShort: "<%= t('auth.val_password_short') %>",
+            passwordLong: "<%= t('auth.val_password_long') %>",
+            passwordConfirmEmpty: "<%= t('auth.val_password_confirm_empty') %>",
+            passwordsMismatch: "<%= t('auth.val_passwords_mismatch') %>",
+            genericSignupError: "<%= t('auth.err_generic_signup') %>",
+            networkError: "<%= t('auth.err_network') %>"
+        };
+
         document.getElementById('signUpForm').addEventListener('submit', async function(e) {
             e.preventDefault(); // Prevent default form submission
             
@@ -192,34 +215,34 @@
             // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!email || !emailRegex.test(email)) {
-                emailWarning.textContent = 'Please enter a valid email address';
+                emailWarning.textContent = i18nMessages.emailInvalid;
                 isValid = false;
             }
             
             // Username validation
             if (!username || username.length < 3) {
-                usernameWarning.textContent = 'Username must be at least 3 characters long';
+                usernameWarning.textContent = i18nMessages.usernameShort;
                 isValid = false;
             } else if (username.length > 20) {
-                usernameWarning.textContent = 'Username must be less than 20 characters';
+                usernameWarning.textContent = i18nMessages.usernameLong;
                 isValid = false;
             }
             
             // Password validation
             if (!password || password.length < 6) {
-                passwordWarning.textContent = 'Password must be at least 6 characters long';
+                passwordWarning.textContent = i18nMessages.passwordShort;
                 isValid = false;
             } else if (password.length > 50) {
-                passwordWarning.textContent = 'Password must be less than 50 characters';
+                passwordWarning.textContent = i18nMessages.passwordLong;
                 isValid = false;
             }
             
             // Password confirmation validation
             if (!passwordAgain) {
-                passwordAgainWarning.textContent = 'Please confirm your password';
+                passwordAgainWarning.textContent = i18nMessages.passwordConfirmEmpty;
                 isValid = false;
             } else if (password !== passwordAgain) {
-                passwordAgainWarning.textContent = 'Passwords do not match';
+                passwordAgainWarning.textContent = i18nMessages.passwordsMismatch;
                 isValid = false;
             }
             
@@ -240,30 +263,25 @@
                         username: username
                     })
                 });
-                console.log(response);
 
                 if (response.ok) {
-                    // Success - redirect to home page
                     window.location.href = '/chat';
                 } else {
-                    // Handle error response
                     const errorData = await response.text();
-                    let errorMessage = 'Kayıt sırasında bir hata oluştu';
+                    let errorMessage = i18nMessages.genericSignupError;
                     
                     try {
                         const errorJson = JSON.parse(errorData);
                         errorMessage = errorJson.error || errorMessage;
                     } catch (e) {
-                        // If response is not JSON, use the text as error message
                         errorMessage = errorData || errorMessage;
                     }
                     
-                    // Display error message
                     emailWarning.textContent = errorMessage;
                 }
             } catch (error) {
                 console.error('Fetch error:', error);
-                emailWarning.textContent = 'Bağlantı hatası. Lütfen tekrar deneyin.';
+                emailWarning.textContent = i18nMessages.networkError;
             }
         });
         
@@ -278,7 +296,6 @@
         
         document.getElementById('password').addEventListener('input', function() {
             document.getElementById('passwordWarning').textContent = '';
-            // Also clear password confirmation warning when password changes
             document.getElementById('passwordAgainWarning').textContent = '';
         });
         
@@ -287,8 +304,8 @@
         });
 
         // Toggle password visibility helper
-        function setupPasswordToggle(buttonId, inputId) {
-            const btn = document.getElementById(buttonId);
+        function setupTogglePassword(btnId, inputId) {
+            const btn = document.getElementById(btnId);
             const input = document.getElementById(inputId);
             if (btn && input) {
                 btn.addEventListener('click', function() {
@@ -298,7 +315,7 @@
                     if (type === 'text') {
                         btn.innerHTML = `
                           <svg class="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
                             <circle cx="12" cy="12" r="3"></circle>
                           </svg>
                         `;
@@ -314,8 +331,8 @@
             }
         }
 
-        setupPasswordToggle('togglePassword', 'password');
-        setupPasswordToggle('togglePasswordAgain', 'passwordAgain');
+        setupTogglePassword('togglePassword', 'password');
+        setupTogglePassword('togglePasswordAgain', 'passwordAgain');
     </script>
   </body>
 </html>

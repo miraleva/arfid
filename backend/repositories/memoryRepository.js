@@ -286,10 +286,37 @@ function getUserFoodPreferences(userId) {
     });
 }
 
+/**
+ * Fetches user's raw problematic sensory triggers.
+ * Conscious architectural choice: Queries ONLY is_problematic = 1 records,
+ * as sensory fit evaluation checks for friction against established triggers.
+ * 
+ * @param {number} userId - Target user ID
+ * @returns {Promise<Array<{name: string, is_problematic: number}>>}
+ */
+function getUserSensoryTriggers(userId) {
+    return new Promise((resolve, reject) => {
+        if (!userId) return resolve([]);
+
+        const sql = `
+            SELECT sa.name, ust.is_problematic 
+            FROM user_sensory_triggers ust
+            JOIN sensory_attributes sa ON ust.attribute_id = sa.id
+            WHERE ust.user_id = ? AND ust.is_problematic = 1
+        `;
+
+        db.all(sql, [userId], (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows || []);
+        });
+    });
+}
+
 module.exports = {
     getUserConstraints,
     applyMemoryUpdates,
     getMasterLists,
     ensureMasterRecord,
-    getUserFoodPreferences
+    getUserFoodPreferences,
+    getUserSensoryTriggers
 };

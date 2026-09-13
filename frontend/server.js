@@ -26,6 +26,60 @@ app.use(session({
     saveUninitialized: false,
 }));
 
+// 🟢 i18n Configuration
+const i18n = require("i18n");
+i18n.configure({
+    locales: ["tr", "en"],
+    directory: path.join(__dirname, "locales"),
+    defaultLocale: "tr",
+    autoReload: true,
+    updateFiles: false,
+    syncFiles: false,
+    cookie: "arfid_lang",
+    queryParameter: "lang",
+    objectNotation: true
+});
+
+app.use(i18n.init);
+
+// 🟢 Custom locale middleware (session-first with returnTo support)
+app.use((req, res, next) => {
+    // 1. Session locale preference
+    if (req.session && req.session.locale) {
+        req.setLocale(req.session.locale);
+    } else {
+        req.setLocale("tr");
+    }
+
+    // Expose helpers globally to all EJS templates
+    res.locals.t = function(key) {
+        return res.__(key);
+    };
+    res.locals.currentLocale = req.getLocale();
+    res.locals.currentPath = req.path;
+    res.locals.user = req.session ? req.session.user : null;
+    next();
+});
+
+// 🟢 Route: Change Locale
+app.get("/set-locale/:lang", (req, res) => {
+    const lang = req.params.lang;
+    const supportedLocales = ["tr", "en"];
+    const targetLocale = supportedLocales.includes(lang) ? lang : "tr";
+
+    if (req.session) {
+        req.session.locale = targetLocale;
+    }
+
+    // Safe returnTo redirection
+    let returnTo = req.query.returnTo;
+    if (!returnTo || typeof returnTo !== "string" || !returnTo.startsWith("/")) {
+        returnTo = "/";
+    }
+
+    res.redirect(returnTo);
+});
+
 // 🟢 Auth kontrol middleware
 function isAuthenticated(req, res, next) {
     if (req.session.user) { // 🟢 Kullanıcı giriş yaptıysa devam et
@@ -40,7 +94,7 @@ app.get("/", (req, res) => {
     if (req.session.user) {
         return res.redirect("/chat");
     }
-    res.render("mainPage", { title: "Ana Sayfa", user: req.session.user });
+    res.render("mainPage", { title: res.__("meta.main_title") });
 });
 // Signin sayfası
 app.get("/signin", (req, res) => {
