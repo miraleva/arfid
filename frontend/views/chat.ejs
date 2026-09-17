@@ -580,7 +580,7 @@
             document.querySelectorAll('.historyItemMoreBtn.menuOpen').forEach(btn => {
                 btn.classList.remove('menuOpen');
             });
-            document.querySelectorAll('.historyItem.hasOpenMenu').forEach(item => {
+            document.querySelectorAll('.historyItem.hasOpenMenu, .savedWidgetItem.hasOpenMenu').forEach(item => {
                 item.classList.remove('hasOpenMenu');
             });
             document.body.classList.remove('hasOpenHistoryMenu');
@@ -863,6 +863,7 @@
                         data: w.widget_data || w.data || {},
                         conversation_id: w.conversation_id,
                         related_message_id: w.related_message_id,
+                        is_pinned: w.is_pinned === 1 || w.is_pinned === true,
                         created_at: w.created_at
                     }));
                     if (recipesBadge) {
@@ -912,8 +913,10 @@
             }
 
             filtered.forEach(w => {
+                const isPinned = w.is_pinned === 1 || w.is_pinned === true;
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'savedWidgetItem';
+                itemDiv.className = 'savedWidgetItem' + (isPinned ? ' isPinned' : '');
+                itemDiv.dataset.widgetId = w.id;
 
                 const isRecipe = w.type === 'recipe';
                 const icon = isRecipe ? '🍲' : '🥗';
@@ -936,11 +939,31 @@
                     <div class="savedWidgetTopRow">
                         <span class="savedWidgetIcon">${icon}</span>
                         <div class="savedWidgetInfo">
-                            <span class="savedWidgetTitle">${title}</span>
+                            <div class="savedWidgetTitleRow">
+                                ${isPinned ? '<span class="savedWidgetPinIcon" title="Sabitlendi">📌</span>' : ''}
+                                <span class="savedWidgetTitle">${title}</span>
+                            </div>
                             <div class="savedWidgetMeta">
                                 <span class="savedWidgetMetaTag">${typeLabel}</span>
                                 ${metaText ? `<span>${metaText}</span>` : ''}
                             </div>
+                        </div>
+                        <button type="button" class="historyItemMoreBtn savedWidgetMoreBtn" title="Seçenekler" aria-label="Seçenekler">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="5" r="2"></circle>
+                                <circle cx="12" cy="12" r="2"></circle>
+                                <circle cx="12" cy="19" r="2"></circle>
+                            </svg>
+                        </button>
+                        <div class="historyDropdownMenu savedWidgetDropdownMenu">
+                            <button type="button" class="dropdownActionItem actionPinWidget">
+                                <span class="dropdownActionIcon">${isPinned ? '📍' : '📌'}</span>
+                                <span>${isPinned ? 'Sabitlemeyi Kaldır' : 'Tarifi Sabitle'}</span>
+                            </button>
+                            <button type="button" class="dropdownActionItem danger actionDeleteWidget">
+                                <span class="dropdownActionIcon">🗑️</span>
+                                <span>Tarifi Sil</span>
+                            </button>
                         </div>
                     </div>
                     <div class="savedWidgetBottomRow">
@@ -956,8 +979,39 @@
 
                 // Kartın geneline tıklanınca Stage C modalı açılsın
                 itemDiv.addEventListener('click', (e) => {
-                    if (e.target.closest('.savedWidgetJumpBtn')) return;
+                    if (e.target.closest('.savedWidgetMoreBtn') || e.target.closest('.historyDropdownMenu') || e.target.closest('.savedWidgetJumpBtn')) return;
                     openWidgetDetailModal(w);
+                });
+
+                // 3 Nokta Butonu Etkileşimi
+                const moreBtn = itemDiv.querySelector('.savedWidgetMoreBtn');
+                const dropdownMenu = itemDiv.querySelector('.savedWidgetDropdownMenu');
+
+                moreBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isAlreadyOpen = dropdownMenu.classList.contains('show');
+                    closeAllDropdowns();
+                    if (!isAlreadyOpen) {
+                        dropdownMenu.classList.add('show');
+                        moreBtn.classList.add('menuOpen');
+                        itemDiv.classList.add('hasOpenMenu');
+                    }
+                });
+
+                // 1. Eylem: Sabitle / Sabitlemeyi Kaldır
+                const pinBtn = itemDiv.querySelector('.actionPinWidget');
+                pinBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeAllDropdowns();
+                    togglePinWidget(w.id);
+                });
+
+                // 2. Eylem: Sil
+                const deleteBtn = itemDiv.querySelector('.actionDeleteWidget');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeAllDropdowns();
+                    deleteWidgetConfirmed(w);
                 });
 
                 // "Bu Sohbete Git" butonuna tıklanınca o konuşmaya ve mesaja atla
@@ -973,6 +1027,44 @@
 
                 savedWidgetsSection.appendChild(itemDiv);
             });
+        }
+
+        // Kayıtlı Tarifi Sabitleme Mantığı
+        async function togglePinWidget(widgetId) {
+            try {
+                const response = await fetch(`/widgets/saved/${widgetId}/pin`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    await fetchAndRenderSavedWidgets();
+                } else {
+                    alert("Sabitleme durumu değiştirilemedi.");
+                }
+            } catch (err) {
+                console.error("Tarif sabitleme hatası:", err);
+            }
+        }
+
+        // Kayıtlı Tarifi Silme Mantığı
+        async function deleteWidgetConfirmed(widget) {
+            const isConfirmed = confirm(`"${widget.title || 'Bu tarif'}" kaydını silmek istediğinize emin misiniz?`);
+            if (!isConfirmed) return;
+
+            try {
+                const response = await fetch(`/widgets/saved/${widget.id}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    await fetchAndRenderSavedWidgets();
+                } else {
+                    const errData = await response.json().catch(() => ({}));
+                    alert(errData.error || "Tarif silinirken bir hata oluştu.");
+                }
+            } catch (err) {
+                console.error("Tarif silme hatası:", err);
+                alert("Sunucu ile iletişim kurulurken bir hata oluştu.");
+            }
         }
 
         // Belirli bir sohbetteki belirli mesaja atlama ve vurgulama

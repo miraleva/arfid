@@ -88,10 +88,10 @@ function getUserWidgets(userId, limit = 50) {
         if (!userId) return resolve([]);
 
         db.all(
-            `SELECT id, user_id, conversation_id, related_message_id, widget_type, title, widget_data, created_at 
+            `SELECT id, user_id, conversation_id, related_message_id, widget_type, title, widget_data, is_pinned, created_at 
              FROM saved_widgets 
              WHERE user_id = ? 
-             ORDER BY id DESC 
+             ORDER BY is_pinned DESC, id DESC 
              LIMIT ?`,
             [userId, limit],
             (err, rows) => {
@@ -115,6 +115,7 @@ function getUserWidgets(userId, limit = 50) {
                         widget_type: row.widget_type,
                         title: row.title,
                         widget_data: parsedData,
+                        is_pinned: row.is_pinned === 1 ? 1 : 0,
                         created_at: row.created_at
                     };
                 });
@@ -136,7 +137,7 @@ function getWidgetById(id, userId) {
         if (!id || !userId) return resolve(null);
 
         db.get(
-            `SELECT id, user_id, conversation_id, related_message_id, widget_type, title, widget_data, created_at 
+            `SELECT id, user_id, conversation_id, related_message_id, widget_type, title, widget_data, is_pinned, created_at 
              FROM saved_widgets 
              WHERE id = ? AND user_id = ?`,
             [id, userId],
@@ -158,6 +159,7 @@ function getWidgetById(id, userId) {
                     widget_type: row.widget_type,
                     title: row.title,
                     widget_data: parsedData,
+                    is_pinned: row.is_pinned === 1 ? 1 : 0,
                     created_at: row.created_at
                 });
             }
@@ -183,6 +185,33 @@ function updateRelatedMessageId(widgetId, relatedMessageId, userId) {
             function (err) {
                 if (err) {
                     console.error("[WidgetRepo] Error updating related_message_id:", err.message);
+                    return resolve(false);
+                }
+                resolve(this.changes > 0);
+            }
+        );
+    });
+}
+
+/**
+ * Toggles the pinned status of a saved widget.
+ * 
+ * @param {number} id - Widget ID
+ * @param {number} userId - User ID
+ * @returns {Promise<boolean>} True if updated successfully
+ */
+function togglePinWidget(id, userId) {
+    return new Promise((resolve) => {
+        if (!id || !userId) return resolve(false);
+
+        db.run(
+            `UPDATE saved_widgets 
+             SET is_pinned = CASE WHEN is_pinned = 1 THEN 0 ELSE 1 END 
+             WHERE id = ? AND user_id = ?`,
+            [id, userId],
+            function (err) {
+                if (err) {
+                    console.error("[WidgetRepo] Error toggling pin:", err.message);
                     return resolve(false);
                 }
                 resolve(this.changes > 0);
@@ -221,5 +250,6 @@ module.exports = {
     getUserWidgets,
     getWidgetById,
     updateRelatedMessageId,
+    togglePinWidget,
     deleteWidget
 };

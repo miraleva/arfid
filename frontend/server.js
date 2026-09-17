@@ -261,6 +261,34 @@ app.get("/widgets/saved", isAuthenticated, async (req, res) => {
     }
 });
 
+// Saved Widget PIN - Proxy to Backend
+app.patch("/widgets/saved/:id/pin", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const widgetId = req.params.id;
+
+    try {
+        const result = await apiClient.togglePinWidget(widgetId, userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Pin widget proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Sabitleme hatası" });
+    }
+});
+
+// Saved Widget DELETE - Proxy to Backend
+app.delete("/widgets/saved/:id", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const widgetId = req.params.id;
+
+    try {
+        const result = await apiClient.deleteWidget(widgetId, userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Delete widget proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Silme hatası" });
+    }
+});
+
 // Chat History GET - Proxy to Backend (Legacy compatibility)
 app.get("/chat/history", isAuthenticated, async (req, res) => {
     const userId = req.session.user ? req.session.user.id : null;

@@ -238,6 +238,46 @@ async function getSavedWidgets(req, res) {
     }
 }
 
+/**
+ * Toggles pinned status for a saved widget.
+ */
+async function togglePinWidget(req, res) {
+    try {
+        const userId = req.get('X-User-Id');
+        const widgetId = Number(req.params.id);
+
+        if (!userId || !widgetId) {
+            return res.status(400).json({ success: false, error: "Geçersiz parametreler" });
+        }
+
+        const success = await widgetRepository.togglePinWidget(widgetId, userId);
+        res.json({ success });
+    } catch (error) {
+        console.error("Toggle pin widget error:", error);
+        res.status(500).json({ success: false, error: "Tarif sabitleme durumu değiştirilemedi" });
+    }
+}
+
+/**
+ * Deletes a saved widget.
+ */
+async function deleteWidget(req, res) {
+    try {
+        const userId = req.get('X-User-Id');
+        const widgetId = Number(req.params.id);
+
+        if (!userId || !widgetId) {
+            return res.status(400).json({ success: false, error: "Geçersiz parametreler" });
+        }
+
+        const success = await widgetRepository.deleteWidget(widgetId, userId);
+        res.json({ success });
+    } catch (error) {
+        console.error("Delete widget error:", error);
+        res.status(500).json({ success: false, error: "Tarif silinemedi" });
+    }
+}
+
 module.exports = {
     handleChat,
     getConversations,
@@ -246,6 +286,8 @@ module.exports = {
     togglePinConversation,
     deleteConversation,
     getSavedWidgets,
+    togglePinWidget,
+    deleteWidget,
     getHistory,
     deleteSession
 };

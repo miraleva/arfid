@@ -154,8 +154,21 @@ async function runTests() {
         assert.strictEqual(widget.related_message_id, msgId2);
     });
 
-    // TEST 7: deleteWidget
-    await it("7. widgetRepository.deleteWidget deletes the widget", async () => {
+    // TEST 7: togglePinWidget
+    await it("7. widgetRepository.togglePinWidget toggles is_pinned status", async () => {
+        const pin1 = await widgetRepository.togglePinWidget(savedWidgetId, testUserId);
+        assert.strictEqual(pin1, true);
+        const widget1 = await widgetRepository.getWidgetById(savedWidgetId, testUserId);
+        assert.strictEqual(widget1.is_pinned, 1);
+
+        const pin2 = await widgetRepository.togglePinWidget(savedWidgetId, testUserId);
+        assert.strictEqual(pin2, true);
+        const widget2 = await widgetRepository.getWidgetById(savedWidgetId, testUserId);
+        assert.strictEqual(widget2.is_pinned, 0);
+    });
+
+    // TEST 8: deleteWidget
+    await it("8. widgetRepository.deleteWidget deletes the widget", async () => {
         const deleted = await widgetRepository.deleteWidget(savedWidgetId, testUserId);
         assert.strictEqual(deleted, true);
         const widget = await widgetRepository.getWidgetById(savedWidgetId, testUserId);
