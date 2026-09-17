@@ -1,0 +1,41 @@
+<%# 
+  Partial: widgetDetailModal.ejs
+  Renders the interactive pop-up modal for Recipe and Nutrition widget details.
+  Shares the same Meelo warm playful design language as settingsModal.
+%>
+
+<div class="widgetModalOverlay" id="widgetModalOverlay" aria-hidden="true">
+    <div class="widgetModal" id="widgetModal" role="dialog" aria-modal="true" aria-labelledby="widgetModalTitle">
+        <!-- Modal Üst Bar (Header) -->
+        <div class="widgetModalHeader">
+            <div class="widgetModalTitleGroup">
+                <span class="widgetModalIcon" id="widgetModalIcon">🍲</span>
+                <div class="widgetModalTitleText">
+                    <span class="widgetModalCategory" id="widgetModalCategory">Tarif Detayı</span>
+                    <h3 class="widgetModalTitle" id="widgetModalTitle">Yükleniyor...</h3>
+                </div>
+            </div>
+            <button type="button" class="widgetModalCloseBtn" id="closeWidgetModalBtn" title="Kapat" aria-label="Kapat">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Dinamik İçerik Gövdesi (Scrollable) -->
+        <div class="widgetModalBody" id="widgetModalBody">
+            <!-- JS tarafından widget tipine göre dinamik olarak doldurulur -->
+        </div>
+
+        <!-- Modal Alt Bar (Footer) -->
+        <div class="widgetModalFooter">
+            <span class="widgetModalFooterNotice" id="widgetModalFooterNotice">
+                💡 Malzemeleri işaretleyerek hazırlık sürecinizi takip edebilirsiniz.
+            </span>
+            <button type="button" class="widgetModalPrimaryBtn" id="closeWidgetModalBottomBtn">
+                <span>Tamam / Kapat</span>
+            </button>
+        </div>
+    </div>
+</div>

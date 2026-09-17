@@ -63,7 +63,7 @@ async function generatePatientCard(userId) {
  * @param {number} [userId] - Optional user ID for logged-in sessions
  * @returns {Promise<import('../types').DietitianResult>}
  */
-async function getDietitianResponse(userText, userId) {
+async function getDietitianResponse(userText, userId, conversationId = null) {
     // 1. Fetch User Memory Context & Master Lists for Semantic Mapping
     let memoryContext = "";
     let masterLists = { foods: [], sensory: [], conditions: [] };
@@ -77,11 +77,11 @@ async function getDietitianResponse(userText, userId) {
         console.error("Error fetching context/lists:", err);
     }
 
-    // 1.1 Fetch Recent Chat Context
+    // 1.1 Fetch Recent Chat Context (Scoped to conversationId)
     let recentChatContext = "";
-    if (userId) {
+    if (conversationId) {
         try {
-            const recentMessages = await chatRepository.getRecentMessages(userId, 10);
+            const recentMessages = await chatRepository.getRecentMessages(conversationId, 10);
             if (recentMessages && recentMessages.length > 0) {
                 recentChatContext = "RECENT CHAT (last 10):\n" +
                     recentMessages.map(m => {
@@ -108,46 +108,73 @@ async function getDietitianResponse(userText, userId) {
 
     try {
         let rawText = "";
+        let capturedWidget = null;
+        const accumulatedToolResults = [];
+        const MAX_TOOL_ROUNDS = 2; // Up to 2 rounds (e.g. Round 1: calculateCalories, Round 2: presentAsWidget)
+        let toolRound = 0;
+        let currentPrompt = systemPrompt;
 
-        // 3. Round 1: Check if Gemini requests a tool call (with tools enabled)
-        const initialResponse = await geminiRawCall(systemPrompt, {
-            tools: [{ functionDeclarations }]
-        });
+        // 3. Multi-turn Tool Calling Loop
+        while (toolRound < MAX_TOOL_ROUNDS) {
+            const toolCallResponse = await geminiRawCall(currentPrompt, {
+                tools: [{ functionDeclarations }]
+            });
 
-        const functionCalls = initialResponse.functionCalls;
+            const functionCalls = toolCallResponse.functionCalls;
 
-        if (functionCalls && functionCalls.length > 0) {
-            console.log(`[Dietitian Service] Tool call requested by Gemini (${functionCalls.length} calls)`);
+            if (!functionCalls || functionCalls.length === 0) {
+                // No tool call requested in this round
+                if (toolCallResponse.text && toolCallResponse.text.trim().startsWith("{")) {
+                    rawText = toolCallResponse.text;
+                }
+                break;
+            }
 
-            // Execute requested tools safely
-            const toolExecutionResults = [];
+            toolRound++;
+            console.log(`[Dietitian Service] Tool round ${toolRound} requested by Gemini (${functionCalls.length} calls)`);
+
             for (const call of functionCalls) {
                 const toolName = call.name;
                 const toolArgs = call.args || {};
                 const executionOutput = await executeTool(toolName, toolArgs, { userId });
-                toolExecutionResults.push({
+
+                accumulatedToolResults.push({
                     toolName,
                     args: toolArgs,
                     output: executionOutput
                 });
+
+                if (toolName === "presentAsWidget" && executionOutput.status === "success") {
+                    capturedWidget = executionOutput.widget;
+                }
             }
 
-            // Round 2 (Final Generation with Structured Output Schema and Tool Results)
+            // If a presentation widget has already been captured, or if max rounds reached, break
+            if (capturedWidget || toolRound >= MAX_TOOL_ROUNDS) {
+                break;
+            }
+
+            // Chaining prompt for the next round (allows Gemini to use calculation results to present a widget)
+            currentPrompt = `
+${systemPrompt}
+
+TOOL EXECUTION RESULTS FROM PREVIOUS ROUND:
+${JSON.stringify(accumulatedToolResults, null, 2)}
+
+INSTRUCTION FOR NEXT STEP:
+You now have the verified calculation results above. If presenting a nutritional summary or recipe, call 'presentAsWidget' now with these verified figures. Otherwise, formulate your final answer.
+`;
+        }
+
+        // Final Structured Generation (Round 2 / Final Turn)
+        if (!rawText) {
             const finalPrompt = `
 ${systemPrompt}
 
-TOOL EXECUTION RESULTS (Use these exact calculations in your response):
-${JSON.stringify(toolExecutionResults, null, 2)}
+TOOL EXECUTION RESULTS (Use these exact verified calculations in your response):
+${JSON.stringify(accumulatedToolResults, null, 2)}
 `;
-
             rawText = await geminiResponse(finalPrompt, jsonSchemaConfig);
-        } else {
-            // Model did not request any tools, get structured output directly
-            if (initialResponse.text && initialResponse.text.trim().startsWith("{")) {
-                rawText = initialResponse.text;
-            } else {
-                rawText = await geminiResponse(systemPrompt, jsonSchemaConfig);
-            }
         }
 
         // 4. Direct JSON Parsing with Defensive Fallback
@@ -184,7 +211,8 @@ ${JSON.stringify(toolExecutionResults, null, 2)}
 
         return {
             assistant_response: assistantResponse,
-            patient_card: patientCard
+            patient_card: patientCard,
+            widget: capturedWidget
         };
 
     } catch (error) {
@@ -195,7 +223,8 @@ ${JSON.stringify(toolExecutionResults, null, 2)}
         }
         return {
             assistant_response: errorMsg,
-            patient_card: ""
+            patient_card: "",
+            widget: null
         };
     }
 }

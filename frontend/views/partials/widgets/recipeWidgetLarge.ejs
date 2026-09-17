@@ -1,0 +1,104 @@
+<%# 
+  Partial: recipeWidgetLarge.ejs
+  Renders a full-featured single recipe card with ingredients, steps, tags, and Open Food Facts image placeholder.
+%>
+<% const rData = (typeof widget !== 'undefined' && widget.data) ? widget.data : {}; %>
+<% const rTitle = (typeof widget !== 'undefined' && widget.title) ? widget.title : 'Önerilen Tarif'; %>
+
+<div class="widgetContainer widgetRecipeLarge" data-widget-type="recipe" data-widget-id="<%= typeof widgetId !== 'undefined' ? widgetId : '' %>">
+    <div class="widgetCard">
+        <!-- Başlık ve Rozet -->
+        <div class="widgetHeaderRow">
+            <div class="widgetTitleGroup">
+                <div class="widgetCategoryLabel">
+                    <span>🍲</span>
+                    <span>Tarif Önerisi</span>
+                </div>
+                <h3 class="widgetTitle"><%= rTitle %></h3>
+            </div>
+            <% if (rData.calories_approx) { %>
+                <div class="widgetBadge approx" title="Model tarafından tahmin edilen yaklaşık kalori">
+                    <span>⚡</span>
+                    <span>~<%= rData.calories_approx %> kcal</span>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Görsel Placeholder (Open Food Facts Entegrasyon Alanı) -->
+        <div class="widgetImageContainer" 
+             data-image-slot="<%= (rData.image_placeholder && rData.image_placeholder.slot_key) || 'recipe_default' %>" 
+             data-image-status="placeholder"
+             title="<%= (rData.image_placeholder && rData.image_placeholder.alt_text) || rTitle %>">
+            <div class="widgetImagePlaceholder">
+                <span class="placeholderIcon">🍲</span>
+                <span class="placeholderTitle"><%= (rData.image_placeholder && rData.image_placeholder.alt_text) || rTitle %></span>
+                <span class="placeholderNote">Görsel Alanı (Placeholder)</span>
+            </div>
+            <img class="widgetRealImage" src="" alt="<%= rTitle %>" />
+        </div>
+
+        <!-- Süre, Porsiyon ve Tahmini Değer İstatistikleri -->
+        <div class="widgetStatsRow">
+            <div class="widgetStatItem">
+                <span class="widgetStatLabel">Hazırlık</span>
+                <span class="widgetStatValue"><%= rData.prep_time_min ? (rData.prep_time_min + ' dk') : '10 dk' %></span>
+            </div>
+            <div class="widgetStatItem">
+                <span class="widgetStatLabel">Pişirme</span>
+                <span class="widgetStatValue"><%= rData.cook_time_min ? (rData.cook_time_min + ' dk') : '25 dk' %></span>
+            </div>
+            <div class="widgetStatItem">
+                <span class="widgetStatLabel">Porsiyon</span>
+                <span class="widgetStatValue"><%= rData.servings || '1-2 Kişilik' %></span>
+            </div>
+            <div class="widgetStatItem">
+                <span class="widgetStatLabel">Güvenilirlik</span>
+                <span class="widgetStatValue" style="color:#C05621;">Tahmini (~)</span>
+            </div>
+        </div>
+
+        <!-- Duyusal Doku Etiketleri -->
+        <% if (rData.sensory_tags && rData.sensory_tags.length > 0) { %>
+            <div class="widgetTagsRow">
+                <% rData.sensory_tags.forEach(function(tag) { %>
+                    <span class="widgetTag">✨ <%= tag %></span>
+                <% }); %>
+            </div>
+        <% } %>
+
+        <!-- Malzeme Listesi (İlk 4 tanesi önizleme) -->
+        <% if (rData.ingredients && rData.ingredients.length > 0) { %>
+            <div class="widgetSectionTitle">
+                <span>🥕</span>
+                <span>Malzemeler</span>
+            </div>
+            <ul class="widgetIngredientsList">
+                <% rData.ingredients.slice(0, 4).forEach(function(ing) { %>
+                    <li class="widgetIngredientItem">
+                        <%= (ing.amount ? ing.amount + ' ' : '') %><%= (ing.unit ? ing.unit + ' ' : '') %><%= ing.name %>
+                    </li>
+                <% }); %>
+                <% if (rData.ingredients.length > 4) { %>
+                    <li class="widgetIngredientItem" style="font-weight:600; color:#8C7B6E;">
+                        +<%= (rData.ingredients.length - 4) %> malzeme daha...
+                    </li>
+                <% } %>
+            </ul>
+        <% } %>
+
+        <!-- ARFID Diyetisyen Notu -->
+        <% if (rData.dietitian_note) { %>
+            <div class="widgetDietitianNote">
+                <strong>💡 Diyetisyen Notu:</strong> <%= rData.dietitian_note %>
+            </div>
+        <% } %>
+
+        <!-- Alt Aksiyon Çubuğu -->
+        <div class="widgetActionsRow">
+            <button type="button" class="widgetDetailBtn openWidgetPopupBtn" data-widget-json="<%= encodeURIComponent(JSON.stringify(widget)) %>">
+                <span>📖</span>
+                <span>Tarifi İncele</span>
+            </button>
+        </div>
+    </div>
+</div>

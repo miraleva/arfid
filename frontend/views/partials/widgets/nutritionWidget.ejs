@@ -1,0 +1,99 @@
+<%# 
+  Partial: nutritionWidget.ejs
+  Renders a nutritional and calorie breakdown infographic card.
+  Marked clearly as VERIFIED via calculateCalories tool.
+%>
+<% const nData = (typeof widget !== 'undefined' && widget.data) ? widget.data : {}; %>
+<% const nTitle = (typeof widget !== 'undefined' && widget.title) ? widget.title : 'Besin Değeri Özeti'; %>
+
+<div class="widgetContainer widgetNutrition" data-widget-type="nutrition" data-widget-id="<%= typeof widgetId !== 'undefined' ? widgetId : '' %>">
+    <div class="widgetCard">
+        <!-- Başlık ve Doğrulanmış Rozet -->
+        <div class="widgetHeaderRow">
+            <div class="widgetTitleGroup">
+                <div class="widgetCategoryLabel">
+                    <span>🥗</span>
+                    <span>Besin & Kalori Özeti</span>
+                </div>
+                <h3 class="widgetTitle"><%= nTitle %></h3>
+            </div>
+            <div class="widgetBadge verified" title="Veritabanı hesaplama aracı (calculateCalories) ile doğrulanmıştır">
+                <span>🛡️</span>
+                <span>Doğrulanmış</span>
+            </div>
+        </div>
+
+        <!-- Görsel Placeholder (Open Food Facts Entegrasyon Alanı) -->
+        <div class="widgetImageContainer" 
+             style="height: 120px;"
+             data-image-slot="<%= (nData.image_placeholder && nData.image_placeholder.slot_key) || 'food_default' %>" 
+             data-image-status="placeholder"
+             title="<%= (nData.image_placeholder && nData.image_placeholder.alt_text) || nTitle %>">
+            <div class="widgetImagePlaceholder">
+                <span class="placeholderIcon">🥗</span>
+                <span class="placeholderTitle"><%= nData.food_name || nTitle %></span>
+                <span class="placeholderNote">Görsel Alanı (Placeholder)</span>
+            </div>
+            <img class="widgetRealImage" src="" alt="<%= nTitle %>" />
+        </div>
+
+        <!-- Hero Besin & Kalori Kutusu -->
+        <div class="nutritionHeaderHero">
+            <div class="nutritionHeroMain">
+                <span class="nutritionFoodName"><%= nData.food_name || nTitle %></span>
+                <span class="nutritionPortionLabel">Porsiyon: <%= nData.amount_label || '1 Porsiyon' %></span>
+            </div>
+            <div class="nutritionCaloriesCircle">
+                <span class="nutritionCaloriesNumber"><%= nData.total_calories || 0 %></span>
+                <span class="nutritionCaloriesUnit">KCAL</span>
+            </div>
+        </div>
+
+        <!-- Makro Besin Izgarası (Protein, Karbonhidrat, Yağ) -->
+        <% if (nData.macros) { %>
+            <div class="nutritionMacrosGrid">
+                <div class="macroCard protein">
+                    <span class="macroLabel">Protein</span>
+                    <span class="macroValue"><%= nData.macros.protein_g !== null ? nData.macros.protein_g + 'g' : '-' %></span>
+                </div>
+                <div class="macroCard carbs">
+                    <span class="macroLabel">Karb</span>
+                    <span class="macroValue"><%= nData.macros.carbs_g !== null ? nData.macros.carbs_g + 'g' : '-' %></span>
+                </div>
+                <div class="macroCard fat">
+                    <span class="macroLabel">Yağ</span>
+                    <span class="macroValue"><%= nData.macros.fat_g !== null ? nData.macros.fat_g + 'g' : '-' %></span>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Detaylı Malzeme / Kalori Dökümü -->
+        <% if (nData.breakdown && nData.breakdown.length > 0) { %>
+            <div class="widgetSectionTitle">
+                <span>📊</span>
+                <span>Kalori Dökümü</span>
+            </div>
+            <div class="nutritionBreakdownList">
+                <% nData.breakdown.forEach(function(item) { %>
+                    <div class="nutritionBreakdownItem">
+                        <span class="breakdownItemName"><%= item.item %></span>
+                        <span class="breakdownItemCalories"><%= item.calories %> kcal</span>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+
+        <!-- Disclaimer Notu -->
+        <div class="nutritionDisclaimer">
+            ℹ️ <%= nData.disclaimer || 'Standart besin tablosu (calculateCalories) ile doğrulanmış ortalama değerlerdir.' %>
+        </div>
+
+        <!-- Alt Aksiyon Butonu -->
+        <div class="widgetActionsRow">
+            <button type="button" class="widgetDetailBtn openWidgetPopupBtn" data-widget-json="<%= encodeURIComponent(JSON.stringify(widget)) %>">
+                <span>🔍</span>
+                <span>Besin Detayı</span>
+            </button>
+        </div>
+    </div>
+</div>
