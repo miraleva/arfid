@@ -1,0 +1,28 @@
+<%# 
+  Partial: recipeWidgetCompact.ejs
+  Renders a compact search-result / alternative cards list.
+%>
+<% const rData = (typeof widget !== 'undefined' && widget.data) ? widget.data : {}; %>
+<% const rTitle = (typeof widget !== 'undefined' && widget.title) ? widget.title : 'Tarif Seçeneği'; %>
+
+<div class="widgetContainer widgetRecipeCompact" data-widget-type="recipe" data-widget-id="<%= typeof widgetId !== 'undefined' ? widgetId : '' %>">
+    <div class="widgetCompactCard openWidgetPopupBtn" data-widget-json="<%= encodeURIComponent(JSON.stringify(widget)) %>">
+        <div class="compactCardLeft">
+            <span class="compactCardIcon">🍲</span>
+            <div class="compactCardInfo">
+                <span class="compactCardTitle"><%= rTitle %></span>
+                <div class="compactCardMeta">
+                    <span>⏱️ <%= (rData.prep_time_min || 10) + (rData.cook_time_min || 20) %> dk</span>
+                    <% if (rData.calories_approx) { %>
+                        <span>⚡ ~<%= rData.calories_approx %> kcal</span>
+                    <% } %>
+                    <span>👥 <%= rData.servings || '1-2 Kişilik' %></span>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="widgetDetailBtn" style="padding:5px 12px; font-size:11.5px;">
+            <span>Gör</span>
+            <span>→</span>
+        </button>
+    </div>
+</div>

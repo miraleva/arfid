@@ -1,0 +1,1067 @@
+/**
+ * Widget Stylesheet - Meelo Playful & Warm Theme
+ * Styles for Recipe Cards (Large & Compact) and Nutrition Infographic Cards
+ */
+
+.widgetContainer {
+    width: 100%;
+    max-width: 490px;
+    margin: 4px 0 6px 0;
+    align-self: flex-start;
+    animation: widgetAppear 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes widgetAppear {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Ana Kart */
+.widgetCard {
+    background: #FFFDF9;
+    border: 2px solid #EADBCC;
+    border-radius: 22px;
+    padding: 18px 20px;
+    box-shadow: 0 6px 20px rgba(43, 33, 24, 0.06);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.widgetCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(43, 33, 24, 0.1);
+    border-color: #D8C5B2;
+}
+
+/* Üst Başlık ve Rozet Çubuğu */
+.widgetHeaderRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.widgetTitleGroup {
+    flex: 1;
+}
+
+.widgetCategoryLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #9B8D82;
+    margin-bottom: 4px;
+}
+
+.widgetTitle {
+    font-family: 'Fredoka', 'Quicksand', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2B2118;
+    line-height: 1.25;
+    margin: 0;
+}
+
+/* Rozetler (Badges) */
+.widgetBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.widgetBadge.approx {
+    background: #FFEBD1;
+    color: #C05621;
+    border: 1px solid #FBD38D;
+}
+
+.widgetBadge.verified {
+    background: #EBF7D9;
+    color: #276749;
+    border: 1px solid #C6F6D5;
+}
+
+.widgetBadge.time {
+    background: #D6F4F8;
+    color: #007A8A;
+    border: 1px solid #B2EBF2;
+}
+
+/* Görsel Placeholder Alanı */
+.widgetImageContainer {
+    width: 100%;
+    height: 160px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #F4ECE0 0%, #EFE5D7 100%);
+    border: 1.5px dashed #D8C5B2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.widgetImagePlaceholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: #8C7B6E;
+    text-align: center;
+    padding: 10px;
+}
+
+.widgetImagePlaceholder .placeholderIcon {
+    font-size: 34px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.widgetCard:hover .widgetImagePlaceholder .placeholderIcon {
+    transform: scale(1.1) rotate(4deg);
+}
+
+.widgetImagePlaceholder .placeholderTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #5A4C40;
+}
+
+.widgetImagePlaceholder .placeholderNote {
+    font-size: 11px;
+    color: #9B8D82;
+}
+
+/* İleride API'den gelecek gerçek resim */
+.widgetImageContainer img.widgetRealImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+    display: none;
+}
+
+/* Özet İstatistik Çubuğu (Süre, Porsiyon, Kalori) */
+.widgetStatsRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: #FAF3E7;
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    border: 1px solid #EADBCC;
+}
+
+.widgetStatItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.widgetStatLabel {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #8C7B6E;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.widgetStatValue {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #2B2118;
+    margin-top: 1px;
+}
+
+/* Duyusal Doku Etiketleri (Sensory Tags) */
+.widgetTagsRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.widgetTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    background: #F4ECE0;
+    border: 1px solid #E5D9CB;
+    border-radius: 9999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #5A4C40;
+}
+
+/* Malzeme Önizleme */
+.widgetSectionTitle {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #2B2118;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.widgetIngredientsList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.widgetIngredientItem {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #372E27;
+    background: #FAF6EF;
+    border-radius: 8px;
+    padding: 5px 10px;
+    border: 1px solid #F0E6D8;
+}
+
+.widgetIngredientItem::before {
+    content: "✓";
+    font-weight: 800;
+    color: #8BBF3D;
+    margin-right: 8px;
+}
+
+/* ARFID Diyetisyen Notu */
+.widgetDietitianNote {
+    background: #EAE6FB;
+    border-left: 3.5px solid #6C5CE7;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #433878;
+    line-height: 1.4;
+    margin-bottom: 14px;
+}
+
+.widgetDietitianNote strong {
+    color: #2D235C;
+}
+
+/* Kart Altı Aksiyon Butonu */
+.widgetActionsRow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+    gap: 8px;
+}
+
+.widgetDetailBtn {
+    background: linear-gradient(135deg, #98C54E 0%, #8BBF3D 100%);
+    color: #FFFFFF;
+    border: 2px solid #2B2118;
+    border-radius: 9999px;
+    padding: 7px 16px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #2B2118;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+}
+
+.widgetDetailBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 #2B2118;
+}
+
+.widgetDetailBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #2B2118;
+}
+
+/* ============================================================ */
+/* BESİN / KALORİ WIDGET'I (NUTRITION WIDGET) ÖZEL STİLLERİ     */
+/* ============================================================ */
+.nutritionHeaderHero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FAF3E7;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    border: 1px solid #EADBCC;
+}
+
+.nutritionHeroMain {
+    display: flex;
+    flex-direction: column;
+}
+
+.nutritionFoodName {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2B2118;
+}
+
+.nutritionPortionLabel {
+    font-size: 12px;
+    color: #8C7B6E;
+    margin-top: 2px;
+}
+
+.nutritionCaloriesCircle {
+    background: #FFEBD1;
+    border: 2px solid #FFA934;
+    border-radius: 14px;
+    padding: 6px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.nutritionCaloriesNumber {
+    font-size: 20px;
+    font-weight: 800;
+    color: #C05621;
+    line-height: 1;
+}
+
+.nutritionCaloriesUnit {
+    font-size: 10px;
+    font-weight: 700;
+    color: #A64614;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+/* Makro Besin Izgarası (Protein, Karbonhidrat, Yağ) */
+.nutritionMacrosGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.macroCard {
+    background: #FFFDF9;
+    border: 1.5px solid #EADBCC;
+    border-radius: 12px;
+    padding: 8px 10px;
+    text-align: center;
+}
+
+.macroLabel {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #8C7B6E;
+    text-transform: uppercase;
+}
+
+.macroValue {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2B2118;
+    margin-top: 2px;
+}
+
+.macroCard.protein .macroValue { color: #00A0B5; }
+.macroCard.carbs .macroValue { color: #FFA934; }
+.macroCard.fat .macroValue { color: #F478B0; }
+
+/* Besin Döküm Tablosu */
+.nutritionBreakdownList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.nutritionBreakdownItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FAF6EF;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 12.5px;
+    border: 1px solid #F0E6D8;
+}
+
+.breakdownItemName {
+    font-weight: 600;
+    color: #372E27;
+}
+
+.breakdownItemCalories {
+    font-weight: 700;
+    color: #C05621;
+}
+
+.nutritionDisclaimer {
+    font-size: 11px;
+    color: #9B8D82;
+    font-style: italic;
+    line-height: 1.35;
+    margin-top: 4px;
+}
+
+/* ============================================================ */
+/* KOMPAKT ÇOKLU TARİF KARTI (COMPACT / SEARCH RESULTS LIST)    */
+/* ============================================================ */
+.widgetCompactList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.widgetCompactCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FFFDF9;
+    border: 1.5px solid #EADBCC;
+    border-radius: 14px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.widgetCompactCard:hover {
+    border-color: #98C54E;
+    background: #FCFAF6;
+    transform: translateX(3px);
+}
+
+.compactCardLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.compactCardIcon {
+    font-size: 22px;
+}
+
+.compactCardInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.compactCardTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2B2118;
+}
+
+.compactCardMeta {
+    font-size: 11.5px;
+    color: #8C7B6E;
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+/* ============================================================ */
+/* WIDGET DETAY POP-UP MODAL (AŞAMA C - MEELO PLAYFUL STYLE)    */
+/* ============================================================ */
+
+.widgetModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(43, 33, 24, 0.48);
+    backdrop-filter: blur(4px);
+    z-index: 2200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease-out;
+}
+
+.widgetModalOverlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.widgetModal {
+    background-color: #FFFDF9;
+    width: 92%;
+    max-width: 680px;
+    height: 85vh;
+    max-height: 750px;
+    border-radius: 30px;
+    box-shadow: 0 12px 0 #2B2118;
+    border: 3.5px solid #2B2118;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    transform: scale(0.93) translateY(12px);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'Fredoka', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
+}
+
+.widgetModalOverlay.active .widgetModal {
+    transform: scale(1) translateY(0);
+}
+
+/* Modal Header */
+.widgetModalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 2.5px solid #2B2118;
+    background-color: #FAF3E7;
+    flex-shrink: 0;
+}
+
+.widgetModalTitleGroup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.widgetModalIcon {
+    font-size: 26px;
+    background: #FFFDF9;
+    border: 2px solid #2B2118;
+    border-radius: 14px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 0 #2B2118;
+    flex-shrink: 0;
+}
+
+.widgetModalTitleText {
+    display: flex;
+    flex-direction: column;
+}
+
+.widgetModalCategory {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #8C7B6E;
+}
+
+.widgetModalTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2B2118;
+    margin: 0;
+    line-height: 1.25;
+}
+
+.widgetModalCloseBtn {
+    background: #FFFDF9;
+    border: 2.5px solid #2B2118;
+    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #2B2118;
+    transition: all 0.15s ease;
+    color: #2B2118;
+}
+
+.widgetModalCloseBtn:hover {
+    background-color: #FF7675;
+    color: #FFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 #2B2118;
+}
+
+.widgetModalCloseBtn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #2B2118;
+}
+
+/* Modal Body */
+.widgetModalBody {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: #FFFDF9;
+}
+
+.widgetModalBody::-webkit-scrollbar {
+    width: 8px;
+}
+.widgetModalBody::-webkit-scrollbar-track {
+    background: #FAF3E7;
+}
+.widgetModalBody::-webkit-scrollbar-thumb {
+    background: #D8C5B2;
+    border-radius: 4px;
+}
+
+/* Modal Sections */
+.modalHeroSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modalHeroBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.modalImagePlaceholder {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(135deg, #F9F3EA 0%, #EFE5D5 100%);
+    border: 2px dashed #D4C3B3;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #8C7B6E;
+}
+
+.modalImagePlaceholder .icon {
+    font-size: 36px;
+}
+
+.modalImagePlaceholder .title {
+    font-weight: 700;
+    font-size: 14px;
+    color: #4A3B32;
+}
+
+.modalImagePlaceholder .note {
+    font-size: 11px;
+    color: #A39285;
+}
+
+/* Modal Stats Grid */
+.modalStatsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background: #FAF6EF;
+    border: 1.5px solid #EADBCC;
+    border-radius: 16px;
+    padding: 12px;
+}
+
+.modalStatCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.modalStatCard .label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8C7B6E;
+    text-transform: uppercase;
+}
+
+.modalStatCard .val {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2B2118;
+    margin-top: 2px;
+}
+
+/* Modal Section Title */
+.modalSectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #2B2118;
+    margin-bottom: 8px;
+}
+
+/* Checkbox Ingredients List */
+.modalIngredientsList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.modalIngredientItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FAF7F2;
+    border: 1.5px solid #ECE1D4;
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.18s ease;
+}
+
+.modalIngredientItem:hover {
+    background: #F5EFE6;
+    border-color: #D8C5B2;
+}
+
+.modalIngredientItem input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #2B2118;
+    border-radius: 6px;
+    background: #FFF;
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.modalIngredientItem input[type="checkbox"]::before {
+    content: "✓";
+    font-size: 13px;
+    font-weight: 900;
+    color: #FFF;
+    transform: scale(0);
+    transition: transform 0.15s ease;
+}
+
+.modalIngredientItem input[type="checkbox"]:checked {
+    background: #98C54E;
+    border-color: #2B2118;
+}
+
+.modalIngredientItem input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+.modalIngredientItem.checked {
+    opacity: 0.65;
+    background: #EFE9DE;
+}
+
+.modalIngredientItem.checked .ingText {
+    text-decoration: line-through;
+    color: #7D6F63;
+}
+
+.modalIngredientItem .ingText {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #2B2118;
+    flex: 1;
+}
+
+/* Steps / Instructions */
+.modalInstructionList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modalStepCard {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #FFFDF9;
+    border: 1.5px solid #EADBCC;
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.modalStepNumber {
+    background: #FFA934;
+    color: #2B2118;
+    font-weight: 800;
+    font-size: 13px;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 1.5px solid #2B2118;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.modalStepText {
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: #382C24;
+    font-weight: 500;
+}
+
+/* Dietitian Note Callout in Modal */
+.modalDietitianNote {
+    background: #FFF8E6;
+    border: 2px solid #F6D884;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #5C4318;
+}
+
+.modalDietitianNote .noteIcon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+/* Nutrition Modal Specifics */
+.modalNutritionHero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #F8F4EC 0%, #EFE8DA 100%);
+    border: 2px solid #2B2118;
+    border-radius: 20px;
+    padding: 18px 22px;
+    box-shadow: 0 4px 0 #2B2118;
+}
+
+.modalNutritionHeroInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modalNutritionFoodName {
+    font-size: 20px;
+    font-weight: 800;
+    color: #2B2118;
+}
+
+.modalNutritionPortion {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8C7B6E;
+}
+
+.modalNutritionHeroBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #EBF7D9;
+    color: #276749;
+    border: 1px solid #C6F6D5;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 4px;
+    width: fit-content;
+}
+
+.modalNutritionCalorieBadge {
+    background: #FFA934;
+    border: 2.5px solid #2B2118;
+    border-radius: 18px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 3px 0 #2B2118;
+    min-width: 90px;
+}
+
+.modalNutritionCalorieNumber {
+    font-size: 28px;
+    font-weight: 900;
+    color: #2B2118;
+    line-height: 1;
+}
+
+.modalNutritionCalorieUnit {
+    font-size: 11px;
+    font-weight: 800;
+    color: #2B2118;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+/* Modal Macros Grid with Cards */
+.modalMacrosGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.modalMacroCard {
+    background: #FFFDF9;
+    border: 2px solid #EADBCC;
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modalMacroCard.protein { border-top: 4px solid #00A0B5; }
+.modalMacroCard.carbs { border-top: 4px solid #FFA934; }
+.modalMacroCard.fat { border-top: 4px solid #F478B0; }
+
+.modalMacroCard .macroHeader {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 700;
+    color: #8C7B6E;
+}
+
+.modalMacroCard .macroGrams {
+    font-size: 18px;
+    font-weight: 800;
+    color: #2B2118;
+}
+
+/* Modal Breakdown Table */
+.modalBreakdownList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modalBreakdownItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FAF7F2;
+    border: 1px solid #ECE1D4;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 13px;
+}
+
+.modalBreakdownItem .itemName {
+    font-weight: 600;
+    color: #2B2118;
+}
+
+.modalBreakdownItem .itemCals {
+    font-weight: 700;
+    color: #C05621;
+}
+
+/* Modal Footer */
+.widgetModalFooter {
+    padding: 14px 24px;
+    border-top: 2.5px solid #2B2118;
+    background-color: #FAF3E7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 16px;
+}
+
+.widgetModalFooterNotice {
+    font-size: 12px;
+    color: #8C7B6E;
+    font-weight: 500;
+    flex: 1;
+}
+
+.widgetModalPrimaryBtn {
+    background: #98C54E;
+    color: #2B2118;
+    border: 2.5px solid #2B2118;
+    border-radius: 14px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #2B2118;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.widgetModalPrimaryBtn:hover {
+    background: #A6D657;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 #2B2118;
+}
+
+.widgetModalPrimaryBtn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #2B2118;
+}
+
+@media (max-width: 600px) {
+    .widgetModal {
+        width: 95%;
+        height: 90vh;
+        border-radius: 24px;
+    }
+    .modalStatsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .modalMacrosGrid {
+        grid-template-columns: 1fr;
+    }
+    .widgetModalFooter {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+}
+

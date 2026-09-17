@@ -13,35 +13,52 @@ const INTERNAL_SHARED_SECRET = process.env.INTERNAL_SHARED_SECRET;
  * Generic core fetch helper for backend requests.
  * 
  * @param {string} endpoint - API path (e.g. '/signin')
- * @param {Object} body - Payload object to serialize as JSON
+ * @param {string} [method="POST"] - HTTP method
+ * @param {Object|null} [body=null] - Payload object to serialize as JSON
  * @param {Object} [extraHeaders={}] - Additional headers (e.g. X-User-Id)
  * @returns {Promise<{ ok: boolean, status: number, data: any }>}
  */
-async function callBackend(endpoint, body, extraHeaders = {}) {
+async function requestBackend(endpoint, method = "POST", body = null, extraHeaders = {}) {
     const headers = {
         "Content-Type": "application/json",
         "X-Internal-Token": INTERNAL_SHARED_SECRET,
         ...extraHeaders
     };
 
-    const response = await fetch(`${BACKEND_API_URL}${endpoint}`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body)
-    });
+    const options = {
+        method,
+        headers
+    };
 
-    let data;
-    try {
-        data = await response.json();
-    } catch (e) {
-        data = { error: "Geçersiz yanıt formatı" };
+    if (body !== null && method !== "GET" && method !== "HEAD") {
+        options.body = JSON.stringify(body);
     }
 
-    return {
-        ok: response.ok,
-        status: response.status,
-        data
-    };
+    try {
+        const response = await fetch(`${BACKEND_API_URL}${endpoint}`, options);
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            data = { error: "Geçersiz yanıt formatı" };
+        }
+
+        return {
+            ok: response.ok,
+            status: response.status,
+            data
+        };
+    } catch (err) {
+        return {
+            ok: false,
+            status: 500,
+            data: { error: err.message || "Bağlantı hatası" }
+        };
+    }
+}
+
+async function callBackend(endpoint, body, extraHeaders = {}) {
+    return requestBackend(endpoint, "POST", body, extraHeaders);
 }
 
 /**
@@ -68,60 +85,91 @@ async function signup(email, password, username) {
 }
 
 /**
- * Sends a chat message to the backend with trusted user ID header.
+ * Sends a chat message to the backend with trusted user ID header and optional conversation ID.
  * 
  * @param {string} message - User message text
  * @param {number|string|null} [userId=null] - Authenticated user ID
+ * @param {number|string|null} [conversationId=null] - Active conversation ID
  * @returns {Promise<{ ok: boolean, status: number, data: any }>}
  */
-async function sendChatMessage(message, userId = null) {
+async function sendChatMessage(message, userId = null, conversationId = null) {
     const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
-    return callBackend("/chat", { message }, extraHeaders);
+    return callBackend("/chat", { message, conversationId }, extraHeaders);
 }
 
 /**
- * Retrieves chat history from the backend with trusted user ID header.
+ * Retrieves all conversations for the user.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function getConversations(userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend("/chat/conversations", "GET", null, extraHeaders);
+}
+
+/**
+ * Retrieves all messages for a specific conversation.
+ * 
+ * @param {number|string} conversationId - Conversation ID
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function getConversationMessages(conversationId, userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend(`/chat/conversations/${conversationId}/messages`, "GET", null, extraHeaders);
+}
+
+/**
+ * Renames a conversation.
+ * 
+ * @param {number|string} conversationId - Conversation ID
+ * @param {string} title - New title
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function renameConversation(conversationId, title, userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend(`/chat/conversations/${conversationId}/rename`, "PATCH", { title }, extraHeaders);
+}
+
+/**
+ * Toggles pin status of a conversation.
+ * 
+ * @param {number|string} conversationId - Conversation ID
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function togglePinConversation(conversationId, userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend(`/chat/conversations/${conversationId}/pin`, "PATCH", null, extraHeaders);
+}
+
+/**
+ * Deletes an entire conversation.
+ * 
+ * @param {number|string} conversationId - Conversation ID
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function deleteConversation(conversationId, userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend(`/chat/conversations/${conversationId}`, "DELETE", null, extraHeaders);
+}
+
+/**
+ * Backward compatibility: Retrieves chat history from the backend.
  * 
  * @param {number|string} userId - Authenticated user ID
  * @returns {Promise<{ ok: boolean, status: number, data: any }>}
  */
 async function getChatHistory(userId) {
     const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
-    const headers = {
-        "Content-Type": "application/json",
-        "X-Internal-Token": INTERNAL_SHARED_SECRET,
-        ...extraHeaders
-    };
-
-    try {
-        const response = await fetch(`${BACKEND_API_URL}/chat/history`, {
-            method: "GET",
-            headers
-        });
-
-        let data;
-        try {
-            data = await response.json();
-        } catch (e) {
-            data = { messages: [] };
-        }
-
-        return {
-            ok: response.ok,
-            status: response.status,
-            data
-        };
-    } catch (err) {
-        return {
-            ok: false,
-            status: 500,
-            data: { messages: [] }
-        };
-    }
+    return requestBackend("/chat/history", "GET", null, extraHeaders);
 }
 
 /**
- * Sends a request to delete messages in a session.
+ * Backward compatibility: Sends a request to delete messages in a session.
  * 
  * @param {number[]} messageIds - Array of message IDs to delete
  * @param {number|string} userId - Authenticated user ID
@@ -129,45 +177,34 @@ async function getChatHistory(userId) {
  */
 async function deleteChatSession(messageIds, userId) {
     const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
-    const headers = {
-        "Content-Type": "application/json",
-        "X-Internal-Token": INTERNAL_SHARED_SECRET,
-        ...extraHeaders
-    };
+    return requestBackend("/chat/session", "DELETE", { messageIds }, extraHeaders);
+}
 
-    try {
-        const response = await fetch(`${BACKEND_API_URL}/chat/session`, {
-            method: "DELETE",
-            headers,
-            body: JSON.stringify({ messageIds })
-        });
-
-        let data;
-        try {
-            data = await response.json();
-        } catch (e) {
-            data = { success: false };
-        }
-
-        return {
-            ok: response.ok,
-            status: response.status,
-            data
-        };
-    } catch (err) {
-        return {
-            ok: false,
-            status: 500,
-            data: { success: false }
-        };
-    }
+/**
+ * Retrieves all saved widgets (recipes and nutrition cards) for the user.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function getSavedWidgets(userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend("/widgets/saved", "GET", null, extraHeaders);
 }
 
 module.exports = {
     signin,
     signup,
     sendChatMessage,
+    getConversations,
+    getConversationMessages,
+    renameConversation,
+    togglePinConversation,
+    deleteConversation,
+    getSavedWidgets,
     getChatHistory,
     deleteChatSession,
-    callBackend
+    callBackend,
+    requestBackend
 };
+
+

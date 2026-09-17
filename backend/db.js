@@ -74,19 +74,54 @@ db.serialize(() => {
         FOREIGN KEY (condition_id) REFERENCES conditions(id) ON DELETE CASCADE
     )`);
 
-    // 4. Chat Messages Table & Index
-    db.run(`CREATE TABLE IF NOT EXISTS chat_messages (
+    // 4. Conversations Table (Session Management)
+    db.run(`CREATE TABLE IF NOT EXISTS conversations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),
-        content TEXT NOT NULL,
+        title TEXT NOT NULL,
         created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        is_pinned INTEGER DEFAULT 0 CHECK(is_pinned IN (0, 1)),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )`);
 
+    db.run(`CREATE INDEX IF NOT EXISTS idx_conversations_user_updated ON conversations(user_id, updated_at DESC)`);
+
+    // 5. Chat Messages Table & Indexes
+    db.run(`CREATE TABLE IF NOT EXISTS chat_messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        conversation_id INTEGER,
+        role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),
+        content TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+    )`);
+
+    db.run(`CREATE INDEX IF NOT EXISTS idx_chat_messages_conv_id ON chat_messages(conversation_id, id ASC)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_chat_messages_user_id_id ON chat_messages(user_id, id)`);
 
-    // 5. Seed Data (Idempotent: INSERT OR IGNORE)
+    // 6. Saved Widgets Table (Recipes & Nutritional Cards)
+    db.run(`CREATE TABLE IF NOT EXISTS saved_widgets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        conversation_id INTEGER,
+        related_message_id INTEGER,
+        widget_type TEXT NOT NULL CHECK(widget_type IN ('recipe', 'nutrition')),
+        title TEXT NOT NULL,
+        widget_data TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE SET NULL,
+        FOREIGN KEY (related_message_id) REFERENCES chat_messages(id) ON DELETE SET NULL
+    )`);
+
+    db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_user_id ON saved_widgets(user_id, id DESC)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_conv_id ON saved_widgets(conversation_id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_message_id ON saved_widgets(related_message_id)`);
+
+    // 6. Seed Data (Idempotent: INSERT OR IGNORE)
     // Foods
     const foods = [
         'Apple', 'Banana', 'Orange', 'Strawberry', 'Grapes',

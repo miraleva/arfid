@@ -5,11 +5,13 @@
 
 const calculateCalories = require("./calculateCalories");
 const calculateSensoryFit = require("./calculateSensoryFit");
+const presentAsWidget = require("./presentAsWidget");
 
 // List of all tool definitions
 const tools = [
     calculateCalories,
-    calculateSensoryFit
+    calculateSensoryFit,
+    presentAsWidget
 ];
 
 // Gemini SDK compatible functionDeclarations list

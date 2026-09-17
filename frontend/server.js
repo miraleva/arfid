@@ -166,11 +166,11 @@ app.post("/signup", async (req, res) => {
 
 // Chat POST - Proxy to Backend
 app.post("/chat", isAuthenticated, async (req, res) => {
-    const { message } = req.body;
+    const { message, conversationId } = req.body;
     const userId = req.session.user ? req.session.user.id : null;
 
     try {
-        const result = await apiClient.sendChatMessage(message, userId);
+        const result = await apiClient.sendChatMessage(message, userId, conversationId);
         res.status(result.status).json(result.data);
     } catch (error) {
         console.error("Chat proxy hatası:", error);
@@ -178,7 +178,90 @@ app.post("/chat", isAuthenticated, async (req, res) => {
     }
 });
 
-// Chat History GET - Proxy to Backend
+// Conversations List GET - Proxy to Backend
+app.get("/chat/conversations", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+
+    try {
+        const result = await apiClient.getConversations(userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Get conversations proxy hatası:", error);
+        res.status(500).json({ conversations: [] });
+    }
+});
+
+// Conversation Messages GET - Proxy to Backend
+app.get("/chat/conversations/:id/messages", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const conversationId = req.params.id;
+
+    try {
+        const result = await apiClient.getConversationMessages(conversationId, userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Get conversation messages proxy hatası:", error);
+        res.status(500).json({ messages: [] });
+    }
+});
+
+// Conversation Rename PATCH - Proxy to Backend
+app.patch("/chat/conversations/:id/rename", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const conversationId = req.params.id;
+    const { title } = req.body;
+
+    try {
+        const result = await apiClient.renameConversation(conversationId, title, userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Rename conversation proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Güncelleme hatası" });
+    }
+});
+
+// Conversation Pin PATCH - Proxy to Backend
+app.patch("/chat/conversations/:id/pin", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const conversationId = req.params.id;
+
+    try {
+        const result = await apiClient.togglePinConversation(conversationId, userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Toggle pin proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Sabitleme hatası" });
+    }
+});
+
+// Conversation DELETE - Proxy to Backend
+app.delete("/chat/conversations/:id", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const conversationId = req.params.id;
+
+    try {
+        const result = await apiClient.deleteConversation(conversationId, userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Delete conversation proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Silme hatası" });
+    }
+});
+
+// Saved Widgets (Tariflerim) GET - Proxy to Backend
+app.get("/widgets/saved", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+
+    try {
+        const result = await apiClient.getSavedWidgets(userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Get saved widgets proxy hatası:", error);
+        res.status(500).json({ widgets: [] });
+    }
+});
+
+// Chat History GET - Proxy to Backend (Legacy compatibility)
 app.get("/chat/history", isAuthenticated, async (req, res) => {
     const userId = req.session.user ? req.session.user.id : null;
 
@@ -191,7 +274,7 @@ app.get("/chat/history", isAuthenticated, async (req, res) => {
     }
 });
 
-// Chat Session DELETE - Proxy to Backend
+// Chat Session DELETE - Proxy to Backend (Legacy compatibility)
 app.delete("/chat/session", isAuthenticated, async (req, res) => {
     const userId = req.session.user ? req.session.user.id : null;
     const { messageIds } = req.body;

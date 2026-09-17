@@ -16,15 +16,30 @@ const { verifyInternalToken } = require("../middleware/internalAuth");
 router.post("/chat", verifyInternalToken, chatController.handleChat);
 
 /**
- * Route: Get user chat history endpoint
+ * Conversation Lifecycle Endpoints
+ */
+router.get("/chat/conversations", verifyInternalToken, chatController.getConversations);
+router.get("/chat/conversations/:id/messages", verifyInternalToken, chatController.getConversationMessages);
+router.patch("/chat/conversations/:id/rename", verifyInternalToken, chatController.renameConversation);
+router.patch("/chat/conversations/:id/pin", verifyInternalToken, chatController.togglePinConversation);
+router.delete("/chat/conversations/:id", verifyInternalToken, chatController.deleteConversation);
+
+/**
+ * Saved Widgets (Tariflerim & Besin Değerleri) Endpoint
+ */
+router.get("/widgets/saved", verifyInternalToken, chatController.getSavedWidgets);
+
+/**
+ * Route: Get user chat history endpoint (legacy compatibility)
  * Path: GET /chat/history
  */
 router.get("/chat/history", verifyInternalToken, chatController.getHistory);
 
 /**
- * Route: Delete chat session endpoint
+ * Route: Delete chat session endpoint (legacy compatibility)
  * Path: DELETE /chat/session
  */
 router.delete("/chat/session", verifyInternalToken, chatController.deleteSession);
 
 module.exports = router;
+

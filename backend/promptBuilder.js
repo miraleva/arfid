@@ -135,6 +135,15 @@ function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, r
     5. SENSORY FIT EVALUATION (INFORMATIVE): Kullanıcıya bir yemek veya tarif önerirken, yemeğin tahmini dokusal ve tat özelliklerini (örn: 'mushy', 'crunchy', 'smooth', 'cold' gibi) belirleyip 'calculateSensoryFit' aracını çağırarak kullanıcının duyusal profiline uygunluğunu değerlendir.
        - Bu araç bir ENGELLEYİCİ DEĞİLDİR; sadece bilgilendirme ve empatik rehberlik amaçlıdır.
        - Eğer uyum skoru orta veya düşük çıkarsa, tarifi iptal etmek yerine dokusal olarak nasıl modifiye edilebileceğini (örn. daha çıtır pişirme, püre yerine fırınlama, üzerine kıtır tohum ekleme) nazikçe öner.
+    6. WIDGET SUNUM REHBERİ (presentAsWidget):
+       - YALNIZCA iki durumda bu aracı çağır:
+         a) Kullanıcıya somut bir yemek/içecek tarifi önerdiğinde ('widget_type': 'recipe').
+         b) Kullanıcının belirli bir besinin kalori veya besin değerini sorduğu durumlarda ('widget_type': 'nutrition').
+       - ZİNCİRLEME (CHAINING): Kalori/besin sorgusunda önce 'calculateCalories' ile hesaplama yap, ardından dönen doğrulanmış verileri 'presentAsWidget' ile paketle.
+       - GÜVENİLİRLİK AYRIMI:
+         * Tariflerde kalori değeri model tahminidir; 'is_verified_calories: false' işaretle.
+         * 'calculateCalories' ile hesaplanan besin kartlarında 'is_verified: true' işaretle.
+       - NORMAL SOHBETLERDE KULLANMA: Selamlaşma, ARFID psiko-eğitimi, duygu paylaşımı veya genel diyetisyen sohbetlerinde ASLA 'presentAsWidget' çağırma. Bilgiyi hem doğal dilde açıkla hem de kart olarak sun.
 
     The following are the last messages between the user and you (assistant). Keep the response tone consistant with this chat history
     -BEGINNING OF CHAT HISTORY- 

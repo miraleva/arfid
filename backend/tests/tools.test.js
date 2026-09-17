@@ -40,11 +40,12 @@ function it(desc, fn) {
 
 async function runTests() {
     // TEST 1: Tool registry declaration integrity
-    it("1. Tool registry exposes calculateCalories and calculateSensoryFit with valid schemas", () => {
-        assert.strictEqual(functionDeclarations.length, 2);
+    it("1. Tool registry exposes calculateCalories, calculateSensoryFit, and presentAsWidget with valid schemas", () => {
+        assert.strictEqual(functionDeclarations.length, 3);
         const names = functionDeclarations.map(t => t.name);
         assert.ok(names.includes("calculateCalories"));
         assert.ok(names.includes("calculateSensoryFit"));
+        assert.ok(names.includes("presentAsWidget"));
     });
 
     // TEST 2: Valid calorie calculation execution
@@ -88,6 +89,62 @@ async function runTests() {
         const malformedRes = await executeTool("calculateCalories", null);
         assert.strictEqual(malformedRes.status, "error");
         assert.strictEqual(malformedRes.error_code, "INVALID_ARGUMENTS");
+    });
+
+    // TEST 6: presentAsWidget formats recipe widget with approximate calories
+    await it("6. presentAsWidget formats recipe widget and sets is_verified_calories to false", async () => {
+        const recipeRes = await executeTool("presentAsWidget", {
+            widget_type: "recipe",
+            title: "Fırında Çıtır Patates",
+            recipe_data: {
+                display_mode: "single",
+                prep_time_min: 10,
+                cook_time_min: 25,
+                servings: "2 Kişilik",
+                calories_approx: 220,
+                sensory_tags: ["Çıtır", "Kuru Doku"],
+                ingredients: [{ name: "Patates", amount: 2, unit: "adet" }],
+                instructions: ["Dilimle", "Fırınla"]
+            }
+        });
+        assert.strictEqual(recipeRes.status, "success");
+        assert.strictEqual(recipeRes.widget.type, "recipe");
+        assert.strictEqual(recipeRes.widget.data.is_verified_calories, false);
+        assert.strictEqual(recipeRes.widget.data.calories_approx, 220);
+    });
+
+    // TEST 7: presentAsWidget formats nutrition widget with verified calories
+    await it("7. presentAsWidget formats nutrition widget and sets is_verified to true", async () => {
+        const nutritionRes = await executeTool("presentAsWidget", {
+            widget_type: "nutrition",
+            title: "Tavuk Göğsü Besin Değeri",
+            nutrition_data: {
+                food_name: "Tavuk Göğsü",
+                amount_label: "150 gram",
+                total_calories: 247,
+                macros: { protein_g: 46.5, carbs_g: 0, fat_g: 5.4 }
+            }
+        });
+        assert.strictEqual(nutritionRes.status, "success");
+        assert.strictEqual(nutritionRes.widget.type, "nutrition");
+        assert.strictEqual(nutritionRes.widget.data.is_verified, true);
+        assert.strictEqual(nutritionRes.widget.data.total_calories, 247);
+    });
+
+    // TEST 8: presentAsWidget catches invalid widget type or missing title
+    await it("8. presentAsWidget validates required fields and types", async () => {
+        const invalidTypeRes = await executeTool("presentAsWidget", {
+            widget_type: "unknown_type",
+            title: "Test"
+        });
+        assert.strictEqual(invalidTypeRes.status, "error");
+        assert.strictEqual(invalidTypeRes.error_code, "INVALID_WIDGET_TYPE");
+
+        const missingTitleRes = await executeTool("presentAsWidget", {
+            widget_type: "recipe"
+        });
+        assert.strictEqual(missingTitleRes.status, "error");
+        assert.strictEqual(missingTitleRes.error_code, "MISSING_TITLE");
     });
 
     console.log("\n=================================================");

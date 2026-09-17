@@ -7,6 +7,7 @@
     
     <link rel="stylesheet" href="chat.css">
     <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="widget.css">
     <!-- Fonts: Fredoka & Quicksand (Meelo Style) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,20 +39,38 @@
                 </button>
             </div>
 
-            <!-- 2. Arama Kutusu (Client-side Başlık Arama) -->
+            <!-- Sekmeler: Sohbetler / Tariflerim -->
+            <div class="sidebarTabs">
+                <button type="button" class="sidebarTabBtn active" id="tabChatsBtn">
+                    <span>💬</span>
+                    <span>Sohbetler</span>
+                </button>
+                <button type="button" class="sidebarTabBtn" id="tabRecipesBtn">
+                    <span>🍲</span>
+                    <span>Tariflerim</span>
+                    <span class="recipesBadge" id="recipesBadge">0</span>
+                </button>
+            </div>
+
+            <!-- 2. Arama Kutusu (Client-side Arama) -->
             <div class="searchSection">
                 <div class="searchInputWrapper">
                     <svg class="searchIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" class="searchInput" id="searchInput" placeholder="Sohbetlerde ara..." aria-label="Sohbetlerde ara" />
+                    <input type="text" class="searchInput" id="searchInput" placeholder="Sohbetlerde ara..." aria-label="Arama yap" />
                 </div>
             </div>
 
             <!-- 3. Geçmiş Sohbetler Listesi Alanı -->
             <div class="chatHistorySection" id="chatHistorySection">
-                <!-- Gerçek çoklu-sohbet verisi bağlandığında dinamik olarak listelenecektir -->
+                <!-- Dinamik olarak doldurulur -->
+            </div>
+
+            <!-- 3B. Kayıtlı Tarifler Listesi Alanı (Aşama D) -->
+            <div class="savedWidgetsSection" id="savedWidgetsSection" style="display: none;">
+                <!-- Dinamik olarak doldurulur -->
             </div>
 
             <!-- 4. Alt Kısım: Profil, Ayarlar ve Logout Alanı -->
@@ -167,6 +186,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- Widget Detay Pop-up Modalı (Aşama C) -->
+        <%- include('partials/widgets/widgetDetailModal') %>
 
         <!-- Sidebar Kapalıyken Gösterilecek Açma Butonu Toggle -->
         <button class="sidebarOpenBtn" id="sidebarOpenBtn" title="Sidebar'ı Aç" aria-label="Sidebar'ı Aç">
@@ -340,8 +362,8 @@
                 messageInput.value = '';
                 messageInput.focus();
 
-                // 3. Kural: Önceden seçili olan sohbet kartındaki .active sınıfı KALDIRILSIN
-                activeSessionId = null;
+                // Seçili olan sohbet kartındaki .active sınıfını kaldır
+                activeConversationId = null;
                 document.querySelectorAll('.historyItem.active').forEach(item => {
                     item.classList.remove('active');
                 });
@@ -354,52 +376,16 @@
         }
 
         // ==========================================
-        // GEÇMİŞ SOHBETLERİN YEREL GRUPLANMASI & YÖNETİMİ
+        // SOHBET OTURUMLARI (CONVERSATION) YÖNETİMİ
         // ==========================================
         const chatHistorySection = document.getElementById('chatHistorySection');
         const searchInput = document.getElementById('searchInput');
-        let allChatSessions = []; // İstemci tarafında tutulan oturumlar [{ id, title, timeLabel, messages: [] }]
-        let activeSessionId = null;
+        let allChatSessions = []; // Backend'den gelen konuşmalar [{ id, title, created_at, updated_at, is_pinned }]
+        let activeConversationId = null;
 
-        // Kullanıcı kimliğine göre pin ve özel başlık yerel depolama anahtarları
-        const currentUserId = "<%= (typeof user !== 'undefined' && user && user.id) ? user.id : 'guest' %>";
-        const PIN_STORAGE_KEY = `arfid_pinned_sessions_${currentUserId}`;
-        const TITLE_STORAGE_KEY = `arfid_custom_titles_${currentUserId}`;
-
-        function getPinnedSessionIds() {
-            try {
-                return JSON.parse(localStorage.getItem(PIN_STORAGE_KEY) || '[]');
-            } catch (e) {
-                return [];
-            }
-        }
-
-        function setPinnedSessionIds(pins) {
-            try {
-                localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pins));
-            } catch (e) {
-                console.error("Pin kaydedilemedi:", e);
-            }
-        }
-
-        function getCustomTitles() {
-            try {
-                return JSON.parse(localStorage.getItem(TITLE_STORAGE_KEY) || '{}');
-            } catch (e) {
-                return {};
-            }
-        }
-
-        function setCustomTitles(titles) {
-            try {
-                localStorage.setItem(TITLE_STORAGE_KEY, JSON.stringify(titles));
-            } catch (e) {
-                console.error("Özel başlık kaydedilemedi:", e);
-            }
-        }
-
-        // Tarih formatlama yardımcısı (Bugün, Dün, vb.)
+        // Tarih formatlama yardımcısı (Bugün, Dün, Bu Hafta, Daha Eski)
         function getDateCategory(timestampSeconds) {
+            if (!timestampSeconds) return "Daha Eski";
             const date = new Date(timestampSeconds * 1000);
             const now = new Date();
             
@@ -417,70 +403,6 @@
             return "Daha Eski";
         }
 
-        // 3 Saatlik (10.800 saniye) Zaman Boşluğuna Göre Gruplama
-        function groupMessagesIntoSessions(rawMessages) {
-            if (!rawMessages || rawMessages.length === 0) return [];
-
-            const THREE_HOURS_SECONDS = 3 * 3600; // 10.800 saniye
-            const sessions = [];
-            let currentSession = null;
-
-            for (let i = 0; i < rawMessages.length; i++) {
-                const msg = rawMessages[i];
-
-                if (!currentSession) {
-                    currentSession = {
-                        id: 'session_' + (msg.id || i),
-                        startTime: msg.created_at,
-                        category: getDateCategory(msg.created_at),
-                        messages: [msg],
-                        title: '',
-                        isPinned: false
-                    };
-                } else {
-                    const lastMsg = currentSession.messages[currentSession.messages.length - 1];
-                    const timeDiff = msg.created_at - lastMsg.created_at;
-
-                    if (timeDiff > THREE_HOURS_SECONDS) {
-                        // 3+ saat boşluk varsa önceki oturumu tamamla ve yeni grup başlat
-                        sessions.push(currentSession);
-                        currentSession = {
-                            id: 'session_' + (msg.id || i),
-                            startTime: msg.created_at,
-                            category: getDateCategory(msg.created_at),
-                            messages: [msg],
-                            title: '',
-                            isPinned: false
-                        };
-                    } else {
-                        currentSession.messages.push(msg);
-                    }
-                }
-            }
-
-            if (currentSession) {
-                sessions.push(currentSession);
-            }
-
-            const customTitles = getCustomTitles();
-            const pinnedIds = getPinnedSessionIds();
-
-            // 1. Kural: Başlık Kullanıcının o gruptaki İLK mesajının ilk ~45 karakteri kırpılarak üretilsin (Sıfır LLM)
-            sessions.forEach(sess => {
-                if (customTitles[sess.id]) {
-                    sess.title = customTitles[sess.id];
-                } else {
-                    const firstUserMsg = sess.messages.find(m => m.role === 'user');
-                    const rawText = firstUserMsg ? firstUserMsg.content.trim() : (sess.messages[0] ? sess.messages[0].content.trim() : 'Yeni Sohbet');
-                    sess.title = rawText.length > 45 ? rawText.slice(0, 45) + '...' : rawText;
-                }
-                sess.isPinned = pinnedIds.includes(sess.id);
-            });
-
-            // En yeni oturumlar üstte olacak şekilde ters sırala
-            return sessions.reverse();
-        }
-
         // Sidebar'da Grupları Render Etme (Sabitlenenler en üstte, diğerleri tarih gruplarında)
         function renderSidebarHistory(filterQuery = '') {
             if (!chatHistorySection) return;
@@ -488,9 +410,8 @@
 
             const q = filterQuery.toLowerCase().trim();
 
-            // 1. Kural: Arama SADECE sohbet başlıklarında (45 karakterlik kırpılmış veya özel metinde) çalışır
             const filteredSessions = q
-                ? allChatSessions.filter(s => s.title.toLowerCase().includes(q))
+                ? allChatSessions.filter(s => (s.title || '').toLowerCase().includes(q))
                 : allChatSessions;
 
             if (allChatSessions.length === 0) {
@@ -513,8 +434,8 @@
             }
 
             // Sabitlenenleri ve normal kategorileri ayrıştır
-            const pinnedSessions = filteredSessions.filter(s => s.isPinned);
-            const regularSessions = filteredSessions.filter(s => !s.isPinned);
+            const pinnedSessions = filteredSessions.filter(s => s.is_pinned === 1 || s.is_pinned === true);
+            const regularSessions = filteredSessions.filter(s => !(s.is_pinned === 1 || s.is_pinned === true));
 
             // 1. Varsa Sabitlenenler Grubu Render Et
             if (pinnedSessions.length > 0) {
@@ -524,10 +445,11 @@
             // 2. Normal Tarih Gruplarını Render Et ("Bugün", "Dün", "Bu Hafta", "Daha Eski")
             const categories = {};
             regularSessions.forEach(sess => {
-                if (!categories[sess.category]) {
-                    categories[sess.category] = [];
+                const cat = sess.category || getDateCategory(sess.updated_at);
+                if (!categories[cat]) {
+                    categories[cat] = [];
                 }
-                categories[sess.category].push(sess);
+                categories[cat].push(sess);
             });
 
             // Bilinen sıralama düzeni
@@ -557,9 +479,10 @@
             groupDiv.appendChild(titleDiv);
 
             sessionList.forEach(sess => {
+                const isPinned = sess.is_pinned === 1 || sess.is_pinned === true;
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'historyItem';
-                if (activeSessionId === sess.id) {
+                if (activeConversationId === sess.id) {
                     itemDiv.classList.add('active');
                 }
                 itemDiv.dataset.sessionId = sess.id;
@@ -568,7 +491,7 @@
                 itemDiv.innerHTML = `
                     <div class="historyItemLeft">
                         <span class="historyDot"></span>
-                        ${sess.isPinned ? '<span class="historyPinIcon" title="Sabitlendi">📌</span>' : ''}
+                        ${isPinned ? '<span class="historyPinIcon" title="Sabitlendi">📌</span>' : ''}
                         <span class="historyTitle">${escapeHtml(sess.title)}</span>
                     </div>
                     <button type="button" class="historyItemMoreBtn" title="Seçenekler" aria-label="Seçenekler">
@@ -580,8 +503,8 @@
                     </button>
                     <div class="historyDropdownMenu">
                         <button type="button" class="dropdownActionItem actionPin">
-                            <span class="dropdownActionIcon">${sess.isPinned ? '📍' : '📌'}</span>
-                            <span>${sess.isPinned ? 'Sabitlemeyi Kaldır' : 'Sohbeti Sabitle'}</span>
+                            <span class="dropdownActionIcon">${isPinned ? '📍' : '📌'}</span>
+                            <span>${isPinned ? 'Sabitlemeyi Kaldır' : 'Sohbeti Sabitle'}</span>
                         </button>
                         <button type="button" class="dropdownActionItem actionRename">
                             <span class="dropdownActionIcon">✏️</span>
@@ -600,7 +523,7 @@
                     if (e.target.closest('.historyItemMoreBtn') || e.target.closest('.historyDropdownMenu')) {
                         return;
                     }
-                    loadSessionToChat(sess, itemDiv);
+                    loadConversationToChat(sess, itemDiv);
                 });
 
                 // 3 Nokta Butonu Etkileşimi
@@ -671,21 +594,18 @@
         });
 
         // Sohbeti Sabitleme Mantığı
-        function togglePinSession(sessionId) {
-            let pinnedIds = getPinnedSessionIds();
-            const session = allChatSessions.find(s => s.id === sessionId);
-            if (!session) return;
-
-            if (pinnedIds.includes(sessionId)) {
-                pinnedIds = pinnedIds.filter(id => id !== sessionId);
-                session.isPinned = false;
-            } else {
-                pinnedIds.push(sessionId);
-                session.isPinned = true;
+        async function togglePinSession(sessionId) {
+            try {
+                const response = await fetch(`/chat/conversations/${sessionId}/pin`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    await fetchAndInitializeHistory();
+                }
+            } catch (err) {
+                console.error("Pin değiştirilemedi:", err);
             }
-
-            setPinnedSessionIds(pinnedIds);
-            renderSidebarHistory(searchInput ? searchInput.value : '');
         }
 
         // ==========================================
@@ -720,19 +640,28 @@
             sessionToRename = null;
         }
 
-        function saveSessionRename() {
+        async function saveSessionRename() {
             if (!sessionToRename || !renameModalInput) return;
             const newTitle = renameModalInput.value.trim();
             if (!newTitle) return;
 
-            sessionToRename.title = newTitle;
+            try {
+                const response = await fetch(`/chat/conversations/${sessionToRename.id}/rename`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: newTitle })
+                });
 
-            const customTitles = getCustomTitles();
-            customTitles[sessionToRename.id] = newTitle;
-            setCustomTitles(customTitles);
-
-            closeRenameModal();
-            renderSidebarHistory(searchInput ? searchInput.value : '');
+                if (response.ok) {
+                    closeRenameModal();
+                    await fetchAndInitializeHistory();
+                } else {
+                    alert("Sohbet adı güncellenemedi.");
+                }
+            } catch (err) {
+                console.error("Yeniden adlandırma hatası:", err);
+                alert("Bağlantı hatası.");
+            }
         }
 
         if (renameCancelBtn) {
@@ -764,42 +693,21 @@
             const isConfirmed = confirm(`"${session.title}" adlı sohbeti silmek istediğinize emin misiniz?`);
             if (!isConfirmed) return;
 
-            const messageIds = (session.messages || []).map(m => m.id).filter(id => id !== undefined && id !== null);
-
             try {
-                const response = await fetch('/chat/session', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ messageIds })
+                const response = await fetch(`/chat/conversations/${session.id}`, {
+                    method: 'DELETE'
                 });
 
                 if (response.ok) {
-                    // Oturumu istemci listesinden kaldır
-                    allChatSessions = allChatSessions.filter(s => s.id !== session.id);
-
-                    // Pin ve özel başlıktan temizle
-                    let pinnedIds = getPinnedSessionIds();
-                    if (pinnedIds.includes(session.id)) {
-                        setPinnedSessionIds(pinnedIds.filter(id => id !== session.id));
-                    }
-                    const customTitles = getCustomTitles();
-                    if (customTitles[session.id]) {
-                        delete customTitles[session.id];
-                        setCustomTitles(customTitles);
-                    }
-
-                    // Eğer silinen oturum o anda ekranda açıksa ekranı sıfırla
-                    if (activeSessionId === session.id) {
-                        activeSessionId = null;
+                    if (activeConversationId === session.id) {
+                        activeConversationId = null;
                         finishActiveTyping();
                         removeLoading();
                         chatArea.innerHTML = '';
                         checkWelcomeState();
                     }
 
-                    renderSidebarHistory(searchInput ? searchInput.value : '');
+                    await fetchAndInitializeHistory();
                 } else {
                     const errData = await response.json().catch(() => ({}));
                     alert(errData.error || "Sohbet silinirken bir hata oluştu.");
@@ -810,12 +718,12 @@
             }
         }
 
-        // Tıklanan Oturumu Chat Ekranına Dökme
-        function loadSessionToChat(session, activeElement) {
+        // Tıklanan Konuşmayı Chat Ekranına Yükleme
+        async function loadConversationToChat(session, activeElement) {
             finishActiveTyping();
             removeLoading();
 
-            activeSessionId = session.id;
+            activeConversationId = session.id;
 
             // .active sınıfını güncelle
             document.querySelectorAll('.historyItem.active').forEach(el => el.classList.remove('active'));
@@ -823,7 +731,7 @@
                 activeElement.classList.add('active');
             }
 
-            // Ekranı temizle ve mesajları doldur
+            // Ekranı temizle
             chatArea.innerHTML = '';
             
             if (welcomeCenteredGroup) welcomeCenteredGroup.style.display = 'none';
@@ -833,56 +741,282 @@
                 chatContainer.appendChild(messageInputContainer);
             }
 
-            session.messages.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                if (msg.role === 'user') {
-                    messageDiv.className = 'userMessage';
-                    messageDiv.innerHTML = `<div class="userMessageBubble">${escapeHtml(msg.content.trim())}</div>`;
-                } else {
-                    messageDiv.className = 'welcomeMessage';
-                    messageDiv.innerHTML = `
-                        <div class="aiAvatar">
-                            <img src="/image/arfid_icon.png" class="aiAvatarIcon" alt="ARFID Asistanı">
-                        </div>
-                        <div class="aiMessageBubble">${escapeHtml(msg.content.trim())}</div>
-                    `;
-                }
-                chatArea.appendChild(messageDiv);
-            });
+            try {
+                const response = await fetch(`/chat/conversations/${session.id}/messages`);
+                if (!response.ok) throw new Error("Mesajlar alınamadı");
+                const data = await response.json();
+                const messages = data.messages || [];
 
-            chatArea.scrollTop = chatArea.scrollHeight;
+                if (activeConversationId !== session.id) return;
+
+                messages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    if (msg.id) {
+                        messageDiv.dataset.messageId = msg.id;
+                    }
+                    if (msg.role === 'user') {
+                        messageDiv.className = 'userMessage';
+                        messageDiv.innerHTML = `<div class="userMessageBubble">${escapeHtml(msg.content.trim())}</div>`;
+                    } else {
+                        messageDiv.className = 'welcomeMessage';
+                        messageDiv.innerHTML = `
+                            <div class="aiAvatar">
+                                <img src="/image/arfid_icon.png" class="aiAvatarIcon" alt="ARFID Asistanı">
+                            </div>
+                            <div class="aiResponseContent">
+                                <div class="aiMessageBubble">${escapeHtml(msg.content.trim())}</div>
+                            </div>
+                        `;
+                        if (msg.widget) {
+                            const widgetEl = renderWidgetDOM(msg.widget);
+                            if (widgetEl) {
+                                messageDiv.querySelector('.aiResponseContent').appendChild(widgetEl);
+                            }
+                        }
+                    }
+                    chatArea.appendChild(messageDiv);
+                });
+
+                chatArea.scrollTop = chatArea.scrollHeight;
+            } catch (err) {
+                console.error("Mesaj yükleme hatası:", err);
+                chatArea.innerHTML = '<div class="historyNotFound">Sohbet mesajları yüklenirken bir hata oluştu.</div>';
+            }
 
             if (window.innerWidth <= 768) {
                 closeSidebar();
             }
         }
 
-        // Backend'den Geçmiş Mesajları Çekip Başlatma (200 Mesaj Sınırı)
+        // Backend'den Konuşma Listesini Çekip Başlatma
         async function fetchAndInitializeHistory() {
             try {
-                const response = await fetch('/chat/history');
+                const response = await fetch('/chat/conversations');
                 if (response.ok) {
                     const data = await response.json();
-                    allChatSessions = groupMessagesIntoSessions(data.messages || []);
-                    renderSidebarHistory();
+                    const conversations = data.conversations || [];
+                    allChatSessions = conversations.map(c => ({
+                        ...c,
+                        category: getDateCategory(c.updated_at)
+                    }));
+                    renderSidebarHistory(searchInput ? searchInput.value : '');
                 } else {
-                    renderSidebarHistory();
+                    renderSidebarHistory(searchInput ? searchInput.value : '');
                 }
             } catch (err) {
                 console.error("Geçmiş sohbetler yüklenemedi:", err);
-                renderSidebarHistory();
+                renderSidebarHistory(searchInput ? searchInput.value : '');
             }
         }
 
-        // 5. Kural: Arama tamamen CLIENT-SIDE çalışsın, sadece başlıklarda filtrelesin
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                renderSidebarHistory(e.target.value);
+        // ==========================================
+        // SİDEBAR SEKMELERİ & KAYITLI TARİFLERİM (Aşama D)
+        // ==========================================
+        const tabChatsBtn = document.getElementById('tabChatsBtn');
+        const tabRecipesBtn = document.getElementById('tabRecipesBtn');
+        const recipesBadge = document.getElementById('recipesBadge');
+        const savedWidgetsSection = document.getElementById('savedWidgetsSection');
+        let activeSidebarTab = 'chats'; // 'chats' veya 'recipes'
+        let allSavedWidgets = [];
+
+        function switchSidebarTab(tabName) {
+            activeSidebarTab = tabName;
+            if (tabName === 'chats') {
+                if (tabChatsBtn) tabChatsBtn.classList.add('active');
+                if (tabRecipesBtn) tabRecipesBtn.classList.remove('active');
+                if (chatHistorySection) chatHistorySection.style.display = 'block';
+                if (savedWidgetsSection) savedWidgetsSection.style.display = 'none';
+                if (searchInput) {
+                    searchInput.placeholder = 'Sohbetlerde ara...';
+                    renderSidebarHistory(searchInput.value);
+                }
+            } else if (tabName === 'recipes') {
+                if (tabRecipesBtn) tabRecipesBtn.classList.add('active');
+                if (tabChatsBtn) tabChatsBtn.classList.remove('active');
+                if (chatHistorySection) chatHistorySection.style.display = 'none';
+                if (savedWidgetsSection) savedWidgetsSection.style.display = 'flex';
+                if (searchInput) {
+                    searchInput.placeholder = 'Tarifler ve besinlerde ara...';
+                    renderSavedWidgets(searchInput.value);
+                }
+            }
+        }
+
+        if (tabChatsBtn) {
+            tabChatsBtn.addEventListener('click', () => switchSidebarTab('chats'));
+        }
+        if (tabRecipesBtn) {
+            tabRecipesBtn.addEventListener('click', () => switchSidebarTab('recipes'));
+        }
+
+        // Backend'den Kayıtlı Widget'ları (Tarif & Besin) Çekme
+        async function fetchAndRenderSavedWidgets() {
+            try {
+                const response = await fetch('/widgets/saved');
+                if (response.ok) {
+                    const data = await response.json();
+                    const rawWidgets = data.widgets || [];
+                    allSavedWidgets = rawWidgets.map(w => ({
+                        id: w.id,
+                        type: w.widget_type || w.type || 'recipe',
+                        title: w.title,
+                        data: w.widget_data || w.data || {},
+                        conversation_id: w.conversation_id,
+                        related_message_id: w.related_message_id,
+                        created_at: w.created_at
+                    }));
+                    if (recipesBadge) {
+                        recipesBadge.textContent = allSavedWidgets.length;
+                    }
+                    if (activeSidebarTab === 'recipes') {
+                        renderSavedWidgets(searchInput ? searchInput.value : '');
+                    }
+                }
+            } catch (err) {
+                console.error("Kayıtlı tarifler yüklenemedi:", err);
+            }
+        }
+
+        // Kayıtlı Widget'ları Sidebar'da Listeleme (Sekmeye özel izole arama filtresiyle)
+        function renderSavedWidgets(filterQuery = '') {
+            if (!savedWidgetsSection) return;
+            savedWidgetsSection.innerHTML = '';
+
+            const q = filterQuery.toLowerCase().trim();
+            const filtered = q
+                ? allSavedWidgets.filter(w => {
+                    const title = (w.title || '').toLowerCase();
+                    const type = (w.type || '').toLowerCase();
+                    const note = (w.data && (w.data.food_name || w.data.dietitian_note || '')) ? String(w.data.food_name || w.data.dietitian_note).toLowerCase() : '';
+                    return title.includes(q) || type.includes(q) || note.includes(q);
+                })
+                : allSavedWidgets;
+
+            if (allSavedWidgets.length === 0) {
+                savedWidgetsSection.innerHTML = `
+                    <div class="historyEmptyState">
+                        <span class="emptyIcon">🍲</span>
+                        Henüz kayıtlı bir tarif veya besin kartınız yok. Sohbet esnasında üretilen kartlar burada toplanır!
+                    </div>
+                `;
+                return;
+            }
+
+            if (filtered.length === 0) {
+                savedWidgetsSection.innerHTML = `
+                    <div class="historyNotFound">
+                        "${escapeHtml(filterQuery)}" ile eşleşen tarif bulunamadı.
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(w => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'savedWidgetItem';
+
+                const isRecipe = w.type === 'recipe';
+                const icon = isRecipe ? '🍲' : '🥗';
+                const typeLabel = isRecipe ? 'Tarif' : 'Besin Özeti';
+                const title = escapeHtml(w.title || (isRecipe ? 'Yemek Tarifi' : 'Besin Özeti'));
+                
+                let metaText = '';
+                if (isRecipe && w.data) {
+                    const time = (w.data.prep_time_min || 10) + (w.data.cook_time_min || 20);
+                    metaText = `⏱️ ${time} dk ${w.data.calories_approx ? `• ~${w.data.calories_approx} kcal` : ''}`;
+                } else if (w.data && w.data.total_calories) {
+                    metaText = `⚡ ${w.data.total_calories} kcal • ${escapeHtml(w.data.amount_label || 'Porsiyon')}`;
+                }
+
+                const dateStr = w.created_at
+                    ? new Date(w.created_at * 1000).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })
+                    : '';
+
+                itemDiv.innerHTML = `
+                    <div class="savedWidgetTopRow">
+                        <span class="savedWidgetIcon">${icon}</span>
+                        <div class="savedWidgetInfo">
+                            <span class="savedWidgetTitle">${title}</span>
+                            <div class="savedWidgetMeta">
+                                <span class="savedWidgetMetaTag">${typeLabel}</span>
+                                ${metaText ? `<span>${metaText}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="savedWidgetBottomRow">
+                        <span class="savedWidgetDate">${dateStr}</span>
+                        ${(w.conversation_id && w.related_message_id) ? `
+                            <button type="button" class="savedWidgetJumpBtn" data-conv-id="${w.conversation_id}" data-msg-id="${w.related_message_id}">
+                                <span>Bu Sohbete Git</span>
+                                <span>↗</span>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+
+                // Kartın geneline tıklanınca Stage C modalı açılsın
+                itemDiv.addEventListener('click', (e) => {
+                    if (e.target.closest('.savedWidgetJumpBtn')) return;
+                    openWidgetDetailModal(w);
+                });
+
+                // "Bu Sohbete Git" butonuna tıklanınca o konuşmaya ve mesaja atla
+                const jumpBtn = itemDiv.querySelector('.savedWidgetJumpBtn');
+                if (jumpBtn) {
+                    jumpBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const convId = parseInt(jumpBtn.dataset.convId, 10);
+                        const msgId = parseInt(jumpBtn.dataset.msgId, 10);
+                        jumpToConversationMessage(convId, msgId);
+                    });
+                }
+
+                savedWidgetsSection.appendChild(itemDiv);
             });
         }
 
-        // Sayfa açılışında geçmişi getir
+        // Belirli bir sohbetteki belirli mesaja atlama ve vurgulama
+        async function jumpToConversationMessage(conversationId, messageId) {
+            // 1. Sohbetler sekmesine geç
+            switchSidebarTab('chats');
+
+            // 2. İlgili session objesini ve DOM elemanını bul
+            const session = allChatSessions.find(s => s.id === conversationId) || { id: conversationId, title: "Sohbet" };
+            const historyItemEl = document.querySelector(`.historyItem[data-session-id="${conversationId}"]`);
+
+            // 3. Konuşmayı yükle
+            await loadConversationToChat(session, historyItemEl);
+
+            // 4. İlgili mesaja yumuşakça kaydır ve vurgula
+            setTimeout(() => {
+                const msgEl = document.querySelector(`[data-message-id="${messageId}"]`);
+                if (msgEl) {
+                    msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    msgEl.classList.remove('highlightMessage');
+                    void msgEl.offsetWidth; // Reflow tetikle
+                    msgEl.classList.add('highlightMessage');
+                    setTimeout(() => {
+                        msgEl.classList.remove('highlightMessage');
+                    }, 3000);
+                }
+            }, 180);
+        }
+
+        // Arama kutusu - Aktif sekmeye göre İZOLE filtreleme yapar
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value;
+                if (activeSidebarTab === 'chats') {
+                    renderSidebarHistory(query);
+                } else if (activeSidebarTab === 'recipes') {
+                    renderSavedWidgets(query);
+                }
+            });
+        }
+
+        // Sayfa açılışında hem sohbet geçmişini hem de kayıtlı tarifleri getir
         fetchAndInitializeHistory();
+        fetchAndRenderSavedWidgets();
 
         // ==========================================
         // MEVCUT MESAJLAŞMA & FONKSİYONEL JS MANTIĞI
@@ -962,7 +1096,208 @@
             return div.innerHTML;
         }
 
-        function addAiMessage(message) {
+        // ==========================================
+        // WIDGET RENDER SİSTEMİ (Aşama B)
+        // ==========================================
+        function renderWidgetDOM(widget) {
+            if (!widget || typeof widget !== 'object') return null;
+
+            const container = document.createElement('div');
+            container.className = 'widgetContainer';
+            container.dataset.widgetType = widget.type || 'recipe';
+
+            const data = widget.data || {};
+            const title = escapeHtml(widget.title || 'Bilgi Kartı');
+
+            if (widget.type === 'recipe') {
+                const isCompact = data.display_mode === 'compact_list';
+                if (isCompact) {
+                    container.classList.add('widgetRecipeCompact');
+                    const totalTime = (data.prep_time_min || 10) + (data.cook_time_min || 20);
+                    container.innerHTML = `
+                        <div class="widgetCompactCard openWidgetPopupBtn" data-widget-json="${encodeURIComponent(JSON.stringify(widget))}">
+                            <div class="compactCardLeft">
+                                <span class="compactCardIcon">🍲</span>
+                                <div class="compactCardInfo">
+                                    <span class="compactCardTitle">${title}</span>
+                                    <div class="compactCardMeta">
+                                        <span>⏱️ ${totalTime} dk</span>
+                                        ${data.calories_approx ? `<span>⚡ ~${data.calories_approx} kcal</span>` : ''}
+                                        <span>👥 ${escapeHtml(data.servings || '1-2 Kişilik')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="widgetDetailBtn" style="padding:5px 12px; font-size:11.5px;">
+                                <span>Gör</span>
+                                <span>→</span>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    container.classList.add('widgetRecipeLarge');
+                    const approxBadge = data.calories_approx
+                        ? `<div class="widgetBadge approx" title="Model tarafından tahmin edilen yaklaşık kalori">
+                             <span>⚡</span><span>~${data.calories_approx} kcal</span>
+                           </div>`
+                        : '';
+                    
+                    const imageSlot = (data.image_placeholder && data.image_placeholder.slot_key) || 'recipe_default';
+                    const altText = escapeHtml((data.image_placeholder && data.image_placeholder.alt_text) || title);
+
+                    const tagsHtml = (data.sensory_tags && data.sensory_tags.length > 0)
+                        ? `<div class="widgetTagsRow">
+                             ${data.sensory_tags.map(t => `<span class="widgetTag">✨ ${escapeHtml(t)}</span>`).join('')}
+                           </div>`
+                        : '';
+
+                    const ingHtml = (data.ingredients && data.ingredients.length > 0)
+                        ? `<div class="widgetSectionTitle"><span>🥕</span><span>Malzemeler</span></div>
+                           <ul class="widgetIngredientsList">
+                             ${data.ingredients.slice(0, 4).map(ing => `
+                               <li class="widgetIngredientItem">
+                                 ${ing.amount ? escapeHtml(String(ing.amount)) + ' ' : ''}${ing.unit ? escapeHtml(ing.unit) + ' ' : ''}${escapeHtml(ing.name)}
+                               </li>
+                             `).join('')}
+                             ${data.ingredients.length > 4 ? `<li class="widgetIngredientItem" style="font-weight:600; color:#8C7B6E;">+${data.ingredients.length - 4} malzeme daha...</li>` : ''}
+                           </ul>`
+                        : '';
+
+                    const noteHtml = data.dietitian_note
+                        ? `<div class="widgetDietitianNote"><strong>💡 Diyetisyen Notu:</strong> ${escapeHtml(data.dietitian_note)}</div>`
+                        : '';
+
+                    container.innerHTML = `
+                        <div class="widgetCard">
+                            <div class="widgetHeaderRow">
+                                <div class="widgetTitleGroup">
+                                    <div class="widgetCategoryLabel"><span>🍲</span><span>Tarif Önerisi</span></div>
+                                    <h3 class="widgetTitle">${title}</h3>
+                                </div>
+                                ${approxBadge}
+                            </div>
+                            <div class="widgetImageContainer" data-image-slot="${escapeHtml(imageSlot)}" data-image-status="placeholder" title="${altText}">
+                                <div class="widgetImagePlaceholder">
+                                    <span class="placeholderIcon">🍲</span>
+                                    <span class="placeholderTitle">${altText}</span>
+                                    <span class="placeholderNote">Görsel Alanı (Placeholder)</span>
+                                </div>
+                                <img class="widgetRealImage" src="" alt="${altText}" />
+                            </div>
+                            <div class="widgetStatsRow">
+                                <div class="widgetStatItem">
+                                    <span class="widgetStatLabel">Hazırlık</span>
+                                    <span class="widgetStatValue">${data.prep_time_min ? data.prep_time_min + ' dk' : '10 dk'}</span>
+                                </div>
+                                <div class="widgetStatItem">
+                                    <span class="widgetStatLabel">Pişirme</span>
+                                    <span class="widgetStatValue">${data.cook_time_min ? data.cook_time_min + ' dk' : '25 dk'}</span>
+                                </div>
+                                <div class="widgetStatItem">
+                                    <span class="widgetStatLabel">Porsiyon</span>
+                                    <span class="widgetStatValue">${escapeHtml(data.servings || '1-2 Kişilik')}</span>
+                                </div>
+                                <div class="widgetStatItem">
+                                    <span class="widgetStatLabel">Güvenilirlik</span>
+                                    <span class="widgetStatValue" style="color:#C05621;">Tahmini (~)</span>
+                                </div>
+                            </div>
+                            ${tagsHtml}
+                            ${ingHtml}
+                            ${noteHtml}
+                            <div class="widgetActionsRow">
+                                <button type="button" class="widgetDetailBtn openWidgetPopupBtn" data-widget-json="${encodeURIComponent(JSON.stringify(widget))}">
+                                    <span>📖</span>
+                                    <span>Tarifi İncele</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (widget.type === 'nutrition') {
+                container.classList.add('widgetNutrition');
+                const foodName = escapeHtml(data.food_name || title);
+                const amountLabel = escapeHtml(data.amount_label || '1 Porsiyon');
+                const totalCals = data.total_calories || 0;
+                const imageSlot = (data.image_placeholder && data.image_placeholder.slot_key) || 'food_default';
+
+                const macrosHtml = data.macros
+                    ? `<div class="nutritionMacrosGrid">
+                         <div class="macroCard protein">
+                             <span class="macroLabel">Protein</span>
+                             <span class="macroValue">${data.macros.protein_g !== null && data.macros.protein_g !== undefined ? data.macros.protein_g + 'g' : '-'}</span>
+                         </div>
+                         <div class="macroCard carbs">
+                             <span class="macroLabel">Karb</span>
+                             <span class="macroValue">${data.macros.carbs_g !== null && data.macros.carbs_g !== undefined ? data.macros.carbs_g + 'g' : '-'}</span>
+                         </div>
+                         <div class="macroCard fat">
+                             <span class="macroLabel">Yağ</span>
+                             <span class="macroValue">${data.macros.fat_g !== null && data.macros.fat_g !== undefined ? data.macros.fat_g + 'g' : '-'}</span>
+                         </div>
+                       </div>`
+                    : '';
+
+                const breakdownHtml = (data.breakdown && data.breakdown.length > 0)
+                    ? `<div class="widgetSectionTitle"><span>📊</span><span>Kalori Dökümü</span></div>
+                       <div class="nutritionBreakdownList">
+                         ${data.breakdown.map(b => `
+                           <div class="nutritionBreakdownItem">
+                               <span class="breakdownItemName">${escapeHtml(b.item)}</span>
+                               <span class="breakdownItemCalories">${b.calories} kcal</span>
+                           </div>
+                         `).join('')}
+                       </div>`
+                    : '';
+
+                container.innerHTML = `
+                    <div class="widgetCard">
+                        <div class="widgetHeaderRow">
+                            <div class="widgetTitleGroup">
+                                <div class="widgetCategoryLabel"><span>🥗</span><span>Besin & Kalori Özeti</span></div>
+                                <h3 class="widgetTitle">${title}</h3>
+                            </div>
+                            <div class="widgetBadge verified" title="Veritabanı hesaplama aracı (calculateCalories) ile doğrulanmıştır">
+                                <span>🛡️</span>
+                                <span>Doğrulanmış</span>
+                            </div>
+                        </div>
+                        <div class="widgetImageContainer" style="height:120px;" data-image-slot="${escapeHtml(imageSlot)}" data-image-status="placeholder" title="${foodName}">
+                            <div class="widgetImagePlaceholder">
+                                <span class="placeholderIcon">🥗</span>
+                                <span class="placeholderTitle">${foodName}</span>
+                                <span class="placeholderNote">Görsel Alanı (Placeholder)</span>
+                            </div>
+                            <img class="widgetRealImage" src="" alt="${foodName}" />
+                        </div>
+                        <div class="nutritionHeaderHero">
+                            <div class="nutritionHeroMain">
+                                <span class="nutritionFoodName">${foodName}</span>
+                                <span class="nutritionPortionLabel">Porsiyon: ${amountLabel}</span>
+                            </div>
+                            <div class="nutritionCaloriesCircle">
+                                <span class="nutritionCaloriesNumber">${totalCals}</span>
+                                <span class="nutritionCaloriesUnit">KCAL</span>
+                            </div>
+                        </div>
+                        ${macrosHtml}
+                        ${breakdownHtml}
+                        <div class="nutritionDisclaimer">
+                            ℹ️ ${escapeHtml(data.disclaimer || 'Standart besin tablosu (calculateCalories) ile doğrulanmış ortalama değerlerdir.')}
+                        </div>
+                        <div class="widgetActionsRow">
+                            <button type="button" class="widgetDetailBtn openWidgetPopupBtn" data-widget-json="${encodeURIComponent(JSON.stringify(widget))}">
+                                <span>🔍</span>
+                                <span>Besin Detayı</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return container;
+        }
+
+        function addAiMessage(message, widget = null) {
             removeLoading();
             finishActiveTyping();
 
@@ -970,6 +1305,10 @@
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'welcomeMessage';
+
+            const responseContent = document.createElement('div');
+            responseContent.className = 'aiResponseContent';
+
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'aiMessageBubble typingReveal';
             
@@ -978,7 +1317,17 @@
                     <img src="/image/arfid_icon.png" class="aiAvatarIcon" alt="ARFID Asistanı">
                 </div>
             `;
-            messageDiv.appendChild(bubbleDiv);
+            responseContent.appendChild(bubbleDiv);
+
+            // Eğer yanıtla birlikte gelen bir widget varsa mesaj içeriğinin (balonun) altına iliştir
+            if (widget) {
+                const widgetEl = renderWidgetDOM(widget);
+                if (widgetEl) {
+                    responseContent.appendChild(widgetEl);
+                }
+            }
+
+            messageDiv.appendChild(responseContent);
             chatArea.appendChild(messageDiv);
 
             activeTypingBubble = bubbleDiv;
@@ -1048,14 +1397,22 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ message })
+                        body: JSON.stringify({ 
+                            message,
+                            conversationId: activeConversationId
+                        })
                     });
                     
                     if (response.ok) {
                         const data = await response.json();
-                        addAiMessage(data.response);
+                        if (data.conversation_id) {
+                            activeConversationId = data.conversation_id;
+                        }
+                        addAiMessage(data.response, data.widget);
                         // Yeni mesaj atıldığında geçmiş sohbetler listesini anlık tazele
-                        fetchAndInitializeHistory();
+                        await fetchAndInitializeHistory();
+                        // Yeni üretilen bir widget varsa kayıtlı tarifler listesini ve sayacını da tazele
+                        await fetchAndRenderSavedWidgets();
                     } else {
                         const data = await response.json().catch(() => ({}));
                         addAiMessage(data.error || "Üzgünüm, şu an cevap veremiyorum. (Sunucu hatası)");
@@ -1076,6 +1433,361 @@
         messageInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendMessage();
+            }
+        });
+
+        // ==========================================
+        // WIDGET DETAY POP-UP MODAL YÖNETİMİ (Aşama C)
+        // ==========================================
+        const widgetModalOverlay = document.getElementById('widgetModalOverlay');
+        const widgetModal = document.getElementById('widgetModal');
+        const widgetModalIcon = document.getElementById('widgetModalIcon');
+        const widgetModalCategory = document.getElementById('widgetModalCategory');
+        const widgetModalTitle = document.getElementById('widgetModalTitle');
+        const widgetModalBody = document.getElementById('widgetModalBody');
+        const widgetModalFooterNotice = document.getElementById('widgetModalFooterNotice');
+        const closeWidgetModalBtn = document.getElementById('closeWidgetModalBtn');
+        const closeWidgetModalBottomBtn = document.getElementById('closeWidgetModalBottomBtn');
+
+        /**
+         * Generic and source-agnostic modal opener.
+         * Works identically for live chat widgets, compact lists, and Stage D's saved widgets.
+         * 
+         * @param {Object} widget - Standard normalized widget object { type, title, data }
+         */
+        function openWidgetDetailModal(widget) {
+            if (!widget || !widgetModalOverlay || !widgetModalBody) return;
+
+            const type = widget.type || 'recipe';
+            const rawTitle = widget.title || (type === 'recipe' ? 'Yemek Tarifi' : 'Besin Özeti');
+            const data = widget.data || {};
+
+            // 1. Üst Başlık ve İkon Bilgisini Belirle
+            if (type === 'recipe') {
+                if (widgetModalIcon) widgetModalIcon.textContent = '🍲';
+                if (widgetModalCategory) widgetModalCategory.textContent = 'Yemek Tarifi Detayı';
+                if (widgetModalFooterNotice) {
+                    widgetModalFooterNotice.textContent = '💡 Malzemeleri işaretleyerek hazırlık sürecinizi adım adım takip edebilirsiniz.';
+                }
+            } else if (type === 'nutrition') {
+                if (widgetModalIcon) widgetModalIcon.textContent = '🥗';
+                if (widgetModalCategory) widgetModalCategory.textContent = 'Besin & Kalori Analizi';
+                if (widgetModalFooterNotice) {
+                    widgetModalFooterNotice.textContent = '🛡️ Değerler veritabanı hesaplama aracı (calculateCalories) ile doğrulanmıştır.';
+                }
+            }
+            if (widgetModalTitle) widgetModalTitle.textContent = rawTitle;
+
+            // 2. Dinamik Gövde HTML'ini Oluştur
+            let bodyHtml = '';
+
+            if (type === 'recipe') {
+                const prepTime = data.prep_time_min ? (data.prep_time_min + ' dk') : '10 dk';
+                const cookTime = data.cook_time_min ? (data.cook_time_min + ' dk') : '25 dk';
+                const servings = escapeHtml(data.servings || '1-2 Kişilik');
+                const imageSlot = (data.image_placeholder && data.image_placeholder.slot_key) || 'recipe_default';
+                const altText = escapeHtml((data.image_placeholder && data.image_placeholder.alt_text) || rawTitle);
+
+                // Rozetler
+                const tagsHtml = (data.sensory_tags && data.sensory_tags.length > 0)
+                    ? `<div class="modalHeroBadges">
+                         ${data.sensory_tags.map(t => `<span class="widgetTag">✨ ${escapeHtml(t)}</span>`).join('')}
+                         ${data.calories_approx ? `<span class="widgetBadge approx">⚡ ~${data.calories_approx} kcal (Tahmini)</span>` : ''}
+                       </div>`
+                    : (data.calories_approx ? `<div class="modalHeroBadges"><span class="widgetBadge approx">⚡ ~${data.calories_approx} kcal (Tahmini)</span></div>` : '');
+
+                // İstatistik Tablosu
+                const statsHtml = `
+                    <div class="modalStatsGrid">
+                        <div class="modalStatCard">
+                            <span class="label">Hazırlık</span>
+                            <span class="val">${prepTime}</span>
+                        </div>
+                        <div class="modalStatCard">
+                            <span class="label">Pişirme</span>
+                            <span class="val">${cookTime}</span>
+                        </div>
+                        <div class="modalStatCard">
+                            <span class="label">Porsiyon</span>
+                            <span class="val">${servings}</span>
+                        </div>
+                        <div class="modalStatCard">
+                            <span class="label">Güvenilirlik</span>
+                            <span class="val" style="color:#C05621; font-size:12px;">Tahmini (~)</span>
+                        </div>
+                    </div>
+                `;
+
+                // Görsel Alanı Placeholder
+                const imageHtml = `
+                    <div class="modalImagePlaceholder" data-image-slot="${escapeHtml(imageSlot)}" title="${altText}">
+                        <span class="icon">🍲</span>
+                        <span class="title">${altText}</span>
+                        <span class="note">Görsel Alanı (Open Food Facts Placeholder)</span>
+                    </div>
+                `;
+
+                // Malzemeler (Her açılışta sıfırlanan, tıklanabilir checkbox listesi)
+                let ingredientsHtml = '';
+                if (data.ingredients && data.ingredients.length > 0) {
+                    ingredientsHtml = `
+                        <div class="modalSection">
+                            <div class="modalSectionHeader">
+                                <span>🥕</span>
+                                <span>Malzeme Listesi (${data.ingredients.length} Malzeme)</span>
+                            </div>
+                            <ul class="modalIngredientsList">
+                                ${data.ingredients.map((ing, idx) => {
+                                    const amountStr = ing.amount ? (escapeHtml(String(ing.amount)) + ' ') : '';
+                                    const unitStr = ing.unit ? (escapeHtml(ing.unit) + ' ') : '';
+                                    const nameStr = escapeHtml(ing.name || '');
+                                    return `
+                                        <li class="modalIngredientItem">
+                                            <input type="checkbox" id="modal_ing_${idx}" />
+                                            <label class="ingText" for="modal_ing_${idx}">${amountStr}${unitStr}${nameStr}</label>
+                                        </li>
+                                    `;
+                                }).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                // Adım Adım Hazırlanış (Numaralı kartlar)
+                let instructionsHtml = '';
+                if (data.instructions && data.instructions.length > 0) {
+                    instructionsHtml = `
+                        <div class="modalSection">
+                            <div class="modalSectionHeader">
+                                <span>👩‍🍳</span>
+                                <span>Adım Adım Hazırlanış</span>
+                            </div>
+                            <div class="modalInstructionList">
+                                ${data.instructions.map((step, idx) => `
+                                    <div class="modalStepCard">
+                                        <div class="modalStepNumber">${idx + 1}</div>
+                                        <div class="modalStepText">${escapeHtml(step)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // ARFID Diyetisyen Notu
+                let dietitianNoteHtml = '';
+                if (data.dietitian_note) {
+                    dietitianNoteHtml = `
+                        <div class="modalDietitianNote">
+                            <span class="noteIcon">💡</span>
+                            <div>
+                                <strong>ARFID Diyetisyen Tavsiyesi:</strong>
+                                <div style="margin-top:2px;">${escapeHtml(data.dietitian_note)}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                bodyHtml = `
+                    ${tagsHtml}
+                    ${imageHtml}
+                    ${statsHtml}
+                    ${ingredientsHtml}
+                    ${instructionsHtml}
+                    ${dietitianNoteHtml}
+                `;
+
+            } else if (type === 'nutrition') {
+                const foodName = escapeHtml(data.food_name || rawTitle);
+                const amountLabel = escapeHtml(data.amount_label || 'Standart porsiyon');
+                const totalCals = data.total_calories || 0;
+                const imageSlot = (data.image_placeholder && data.image_placeholder.slot_key) || 'food_default';
+
+                // Hero Kalori Alanı
+                const heroHtml = `
+                    <div class="modalNutritionHero">
+                        <div class="modalNutritionHeroInfo">
+                            <span class="modalNutritionFoodName">${foodName}</span>
+                            <span class="modalNutritionPortion">Porsiyon: ${amountLabel}</span>
+                            <div class="modalNutritionHeroBadge">
+                                <span>🛡️</span>
+                                <span>Doğrulanmış Değer (calculateCalories)</span>
+                            </div>
+                        </div>
+                        <div class="modalNutritionCalorieBadge">
+                            <span class="modalNutritionCalorieNumber">${totalCals}</span>
+                            <span class="modalNutritionCalorieUnit">KCAL</span>
+                        </div>
+                    </div>
+                `;
+
+                // Görsel Alanı Placeholder
+                const imageHtml = `
+                    <div class="modalImagePlaceholder" style="height:130px;" data-image-slot="${escapeHtml(imageSlot)}" title="${foodName}">
+                        <span class="icon">🥗</span>
+                        <span class="title">${foodName}</span>
+                        <span class="note">Görsel Alanı (Open Food Facts Placeholder)</span>
+                    </div>
+                `;
+
+                // Makro Besin Tablosu
+                let macrosHtml = '';
+                if (data.macros) {
+                    const p = (data.macros.protein_g !== null && data.macros.protein_g !== undefined) ? data.macros.protein_g + 'g' : '-';
+                    const c = (data.macros.carbs_g !== null && data.macros.carbs_g !== undefined) ? data.macros.carbs_g + 'g' : '-';
+                    const f = (data.macros.fat_g !== null && data.macros.fat_g !== undefined) ? data.macros.fat_g + 'g' : '-';
+
+                    macrosHtml = `
+                        <div class="modalSection">
+                            <div class="modalSectionHeader">
+                                <span>📊</span>
+                                <span>Makro Besin Dağılımı</span>
+                            </div>
+                            <div class="modalMacrosGrid">
+                                <div class="modalMacroCard protein">
+                                    <div class="macroHeader">
+                                        <span>PROTEİN</span>
+                                        <span>🥩</span>
+                                    </div>
+                                    <span class="macroGrams">${p}</span>
+                                </div>
+                                <div class="modalMacroCard carbs">
+                                    <div class="macroHeader">
+                                        <span>KARBONHİDRAT</span>
+                                        <span>🌾</span>
+                                    </div>
+                                    <span class="macroGrams">${c}</span>
+                                </div>
+                                <div class="modalMacroCard fat">
+                                    <div class="macroHeader">
+                                        <span>YAĞ</span>
+                                        <span>🥑</span>
+                                    </div>
+                                    <span class="macroGrams">${f}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Kalori ve Bileşen Dökümü
+                let breakdownHtml = '';
+                if (data.breakdown && data.breakdown.length > 0) {
+                    breakdownHtml = `
+                        <div class="modalSection">
+                            <div class="modalSectionHeader">
+                                <span>🔍</span>
+                                <span>Kalori ve Bileşen Dökümü</span>
+                            </div>
+                            <div class="modalBreakdownList">
+                                ${data.breakdown.map(b => `
+                                    <div class="modalBreakdownItem">
+                                        <span class="itemName">${escapeHtml(b.item)} ${b.note ? `<small style="color:#8C7B6E; font-weight:normal;">(${escapeHtml(b.note)})</small>` : ''}</span>
+                                        <span class="itemCals">${b.calories} kcal</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Standart Açıklama
+                const disclaimerHtml = `
+                    <div class="modalDietitianNote" style="background:#F7FAFC; border-color:#E2E8F0; color:#4A5568;">
+                        <span class="noteIcon">ℹ️</span>
+                        <div>
+                            <strong>Bilgilendirme Notu:</strong>
+                            <div style="margin-top:2px;">${escapeHtml(data.disclaimer || 'Standart besin tablosu (calculateCalories) ile doğrulanmış ortalama değerlerdir.')}</div>
+                        </div>
+                    </div>
+                `;
+
+                bodyHtml = `
+                    ${heroHtml}
+                    ${imageHtml}
+                    ${macrosHtml}
+                    ${breakdownHtml}
+                    ${disclaimerHtml}
+                `;
+            }
+
+            // Gövde içeriğini sıfırdan oluşturup bas (Böylece checkbox'lar sıfırlanır)
+            widgetModalBody.innerHTML = bodyHtml;
+            widgetModalBody.scrollTop = 0;
+
+            // Modalı görünür yap
+            widgetModalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeWidgetDetailModal() {
+            if (widgetModalOverlay) {
+                widgetModalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Kapatma butonları
+        if (closeWidgetModalBtn) {
+            closeWidgetModalBtn.addEventListener('click', closeWidgetDetailModal);
+        }
+        if (closeWidgetModalBottomBtn) {
+            closeWidgetModalBottomBtn.addEventListener('click', closeWidgetDetailModal);
+        }
+
+        // Karartılmış arka plana (overlay) tıklayınca kapatma
+        if (widgetModalOverlay) {
+            widgetModalOverlay.addEventListener('click', function(e) {
+                if (e.target === widgetModalOverlay) {
+                    closeWidgetDetailModal();
+                }
+            });
+        }
+
+        // Malzeme checkbox tıklamasıyla üstünü çizme (checked sınıfı toggle)
+        if (widgetModalBody) {
+            widgetModalBody.addEventListener('change', function(e) {
+                if (e.target && e.target.type === 'checkbox') {
+                    const item = e.target.closest('.modalIngredientItem');
+                    if (item) {
+                        if (e.target.checked) {
+                            item.classList.add('checked');
+                        } else {
+                            item.classList.remove('checked');
+                        }
+                    }
+                }
+            });
+        }
+
+        // Evrensel ESC Tuşu Desteği (Widget modalı, Ayarlar modalı ve Yeniden adlandırma modalı)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (widgetModalOverlay && widgetModalOverlay.classList.contains('active')) {
+                    closeWidgetDetailModal();
+                } else if (typeof settingsModalOverlay !== 'undefined' && settingsModalOverlay && settingsModalOverlay.classList.contains('active')) {
+                    closeSettingsModal();
+                } else if (typeof renameModalOverlay !== 'undefined' && renameModalOverlay && renameModalOverlay.classList.contains('active')) {
+                    closeRenameModal();
+                }
+            }
+        });
+
+        // Widget Butonlarına Tıklandığında Modalı Aç
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.openWidgetPopupBtn');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const jsonStr = btn.dataset.widgetJson;
+                if (jsonStr) {
+                    try {
+                        const widgetObj = JSON.parse(decodeURIComponent(jsonStr));
+                        openWidgetDetailModal(widgetObj);
+                    } catch (parseErr) {
+                        console.error("[Widget Click] JSON parse hatası:", parseErr);
+                    }
+                }
             }
         });
     </script>
