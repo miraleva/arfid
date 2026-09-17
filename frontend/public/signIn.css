@@ -33,7 +33,7 @@ body {
   width: 100vw;
   height: 100vh;
   background-color: var(--color-avocado); /* Orijinal arka plan rengi korundu */
-  font-family: 'Fredoka', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Nunito', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
   color: var(--text-primary);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -215,7 +215,7 @@ body {
 
 /* Başlık: Büyütülmüş ve UI Uyumlu Canlı Renkli */
 .title {
-  font-family: 'Fredoka', cursive, sans-serif;
+  font-family: 'Nunito', cursive, sans-serif;
   color: var(--title-color-signin);
   font-size: 44px;
   font-weight: 800;
@@ -379,7 +379,7 @@ button[type="submit"],
   height: 60px;
   background-color: var(--color-ocean-blue);
   color: #FFFFFF;
-  font-family: 'Fredoka', cursive, sans-serif;
+  font-family: 'Nunito', cursive, sans-serif;
   font-size: 1.4rem;
   font-weight: 800;
   border: 3px solid var(--text-title-dark);
