@@ -1619,7 +1619,7 @@
                     </div>
                 `;
 
-                // Malzemeler (Her açılışta sıfırlanan, tıklanabilir checkbox listesi)
+                // Malzemeler (Klasik Madde İşaretli Liste)
                 let ingredientsHtml = '';
                 if (data.ingredients && data.ingredients.length > 0) {
                     ingredientsHtml = `
@@ -1629,14 +1629,14 @@
                                 <span>Malzeme Listesi (${data.ingredients.length} Malzeme)</span>
                             </div>
                             <ul class="modalIngredientsList">
-                                ${data.ingredients.map((ing, idx) => {
+                                ${data.ingredients.map((ing) => {
                                     const amountStr = ing.amount ? (escapeHtml(String(ing.amount)) + ' ') : '';
                                     const unitStr = ing.unit ? (escapeHtml(ing.unit) + ' ') : '';
                                     const nameStr = escapeHtml(ing.name || '');
                                     return `
                                         <li class="modalIngredientItem">
-                                            <input type="checkbox" id="modal_ing_${idx}" />
-                                            <label class="ingText" for="modal_ing_${idx}">${amountStr}${unitStr}${nameStr}</label>
+                                            <span class="modalIngBullet">●</span>
+                                            <span class="ingText">${amountStr}${unitStr}${nameStr}</span>
                                         </li>
                                     `;
                                 }).join('')}
@@ -1836,21 +1836,7 @@
             });
         }
 
-        // Malzeme checkbox tıklamasıyla üstünü çizme (checked sınıfı toggle)
-        if (widgetModalBody) {
-            widgetModalBody.addEventListener('change', function(e) {
-                if (e.target && e.target.type === 'checkbox') {
-                    const item = e.target.closest('.modalIngredientItem');
-                    if (item) {
-                        if (e.target.checked) {
-                            item.classList.add('checked');
-                        } else {
-                            item.classList.remove('checked');
-                        }
-                    }
-                }
-            });
-        }
+
 
         // Evrensel ESC Tuşu Desteği (Widget modalı, Ayarlar modalı ve Yeniden adlandırma modalı)
         document.addEventListener('keydown', function(e) {

@@ -251,9 +251,9 @@
 }
 
 .widgetIngredientItem::before {
-    content: "✓";
-    font-weight: 800;
-    color: #8BBF3D;
+    content: "●";
+    font-size: 8px;
+    color: var(--color-tangerine, #FFA934);
     margin-right: 8px;
 }
 
@@ -729,7 +729,7 @@
     margin-bottom: 8px;
 }
 
-/* Checkbox Ingredients List */
+/* Klasik Madde İşaretli Malzeme Listesi */
 .modalIngredientsList {
     display: flex;
     flex-direction: column;
@@ -747,8 +747,6 @@
     border: 1.5px solid #ECE1D4;
     border-radius: 12px;
     padding: 10px 14px;
-    cursor: pointer;
-    user-select: none;
     transition: all 0.18s ease;
 }
 
@@ -757,53 +755,18 @@
     border-color: #D8C5B2;
 }
 
-.modalIngredientItem input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #2B2118;
-    border-radius: 6px;
-    background: #FFF;
-    cursor: pointer;
-    display: grid;
-    place-content: center;
-    transition: all 0.15s ease;
+.modalIngredientItem .modalIngBullet {
+    font-size: 9px;
+    color: var(--color-tangerine, #FFA934);
+    line-height: 1;
     flex-shrink: 0;
-}
-
-.modalIngredientItem input[type="checkbox"]::before {
-    content: "✓";
-    font-size: 13px;
-    font-weight: 900;
-    color: #FFF;
-    transform: scale(0);
-    transition: transform 0.15s ease;
-}
-
-.modalIngredientItem input[type="checkbox"]:checked {
-    background: #98C54E;
-    border-color: #2B2118;
-}
-
-.modalIngredientItem input[type="checkbox"]:checked::before {
-    transform: scale(1);
-}
-
-.modalIngredientItem.checked {
-    opacity: 0.65;
-    background: #EFE9DE;
-}
-
-.modalIngredientItem.checked .ingText {
-    text-decoration: line-through;
-    color: #7D6F63;
 }
 
 .modalIngredientItem .ingText {
     font-size: 13.5px;
     font-weight: 600;
     color: #2B2118;
+    line-height: 1.4;
     flex: 1;
 }
 
