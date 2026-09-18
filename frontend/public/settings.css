@@ -40,7 +40,7 @@
     position: relative;
     transform: scale(0.94) translateY(10px);
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    font-family: 'Fredoka', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Nunito', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
 }
 
 .settingsModalOverlay.active .settingsModal {
@@ -58,7 +58,7 @@
 }
 
 .settingsModalTitle {
-    font-family: 'Fredoka', cursive, sans-serif;
+    font-family: 'Nunito', cursive, sans-serif;
     font-size: 22px;
     font-weight: 800;
     color: #2B2118;
@@ -160,7 +160,7 @@
 }
 
 .settingsSectionTitle {
-    font-family: 'Fredoka', cursive, sans-serif;
+    font-family: 'Nunito', cursive, sans-serif;
     font-size: 20px;
     font-weight: 800;
     color: #2B2118;

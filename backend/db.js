@@ -111,13 +111,18 @@ db.serialize(() => {
         widget_type TEXT NOT NULL CHECK(widget_type IN ('recipe', 'nutrition')),
         title TEXT NOT NULL,
         widget_data TEXT NOT NULL,
+        is_pinned INTEGER DEFAULT 0 CHECK(is_pinned IN (0, 1)),
         created_at INTEGER NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE SET NULL,
         FOREIGN KEY (related_message_id) REFERENCES chat_messages(id) ON DELETE SET NULL
     )`);
 
+    // Ensure is_pinned column exists for existing installations
+    db.run(`ALTER TABLE saved_widgets ADD COLUMN is_pinned INTEGER DEFAULT 0`, () => {});
+
     db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_user_id ON saved_widgets(user_id, id DESC)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_user_pinned ON saved_widgets(user_id, is_pinned DESC, id DESC)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_conv_id ON saved_widgets(conversation_id)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_message_id ON saved_widgets(related_message_id)`);
 

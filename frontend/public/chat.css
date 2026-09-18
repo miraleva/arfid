@@ -57,7 +57,7 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    font-family: 'Fredoka', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Nunito', 'Quicksand', 'Plus Jakarta Sans', sans-serif;
     background-color: var(--bg-page-warm);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
@@ -129,7 +129,7 @@ body {
 }
 
 .brandText {
-    font-family: 'Fredoka', cursive, sans-serif;
+    font-family: 'Nunito', cursive, sans-serif;
     font-size: 22px;
     font-weight: 800;
     color: var(--border-dark);
@@ -171,7 +171,7 @@ body {
     padding: 13px 18px;
     font-size: 16px;
     font-weight: 800;
-    font-family: 'Fredoka', cursive, sans-serif;
+    font-family: 'Nunito', cursive, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -500,7 +500,7 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
 }
 
 .renameModalTitle {
-    font-family: 'Fredoka', cursive, sans-serif;
+    font-family: 'Nunito', cursive, sans-serif;
     font-size: 20px;
     font-weight: 800;
     color: var(--border-dark);
@@ -797,7 +797,7 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
 }
 
 .welcomeHeroTitle {
-    font-family: 'Fredoka', cursive, sans-serif;
+    font-family: 'Nunito', cursive, sans-serif;
     font-size: 42px;
     font-weight: 800;
     color: var(--border-dark);
@@ -895,8 +895,8 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     font-weight: 500;
     line-height: 1.65;
     letter-spacing: -0.01em;
-    border: 2.5px solid var(--border-dark);
-    box-shadow: 0 5px 0 var(--border-dark);
+    border: 1.5px solid var(--border-warm);
+    box-shadow: 0 2px 8px rgba(43, 33, 24, 0.04);
     word-break: break-word;
     white-space: pre-wrap;
 }
@@ -911,7 +911,8 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     max-width: 260px;
     display: inline-flex;
     align-items: center;
-    box-shadow: 0 4px 0 var(--border-dark);
+    border: 1.5px solid var(--border-warm);
+    box-shadow: 0 2px 8px rgba(43, 33, 24, 0.04);
 }
 
 .aiMessageBubble.fadeContent {
@@ -941,8 +942,8 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     font-weight: 600;
     line-height: 1.55;
     letter-spacing: -0.01em;
-    border: 2.5px solid var(--border-dark);
-    box-shadow: 0 5px 0 var(--border-dark);
+    border: 1.5px solid rgba(20, 112, 79, 0.25);
+    box-shadow: 0 2px 8px rgba(139, 191, 61, 0.18);
     word-break: break-word;
     white-space: pre-wrap;
 }
@@ -1249,6 +1250,20 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 0 rgba(43, 33, 24, 0.04);
+    position: relative;
+    z-index: 1;
+}
+
+.savedWidgetItem.isPinned {
+    background: #FFFAF0;
+    border-color: #FFA934;
+    box-shadow: 0 2px 0 rgba(255, 169, 52, 0.2);
+}
+
+.savedWidgetItem.hasOpenMenu {
+    z-index: 1000 !important;
+    background-color: #FFFDF9;
+    border-color: var(--border-dark);
 }
 
 .savedWidgetItem:hover {
@@ -1257,10 +1272,16 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     box-shadow: 0 4px 0 #2B2118;
 }
 
+.savedWidgetItem:hover .historyItemMoreBtn,
+.savedWidgetItem .historyItemMoreBtn.menuOpen {
+    opacity: 1;
+}
+
 .savedWidgetTopRow {
     display: flex;
     align-items: flex-start;
     gap: 8px;
+    position: relative;
 }
 
 .savedWidgetIcon {
@@ -1283,6 +1304,19 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     min-width: 0;
 }
 
+.savedWidgetTitleRow {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+}
+
+.savedWidgetPinIcon {
+    font-size: 12px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
 .savedWidgetTitle {
     font-size: 13.5px;
     font-weight: 700;
@@ -1290,6 +1324,11 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.savedWidgetDropdownMenu {
+    top: 34px;
+    right: 0;
 }
 
 .savedWidgetMeta {

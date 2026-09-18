@@ -191,6 +191,30 @@ async function getSavedWidgets(userId) {
     return requestBackend("/widgets/saved", "GET", null, extraHeaders);
 }
 
+/**
+ * Toggles the pinned status of a saved widget.
+ * 
+ * @param {number|string} widgetId - Widget ID
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function togglePinWidget(widgetId, userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend(`/widgets/saved/${widgetId}/pin`, "PATCH", null, extraHeaders);
+}
+
+/**
+ * Deletes a saved widget.
+ * 
+ * @param {number|string} widgetId - Widget ID
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function deleteWidget(widgetId, userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend(`/widgets/saved/${widgetId}`, "DELETE", null, extraHeaders);
+}
+
 module.exports = {
     signin,
     signup,
@@ -201,6 +225,8 @@ module.exports = {
     togglePinConversation,
     deleteConversation,
     getSavedWidgets,
+    togglePinWidget,
+    deleteWidget,
     getChatHistory,
     deleteChatSession,
     callBackend,

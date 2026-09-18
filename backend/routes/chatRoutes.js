@@ -25,9 +25,11 @@ router.patch("/chat/conversations/:id/pin", verifyInternalToken, chatController.
 router.delete("/chat/conversations/:id", verifyInternalToken, chatController.deleteConversation);
 
 /**
- * Saved Widgets (Tariflerim & Besin Değerleri) Endpoint
+ * Saved Widgets (Tariflerim & Besin Değerleri) Endpoints
  */
 router.get("/widgets/saved", verifyInternalToken, chatController.getSavedWidgets);
+router.patch("/widgets/saved/:id/pin", verifyInternalToken, chatController.togglePinWidget);
+router.delete("/widgets/saved/:id", verifyInternalToken, chatController.deleteWidget);
 
 /**
  * Route: Get user chat history endpoint (legacy compatibility)
