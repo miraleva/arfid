@@ -6,7 +6,8 @@
     "start": "node server.js",
     "test": "node tests/tools.test.js && node tests/sensoryFit.test.js",
     "test:unit": "node tests/tools.test.js && node tests/sensoryFit.test.js",
-    "test:all": "node tests/tools.test.js && node tests/sensoryFit.test.js && node tests/patientCard.test.js"
+    "test:rag": "node tests/rag.test.js",
+    "test:all": "node tests/tools.test.js && node tests/sensoryFit.test.js && node tests/patientCard.test.js && node tests/rag.test.js"
   },
   "keywords": [],
   "author": "",

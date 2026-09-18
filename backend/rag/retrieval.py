@@ -1,4 +1,5 @@
 import os
+import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -37,8 +38,8 @@ def query_rag(text: str, top_k: int = 4):
     )
 
     chunks = []
-    for match in res.get("matches", []):
-        metadata = match.get("metadata", {})
+    for match in (res.get("matches") or []):
+        metadata = match.get("metadata") or {}
         chunks.append({
             "text": metadata.get("text", ""),
             "source": metadata.get("source", ""),
@@ -50,6 +51,19 @@ def query_rag(text: str, top_k: int = 4):
 @app.get("/")
 def health_check():
     return {"status": "ok", "service": "ARFID RAG Retrieval API"}
+
+class EmbedRequest(BaseModel):
+    text: str
+
+@app.post("/embed")
+def embed_endpoint(request: EmbedRequest):
+    if not request.text or not request.text.strip():
+        raise HTTPException(status_code=400, detail="Text cannot be empty")
+    try:
+        vector = model.encode(request.text).tolist()
+        return {"embedding": vector, "dimensions": len(vector)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/retrieve")
 def retrieve_endpoint(request: QueryRequest):
@@ -63,6 +77,5 @@ def retrieve_endpoint(request: QueryRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    import uvicorn
     print("Starting Retrieval FastAPI server on port 5001...")
     uvicorn.run(app, host="0.0.0.0", port=5001)
