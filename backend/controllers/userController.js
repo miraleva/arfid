@@ -97,8 +97,113 @@ async function deleteSensoryTrigger(req, res) {
     }
 }
 
+/**
+ * Updates profile information (username and/or email).
+ * 
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ */
+async function updateProfile(req, res) {
+    try {
+        const userId = req.get("X-User-Id");
+        const { username, email } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Kullanıcı doğrulanamadı" });
+        }
+
+        if (!username && !email) {
+            return res.status(400).json({ success: false, error: "Güncellenecek bilgi girilmedi" });
+        }
+
+        const userRepository = require("../repositories/userRepository");
+        const updatedUser = await userRepository.updateProfile(userId, { username, email });
+
+        res.json({
+            success: true,
+            user: {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                username: updatedUser.username
+            }
+        });
+    } catch (err) {
+        if (err.code === "EMAIL_ALREADY_EXISTS") {
+            return res.status(409).json({ success: false, error: "Bu e-posta adresi zaten kullanılıyor" });
+        }
+        console.error("updateProfile error:", err);
+        res.status(500).json({ success: false, error: "Profil güncellenemedi" });
+    }
+}
+
+/**
+ * Changes user password after checking current password.
+ * 
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ */
+async function changePassword(req, res) {
+    try {
+        const userId = req.get("X-User-Id");
+        const { currentPassword, newPassword } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Kullanıcı doğrulanamadı" });
+        }
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ success: false, error: "Mevcut şifre ve yeni şifre gereklidir" });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ success: false, error: "Yeni şifre en az 6 karakter olmalıdır" });
+        }
+
+        const userRepository = require("../repositories/userRepository");
+        await userRepository.updatePassword(userId, currentPassword, newPassword);
+
+        res.json({ success: true, message: "Şifre başarıyla güncellendi" });
+    } catch (err) {
+        if (err.code === "INVALID_CURRENT_PASSWORD") {
+            return res.status(400).json({ success: false, error: "Mevcut şifreniz hatalı" });
+        }
+        if (err.code === "SAME_AS_CURRENT_PASSWORD") {
+            return res.status(400).json({ success: false, error: "Yeni şifre mevcut şifrenizle aynı olamaz." });
+        }
+        console.error("changePassword error:", err);
+        res.status(500).json({ success: false, error: "Şifre değiştirilemedi" });
+    }
+}
+
+/**
+ * Deletes user account and cascades all associated data.
+ * 
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ */
+async function deleteAccount(req, res) {
+    try {
+        const userId = req.get("X-User-Id");
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Kullanıcı doğrulanamadı" });
+        }
+
+        const userRepository = require("../repositories/userRepository");
+        const success = await userRepository.deleteUser(userId);
+
+        res.json({ success, message: "Hesap başarıyla silindi" });
+    } catch (err) {
+        console.error("deleteAccount error:", err);
+        res.status(500).json({ success: false, error: "Hesap silinemedi" });
+    }
+}
+
 module.exports = {
     getDietaryProfile,
     deleteFoodPreference,
-    deleteSensoryTrigger
+    deleteSensoryTrigger,
+    updateProfile,
+    changePassword,
+    deleteAccount
 };

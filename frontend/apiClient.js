@@ -250,6 +250,42 @@ async function deleteSensoryTrigger(userId, attributeId) {
     return requestBackend(`/user/dietary-profile/sensory/${attributeId}`, "DELETE", null, extraHeaders);
 }
 
+/**
+ * Updates user profile (username / email).
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @param {{ username?: string, email?: string }} data - Updated profile payload
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function updateProfile(userId, data) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend("/user/profile", "PUT", data, extraHeaders);
+}
+
+/**
+ * Changes user password.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @param {string} currentPassword - Current plain password
+ * @param {string} newPassword - New plain password
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function changePassword(userId, currentPassword, newPassword) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend("/user/password", "PUT", { currentPassword, newPassword }, extraHeaders);
+}
+
+/**
+ * Permanently deletes user account.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function deleteAccount(userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend("/user/account", "DELETE", null, extraHeaders);
+}
+
 module.exports = {
     signin,
     signup,
@@ -267,6 +303,9 @@ module.exports = {
     getDietaryProfile,
     deleteFoodPreference,
     deleteSensoryTrigger,
+    updateProfile,
+    changePassword,
+    deleteAccount,
     callBackend,
     requestBackend
 };

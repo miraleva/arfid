@@ -131,36 +131,64 @@ const apiClient = require("./apiClient");
 // Signin POST - Backend API'ye bağlı
 app.post("/signin", async (req, res) => {
     const { email, password } = req.body;
+    const isJson = req.xhr || (req.headers["content-type"] && req.headers["content-type"].includes("application/json")) || (req.headers.accept && req.headers.accept.includes("application/json"));
 
     try {
         const result = await apiClient.signin(email, password);
 
         if (result.ok) {
             req.session.user = { id: result.data.id, email: result.data.email, username: result.data.username };
-            res.redirect("/chat");
+            if (isJson) {
+                return res.json({ success: true, redirect: "/chat" });
+            }
+            return res.redirect("/chat");
         } else {
-            res.render("signin", { error: result.data.error || "Email veya şifre yanlış" });
+            const errorMsg = req.__ ? req.__("auth.err_auth_failed") : (result.data?.error || "Email veya şifre yanlış");
+            const status = result.status || 401;
+            if (isJson) {
+                return res.status(status).json({ success: false, error: errorMsg });
+            }
+            return res.status(status).render("signin", { error: errorMsg });
         }
     } catch (error) {
-        res.render("signin", { error: "Bağlantı hatası" });
+        console.error("Signin proxy hatası:", error);
+        const errorMsg = req.__ ? req.__("auth.err_network") : "Bağlantı hatası";
+        if (isJson) {
+            return res.status(500).json({ success: false, error: errorMsg });
+        }
+        return res.status(500).render("signin", { error: errorMsg });
     }
 });
 
 // Signup POST - Backend API'ye bağlı
 app.post("/signup", async (req, res) => {
     const { email, password, username } = req.body;
+    const isJson = req.xhr || (req.headers["content-type"] && req.headers["content-type"].includes("application/json")) || (req.headers.accept && req.headers.accept.includes("application/json"));
 
     try {
         const result = await apiClient.signup(email, password, username);
 
         if (result.ok) {
             req.session.user = { id: result.data.id, email: result.data.email, username: result.data.username };
-            res.redirect("/chat");
+            if (isJson) {
+                return res.json({ success: true, redirect: "/chat" });
+            }
+            return res.redirect("/chat");
         } else {
-            res.render("signup", { error: result.data.error || "Kayıt sırasında bir hata oluştu" });
+            const errorMsg = result.data?.error || "Kayıt sırasında bir hata oluştu";
+            const status = result.status || 400;
+            if (isJson) {
+                return res.status(status).json({ success: false, error: errorMsg });
+            }
+            return res.status(status).render("signup", { error: errorMsg });
         }
     } catch (error) {
-        res.render("signup", { error: "Bağlantı hatası" });
+        console.error("Signup proxy hatası:", error);
+        const errorMsg = "Bağlantı hatası";
+        if (isJson) {
+            return res.status(500).json({ success: false, error: errorMsg });
+        }
+        return res.status(500).render("signup", { error: errorMsg });
     }
 });
 
@@ -354,6 +382,57 @@ app.delete("/user/dietary-profile/sensory/:attributeId", isAuthenticated, async 
     } catch (error) {
         console.error("Delete sensory trigger proxy hatası:", error);
         res.status(500).json({ success: false, error: "Silme hatası" });
+    }
+});
+
+// Update Profile PUT - Proxy to Backend
+app.put("/user/profile", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { username, email } = req.body;
+
+    try {
+        const result = await apiClient.updateProfile(userId, { username, email });
+        if (result.ok && result.data && result.data.user) {
+            req.session.user.username = result.data.user.username;
+            req.session.user.email = result.data.user.email;
+        }
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Update profile proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Profil güncelleme hatası" });
+    }
+});
+
+// Change Password PUT - Proxy to Backend
+app.put("/user/password", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+        const result = await apiClient.changePassword(userId, currentPassword, newPassword);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Change password proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Şifre değiştirme hatası" });
+    }
+});
+
+// Delete Account DELETE - Proxy to Backend
+app.delete("/user/account", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+
+    try {
+        const result = await apiClient.deleteAccount(userId);
+        if (result.ok && result.data && result.data.success) {
+            req.session.destroy(() => {
+                res.status(200).json({ success: true, redirect: "/signin" });
+            });
+        } else {
+            res.status(result.status).json(result.data);
+        }
+    } catch (error) {
+        console.error("Delete account proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Hesap silme hatası" });
     }
 });
 

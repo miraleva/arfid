@@ -130,7 +130,7 @@
                 <div class="inputWrapper">
                   <input type="text" id="email" name="email" placeholder="<%= t('auth.email_placeholder') %>" required />
                 </div>
-                <div id="emailWarning" class="warning"></div>
+                <div id="emailWarning" class="warning"><%= (typeof error !== 'undefined' && error) ? error : '' %></div>
 
                 <label for="password"><%= t('auth.password') %></label>
                 <div class="inputWrapper">
@@ -212,19 +212,12 @@
                     })
                 });
                 
-                if (response.ok) {
-                    window.location.href = '/chat';
+                const data = await response.json().catch(() => null);
+
+                if (response.ok && data && data.success) {
+                    window.location.href = data.redirect || '/chat';
                 } else {
-                    const errorData = await response.text();
-                    let errorMessage = i18nMessages.authFailed;
-                    
-                    try {
-                        const errorJson = JSON.parse(errorData);
-                        errorMessage = errorJson.error || errorMessage;
-                    } catch (e) {
-                        errorMessage = errorData || errorMessage;
-                    }
-                    
+                    const errorMessage = (data && data.error) ? data.error : i18nMessages.authFailed;
                     emailWarning.textContent = errorMessage;
                 }
             } catch (error) {

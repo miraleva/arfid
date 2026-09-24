@@ -24,12 +24,13 @@
     opacity: 1;
 }
 
-/* Modal Kutusu (Krem Zemin + 3.5px Koyu Kenarlık + 10px Flat Gölge) */
+/* Modal Kutusu (Krem Zemin + 3.5px Koyu Kenarlık + 12px Flat Gölge - Ferah Dikdörtgen) */
 .settingsModal {
     background-color: #FFFDF9;
-    width: 90%;
-    max-width: 700px;
-    height: 520px;
+    width: 92%;
+    max-width: 840px;
+    height: 590px;
+    min-height: 480px;
     max-height: 88vh;
     border-radius: 32px;
     box-shadow: 0 12px 0 #2B2118;
@@ -98,7 +99,7 @@
 /* Sol Navigasyon Sekmeleri */
 .settingsTabs,
 .settingsSidebar {
-    width: 190px;
+    width: 210px;
     border-right: 2.5px solid #2B2118;
     background-color: #F4ECE0;
     padding: 14px 10px;
@@ -289,6 +290,134 @@
     box-shadow: 0 1px 0 #2B2118;
 }
 
+/* Bölücüler ve Alt Başlıklar */
+.settingsDivider {
+    margin: 28px 0 20px 0;
+    border: none;
+    border-top: 2.5px dashed #EADBCC;
+}
+
+.settingsSubTitle {
+    font-family: 'Nunito', cursive, sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #2B2118;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settingsBtnSecondary {
+    padding: 9px 22px;
+    border-radius: 9999px;
+    border: 2.2px solid #2B2118;
+    background-color: #FAF3E7;
+    color: #2B2118;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #2B2118;
+    transition: all 0.15s ease;
+}
+
+.settingsBtnSecondary:hover {
+    background-color: #EADBCC;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #2B2118;
+}
+
+.settingsBtnSecondary:active {
+    transform: translateY(1px);
+    box-shadow: 0 1.5px 0 #2B2118;
+}
+
+/* Profil Avatarı ve Bilgisi */
+.settingsAvatarRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 12px 18px;
+    background-color: #FAF3E7;
+    border: 2px solid #2B2118;
+    border-radius: 20px;
+    box-shadow: 0 3px 0 #2B2118;
+}
+
+.settingsAvatarLarge {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #FFEF5A;
+    border: 2.5px solid #2B2118;
+    color: #2B2118;
+    font-family: 'Nunito', cursive, sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 0 #2B2118;
+    flex-shrink: 0;
+}
+
+.settingsAvatarInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.settingsAvatarLabel {
+    font-family: 'Nunito', cursive, sans-serif;
+    font-size: 16.5px;
+    font-weight: 800;
+    color: #2B2118;
+}
+
+.settingsAvatarSub {
+    font-size: 13px;
+    color: #7A6F68;
+    font-weight: 600;
+}
+
+/* Tehlikeli Bölge (Danger Zone) - Başlıksız Sade Buton Alanı */
+.settingsDangerZone {
+    margin-top: 36px;
+    margin-bottom: 10px;
+    padding-top: 22px;
+    border-top: 2px dashed #F5C6CB;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.settingsDangerBtn {
+    padding: 10px 22px;
+    border-radius: 9999px;
+    border: 2.2px solid #2B2118;
+    background-color: #FF5A5F;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 3.5px 0 #2B2118;
+    transition: all 0.15s ease;
+}
+
+.settingsDangerBtn:hover {
+    background-color: #E0484D;
+    transform: translateY(-2px);
+    box-shadow: 0 5.5px 0 #2B2118;
+}
+
+.settingsDangerBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #2B2118;
+}
+
 /* =========================================================
    DİYET & BESLENME PROFİLİ (ARFID MEMORY) STİLLERİ
    ========================================================= */
@@ -387,24 +516,32 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 800;
     width: 20px;
     height: 20px;
     border-radius: 50%;
     line-height: 1;
     color: inherit;
-    opacity: 0.65;
+    opacity: 0.7;
     transition: all 0.15s ease;
-    display: inline-flex;
+    display: none; /* Normalde gizli - sadece düzenleme modunda görünür */
     align-items: center;
     justify-content: center;
+}
+
+.editMode .dietaryTagRemoveBtn {
+    display: inline-flex; /* Düzenleme modunda aktif */
+}
+
+.editMode .dietaryTag {
+    border-style: dashed;
 }
 
 .dietaryTagRemoveBtn:hover {
     opacity: 1;
     transform: scale(1.2);
-    background-color: rgba(43, 33, 24, 0.14);
+    background-color: rgba(43, 33, 24, 0.18);
 }
 
 .dietaryEmptyText {
@@ -413,5 +550,168 @@
     color: #8C7B6E;
     font-weight: 600;
     padding: 4px 0;
+}
+
+/* Beslenme Profilim Alt Çubuk & Düzenle Butonu */
+.dietaryFooter {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 2px dashed #E5D7C5;
+}
+
+.dietaryEditBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #FAF3E7;
+    border: 2.2px solid #2B2118;
+    border-radius: 9999px;
+    padding: 8px 18px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    color: #2B2118;
+    box-shadow: 0 3px 0 #2B2118;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.dietaryEditBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #2B2118;
+    background-color: #FFF2D1;
+}
+
+.dietaryEditBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1.5px 0 #2B2118;
+}
+
+.dietaryEditBtn.active {
+    background-color: #2B2118;
+    color: #FFFFFF;
+    border-color: #2B2118;
+    box-shadow: 0 3px 0 #00A0B5;
+}
+
+/* Profil Sekmesi - Dil Seçimi Kapsayıcısı */
+.settingsLanguageWrapper {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+}
+
+/* Beslenme Profilim Silme Onay Mini-Popup'ı */
+.dietaryConfirmOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(43, 33, 24, 0.48);
+    backdrop-filter: blur(3px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 28px;
+}
+
+.dietaryConfirmOverlay.active {
+    display: flex;
+    animation: fadeInConfirm 0.18s ease-out;
+}
+
+@keyframes fadeInConfirm {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.dietaryConfirmBox {
+    background: #FFFDF9;
+    border: 3px solid #2B2118;
+    border-radius: 24px;
+    box-shadow: 0 8px 0 #2B2118;
+    padding: 24px 28px;
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    animation: popConfirm 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes popConfirm {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.dietaryConfirmIcon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.dietaryConfirmTitle {
+    font-family: 'Nunito', cursive, sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    color: #2B2118;
+    margin-bottom: 8px;
+}
+
+.dietaryConfirmMessage {
+    font-size: 14.5px;
+    color: #6B5D52;
+    font-weight: 600;
+    line-height: 1.45;
+    margin-bottom: 22px;
+    word-break: break-word;
+}
+
+.dietaryConfirmActions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.dietaryConfirmCancelBtn {
+    padding: 9px 20px;
+    border-radius: 9999px;
+    border: 2px solid #2B2118;
+    background: #FAF3E7;
+    color: #2B2118;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 3px 0 #2B2118;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.dietaryConfirmCancelBtn:hover {
+    background: #EADBCC;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 #2B2118;
+}
+
+.dietaryConfirmDeleteBtn {
+    padding: 9px 20px;
+    border-radius: 9999px;
+    border: 2px solid #2B2118;
+    background: #FF5A5F;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 3px 0 #2B2118;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.dietaryConfirmDeleteBtn:hover {
+    background: #E0484D;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 #2B2118;
 }
 

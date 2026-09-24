@@ -27,4 +27,22 @@ router.delete("/user/dietary-profile/food/:foodId", verifyInternalToken, userCon
  */
 router.delete("/user/dietary-profile/sensory/:attributeId", verifyInternalToken, userController.deleteSensoryTrigger);
 
+/**
+ * Route: Update user profile (username / email)
+ * Path: PUT /user/profile
+ */
+router.put("/user/profile", verifyInternalToken, userController.updateProfile);
+
+/**
+ * Route: Change password
+ * Path: PUT /user/password
+ */
+router.put("/user/password", verifyInternalToken, userController.changePassword);
+
+/**
+ * Route: Delete account permanently
+ * Path: DELETE /user/account
+ */
+router.delete("/user/account", verifyInternalToken, userController.deleteAccount);
+
 module.exports = router;
