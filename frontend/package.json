@@ -1,4 +1,12 @@
 {
+  "name": "arfid-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed"
+  },
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
@@ -8,5 +16,8 @@
     "express-session": "^1.18.2",
     "i18n": "^0.15.4",
     "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
   }
 }

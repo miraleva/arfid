@@ -1,0 +1,15 @@
+{
+  "cookies": [
+    {
+      "name": "connect.sid",
+      "value": "s%3AxFw7IwIQOjlBm88swzjnaMPFjqX4aEYZ.zrPusvQBF6M8v%2BH3crmkEZpNg%2FmJtZslAax00INUUks",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}
