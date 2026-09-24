@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="<%= (typeof currentLocale !== 'undefined' && currentLocale) ? currentLocale : 'tr' %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARFID Asistanı - Sohbet</title>
+    <title><%= t('chat.page_title') %></title>
     
     <link rel="stylesheet" href="chat.css">
     <link rel="stylesheet" href="settings.css">
@@ -20,22 +20,25 @@
             <div class="sidebarHeader">
                 <div class="brand">
                     <div class="brandLogo">
-                        <img src="/image/arfid_icon.png" alt="Asistancım Logo" class="brandIconImg">
+                        <img src="/image/arfid_icon.png" alt="<%= t('nav.brand') %> Logo" class="brandIconImg">
                     </div>
-                    <span class="brandText">Asistancım</span>
+                    <span class="brandText"><%= t('nav.brand') %></span>
                 </div>
-                <button class="sidebarCloseBtn" id="sidebarCloseBtn" title="Sidebar'ı Kapat" aria-label="Sidebar'ı Kapat">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                </button>
+                <div class="sidebarHeaderActions">
+                    <%- include('partials/languageToggle') %>
+                    <button class="sidebarCloseBtn" id="sidebarCloseBtn" title="<%= t('chat.close_sidebar') %>" aria-label="<%= t('chat.close_sidebar') %>">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!-- 1. Üst Kısım: Yeni Sohbet Butonu (Flat Renk + Glow) -->
             <div class="newChatSection">
                 <button class="newChatBtn" id="newChatBtn">
                     <span class="newChatIcon">+</span>
-                    <span>Yeni Sohbet</span>
+                    <span><%= t('chat.new_chat') %></span>
                 </button>
             </div>
 
@@ -43,11 +46,11 @@
             <div class="sidebarTabs">
                 <button type="button" class="sidebarTabBtn active" id="tabChatsBtn">
                     <span>💬</span>
-                    <span>Sohbetler</span>
+                    <span><%= t('chat.tab_chats') %></span>
                 </button>
                 <button type="button" class="sidebarTabBtn" id="tabRecipesBtn">
                     <span>🍲</span>
-                    <span>Tariflerim</span>
+                    <span><%= t('chat.tab_recipes') %></span>
                     <span class="recipesBadge" id="recipesBadge">0</span>
                 </button>
             </div>
@@ -59,7 +62,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" class="searchInput" id="searchInput" placeholder="Sohbetlerde ara..." aria-label="Arama yap" />
+                    <input type="text" class="searchInput" id="searchInput" placeholder="<%= t('chat.search_placeholder_chats') %>" aria-label="<%= t('chat.search_placeholder_chats') %>" />
                 </div>
             </div>
 
@@ -81,14 +84,14 @@
                     </div>
                     <div class="userInfo">
                         <div class="userName">
-                            <%= (typeof user !== 'undefined' && user && user.username) ? user.username : 'Kullanıcı' %>
+                            <%= (typeof user !== 'undefined' && user && user.username) ? user.username : t('chat.user_default') %>
                         </div>
                     </div>
                 </div>
 
                 <div class="sidebarActions">
                     <!-- Ayarlar Butonu (⚙️ Settings İkonu) -->
-                    <button class="settingsBtn" id="openSettingsBtn" title="Ayarlar" aria-label="Ayarlar">
+                    <button class="settingsBtn" id="openSettingsBtn" title="<%= t('chat.settings') %>" aria-label="<%= t('chat.settings') %>">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="3"></circle>
                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -96,14 +99,14 @@
                     </button>
 
                     <!-- Çıkış Butonu -->
-                    <a href="/logout" class="logoutLink" title="Çıkış Yap" aria-label="Çıkış Yap">
+                    <a href="/logout" class="logoutLink" title="<%= t('chat.logout') %>" aria-label="<%= t('chat.logout') %>">
                         <button class="logoutBtn" type="button">
                             <svg class="logoutIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                 <polyline points="16 17 21 12 16 7"></polyline>
                                 <line x1="21" y1="12" x2="9" y2="12"></line>
                             </svg>
-                            <span class="logoutText">Çıkış</span>
+                            <span class="logoutText"><%= t('chat.logout') %></span>
                         </button>
                     </a>
                 </div>
@@ -119,9 +122,9 @@
                             <circle cx="12" cy="12" r="3"></circle>
                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                         </svg>
-                        <span>Ayarlar</span>
+                        <span><%= t('chat.settings') %></span>
                     </div>
-                    <button class="settingsCloseBtn" id="closeSettingsBtn" title="Kapat" aria-label="Kapat">
+                    <button class="settingsCloseBtn" id="closeSettingsBtn" title="<%= t('chat.close') %>" aria-label="<%= t('chat.close') %>">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -132,43 +135,94 @@
                 <div class="settingsModalBody">
                     <!-- Sol Panel (Dar Dikey Menü) -->
                     <div class="settingsSidebar">
-                        <button class="settingsTabItem active" type="button">
+                        <button class="settingsTabItem active" id="settingsTabProfile" type="button" data-tab="profile">
                             <svg class="settingsTabIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
-                            <span>Profil</span>
+                            <span><%= t('chat.profile') %></span>
+                        </button>
+                        <button class="settingsTabItem" id="settingsTabDietary" type="button" data-tab="dietary">
+                            <svg class="settingsTabIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5"></path>
+                                <path d="M2 12l10 5 10-5"></path>
+                            </svg>
+                            <span><%= t('chat.dietary_profile') %></span>
                         </button>
                     </div>
 
                     <!-- Sağ Panel (Geniş İçerik Alanı) -->
                     <div class="settingsContent">
-                        <h2 class="settingsSectionTitle">Profil Bilgileri</h2>
-                        <p class="settingsSectionDesc">Hesap bilgilerinizi ve asistan tercihlerinizi buradan görüntüleyebilirsiniz.</p>
+                        <!-- 1. Profil Sekmesi İçeriği -->
+                        <div class="settingsTabPane active" id="settingsPaneProfile">
+                            <h2 class="settingsSectionTitle"><%= t('chat.profile_info') %></h2>
+                            <p class="settingsSectionDesc"><%= t('chat.profile_desc') %></p>
 
-                        <div class="settingsAvatarRow">
-                            <div class="settingsAvatarLarge">
-                                <%= (typeof user !== 'undefined' && user && user.username) ? user.username.charAt(0).toUpperCase() : 'U' %>
+                            <div class="settingsAvatarRow">
+                                <div class="settingsAvatarLarge">
+                                    <%= (typeof user !== 'undefined' && user && user.username) ? user.username.charAt(0).toUpperCase() : 'U' %>
+                                </div>
+                                <div class="settingsAvatarInfo">
+                                    <span class="settingsAvatarLabel"><%= (typeof user !== 'undefined' && user && user.username) ? user.username : t('chat.user_default') %></span>
+                                    <span class="settingsAvatarSub"><%= t('chat.profile_avatar') %></span>
+                                </div>
                             </div>
-                            <div class="settingsAvatarInfo">
-                                <span class="settingsAvatarLabel"><%= (typeof user !== 'undefined' && user && user.username) ? user.username : 'Kullanıcı' %></span>
-                                <span class="settingsAvatarSub">Profil Avatarı</span>
+
+                            <div class="settingsFormGroup">
+                                <label class="settingsLabel" for="settingsUsername"><%= t('auth.username') %></label>
+                                <input type="text" class="settingsInput" id="settingsUsername" value="<%= (typeof user !== 'undefined' && user && user.username) ? user.username : '' %>" placeholder="<%= t('auth.username_placeholder') %>">
+                            </div>
+
+                            <div class="settingsFormGroup">
+                                <label class="settingsLabel" for="settingsEmail"><%= t('auth.email') %></label>
+                                <input type="email" class="settingsInput" id="settingsEmail" value="<%= (typeof user !== 'undefined' && user && user.email) ? user.email : '' %>" placeholder="<%= t('auth.email_placeholder') %>">
+                            </div>
+
+                            <div class="settingsActions">
+                                <span class="settingsNoticeText" id="settingsNoticeText"></span>
+                                <button type="button" class="settingsSaveBtn" id="settingsSaveBtn"><%= t('chat.save') %></button>
                             </div>
                         </div>
 
-                        <div class="settingsFormGroup">
-                            <label class="settingsLabel" for="settingsUsername">Kullanıcı Adı</label>
-                            <input type="text" class="settingsInput" id="settingsUsername" value="<%= (typeof user !== 'undefined' && user && user.username) ? user.username : '' %>" placeholder="Kullanıcı adınızı girin">
-                        </div>
+                        <!-- 2. Beslenme Profilim (ARFID Memory) Sekmesi İçeriği -->
+                        <div class="settingsTabPane" id="settingsPaneDietary">
+                            <h2 class="settingsSectionTitle"><%= t('chat.dietary_profile_title') %></h2>
+                            <p class="settingsSectionDesc"><%= t('chat.dietary_profile_desc') %></p>
 
-                        <div class="settingsFormGroup">
-                            <label class="settingsLabel" for="settingsEmail">E-posta Adresi</label>
-                            <input type="email" class="settingsInput" id="settingsEmail" value="<%= (typeof user !== 'undefined' && user && user.email) ? user.email : '' %>" placeholder="E-posta adresiniz">
-                        </div>
+                            <div id="dietaryLoadingState" class="dietaryLoading" style="display: none;">
+                                <div class="typingDots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                <span><%= t('chat.loading_dietary') %></span>
+                            </div>
 
-                        <div class="settingsActions">
-                            <span class="settingsNoticeText" id="settingsNoticeText"></span>
-                            <button type="button" class="settingsSaveBtn" id="settingsSaveBtn">Kaydet</button>
+                            <div id="dietaryContentContainer">
+                                <!-- Güvenli Gıdalar -->
+                                <div class="dietaryGroup">
+                                    <div class="dietaryGroupHeader">
+                                        <span class="dietaryGroupBadge"><span>🥦</span> <span><%= t('chat.safe_foods') %></span></span>
+                                        <span class="dietaryCount" id="safeFoodsCount">0</span>
+                                    </div>
+                                    <div class="dietaryTagsContainer" id="safeFoodsList"></div>
+                                </div>
+
+                                <!-- Kaçınılan Gıdalar -->
+                                <div class="dietaryGroup">
+                                    <div class="dietaryGroupHeader">
+                                        <span class="dietaryGroupBadge"><span>🚫</span> <span><%= t('chat.avoided_foods') %></span></span>
+                                        <span class="dietaryCount" id="unsafeFoodsCount">0</span>
+                                    </div>
+                                    <div class="dietaryTagsContainer" id="unsafeFoodsList"></div>
+                                </div>
+
+                                <!-- Duyusal Tetikleyiciler -->
+                                <div class="dietaryGroup">
+                                    <div class="dietaryGroupHeader">
+                                        <span class="dietaryGroupBadge"><span>✨</span> <span><%= t('chat.sensory_triggers') %></span></span>
+                                        <span class="dietaryCount" id="sensoryTriggersCount">0</span>
+                                    </div>
+                                    <div class="dietaryTagsContainer" id="sensoryTriggersList"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,11 +232,11 @@
         <!-- Sohbet Yeniden Adlandırma Modalı -->
         <div class="renameModalOverlay" id="renameModalOverlay">
             <div class="renameModal">
-                <div class="renameModalTitle">Sohbeti Yeniden Adlandır</div>
-                <input type="text" class="renameModalInput" id="renameModalInput" placeholder="Yeni sohbet başlığı..." maxlength="60">
+                <div class="renameModalTitle"><%= t('chat.rename_title') %></div>
+                <input type="text" class="renameModalInput" id="renameModalInput" placeholder="<%= t('chat.rename_placeholder') %>" maxlength="60">
                 <div class="renameModalActions">
-                    <button type="button" class="renameCancelBtn" id="renameCancelBtn">İptal</button>
-                    <button type="button" class="renameSaveBtn" id="renameSaveBtn">Kaydet</button>
+                    <button type="button" class="renameCancelBtn" id="renameCancelBtn"><%= t('chat.cancel') %></button>
+                    <button type="button" class="renameSaveBtn" id="renameSaveBtn"><%= t('chat.save') %></button>
                 </div>
             </div>
         </div>
@@ -191,7 +245,7 @@
         <%- include('partials/widgets/widgetDetailModal') %>
 
         <!-- Sidebar Kapalıyken Gösterilecek Açma Butonu Toggle -->
-        <button class="sidebarOpenBtn" id="sidebarOpenBtn" title="Sidebar'ı Aç" aria-label="Sidebar'ı Aç">
+        <button class="sidebarOpenBtn" id="sidebarOpenBtn" title="<%= t('chat.open_sidebar') %>" aria-label="<%= t('chat.open_sidebar') %>">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -208,23 +262,23 @@
                 <!-- 4. DİKEY VE YATAY ORTALANMIŞ KARŞILAMA EKRANI (Başlık + Alt Başlık + Input Tek Grup) -->
                 <div class="welcomeCenteredGroup" id="welcomeCenteredGroup">
                     <div class="welcomeMascot">
-                        <img src="/image/arfid_icon.png" alt="ARFID Asistanı" class="mascotIconImg">
+                        <img src="/image/arfid_icon.png" alt="<%= t('nav.brand') %>" class="mascotIconImg">
                     </div>
-                    <h1 class="welcomeHeroTitle">Hoşgeldiniz, <%= (typeof user !== 'undefined' && user && user.username) ? user.username : 'Kullanıcı' %></h1>
-                    <p class="welcomeHeroSubtitle">Bugün beslenme yolculuğunda sana nasıl yardımcı olabilirim?</p>
+                    <h1 class="welcomeHeroTitle"><%= t('chat.welcome_user') %>, <%= (typeof user !== 'undefined' && user && user.username) ? user.username : t('chat.user_default') %></h1>
+                    <p class="welcomeHeroSubtitle"><%= t('chat.welcome_subtitle') %></p>
                     
                     <!-- Karşılama Ekranındayken Input Bar Buraya Entegre Olur -->
                     <div class="messageInputContainer heroMode" id="messageInputContainer">
                         <div class="messageInputWrapper">
-                            <input type="text" class="messageInput" id="messageInput" placeholder="Duygularınızı, tercihlerinizi veya sorularınızı yazın..." autocomplete="off">
-                            <button class="sendButton" id="sendButton" title="Gönder" aria-label="Gönder">
+                            <input type="text" class="messageInput" id="messageInput" placeholder="<%= t('chat.input_placeholder') %>" autocomplete="off">
+                            <button class="sendButton" id="sendButton" title="<%= t('chat.send') %>" aria-label="<%= t('chat.send') %>">
                                 <svg class="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="12" y1="19" x2="12" y2="5"></line>
                                     <polyline points="5 12 12 5 19 12"></polyline>
                                 </svg>
                             </button>
                         </div>
-                        <div class="inputHint">Asistanımız medikal tanı koymaz; ARFID rehberliği ve destek sunar.</div>
+                        <div class="inputHint"><%= t('chat.input_hint') %></div>
                     </div>
                 </div>
 
@@ -323,6 +377,159 @@
             });
         }
 
+        // ==========================================
+        // AYARLAR MODALI: SEKME GEÇİŞLERİ & BESLENME PROFİLİ
+        // ==========================================
+        const settingsTabProfile = document.getElementById('settingsTabProfile');
+        const settingsTabDietary = document.getElementById('settingsTabDietary');
+        const settingsPaneProfile = document.getElementById('settingsPaneProfile');
+        const settingsPaneDietary = document.getElementById('settingsPaneDietary');
+        const dietaryLoadingState = document.getElementById('dietaryLoadingState');
+        const dietaryContentContainer = document.getElementById('dietaryContentContainer');
+
+        const safeFoodsList = document.getElementById('safeFoodsList');
+        const unsafeFoodsList = document.getElementById('unsafeFoodsList');
+        const sensoryTriggersList = document.getElementById('sensoryTriggersList');
+
+        const safeFoodsCount = document.getElementById('safeFoodsCount');
+        const unsafeFoodsCount = document.getElementById('unsafeFoodsCount');
+        const sensoryTriggersCount = document.getElementById('sensoryTriggersCount');
+
+        const DIETARY_I18N = {
+            emptySafe: '<%= t("chat.empty_safe_foods") %>',
+            emptyUnsafe: '<%= t("chat.empty_avoided_foods") %>',
+            emptySensory: '<%= t("chat.empty_sensory_triggers") %>',
+            deleteTitle: '<%= t("chat.delete") %>'
+        };
+
+        function switchSettingsTab(tabName) {
+            if (tabName === 'profile') {
+                if (settingsTabProfile) settingsTabProfile.classList.add('active');
+                if (settingsTabDietary) settingsTabDietary.classList.remove('active');
+                if (settingsPaneProfile) settingsPaneProfile.classList.add('active');
+                if (settingsPaneDietary) settingsPaneDietary.classList.remove('active');
+            } else if (tabName === 'dietary') {
+                if (settingsTabDietary) settingsTabDietary.classList.add('active');
+                if (settingsTabProfile) settingsTabProfile.classList.remove('active');
+                if (settingsPaneDietary) settingsPaneDietary.classList.add('active');
+                if (settingsPaneProfile) settingsPaneProfile.classList.remove('active');
+                fetchAndRenderDietaryProfile();
+            }
+        }
+
+        if (settingsTabProfile) {
+            settingsTabProfile.addEventListener('click', () => switchSettingsTab('profile'));
+        }
+        if (settingsTabDietary) {
+            settingsTabDietary.addEventListener('click', () => switchSettingsTab('dietary'));
+        }
+
+        async function fetchAndRenderDietaryProfile() {
+            if (!dietaryLoadingState || !dietaryContentContainer) return;
+            dietaryLoadingState.style.display = 'flex';
+            dietaryContentContainer.style.display = 'none';
+
+            try {
+                const response = await fetch('/user/dietary-profile');
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const data = await response.json();
+
+                renderDietaryCategory(safeFoodsList, safeFoodsCount, data.safeFoods || [], 'safe', DIETARY_I18N.emptySafe);
+                renderDietaryCategory(unsafeFoodsList, unsafeFoodsCount, data.unsafeFoods || [], 'unsafe', DIETARY_I18N.emptyUnsafe);
+                renderDietaryCategory(sensoryTriggersList, sensoryTriggersCount, data.sensoryTriggers || [], 'sensory', DIETARY_I18N.emptySensory);
+            } catch (err) {
+                console.error('Beslenme profili alınamadı:', err);
+                renderDietaryCategory(safeFoodsList, safeFoodsCount, [], 'safe', DIETARY_I18N.emptySafe);
+                renderDietaryCategory(unsafeFoodsList, unsafeFoodsCount, [], 'unsafe', DIETARY_I18N.emptyUnsafe);
+                renderDietaryCategory(sensoryTriggersList, sensoryTriggersCount, [], 'sensory', DIETARY_I18N.emptySensory);
+            } finally {
+                dietaryLoadingState.style.display = 'none';
+                dietaryContentContainer.style.display = 'block';
+            }
+        }
+
+        function renderDietaryCategory(containerEl, countEl, items, type, emptyMessage) {
+            if (!containerEl) return;
+            containerEl.innerHTML = '';
+            if (countEl) countEl.textContent = items.length;
+
+            if (!items || items.length === 0) {
+                const emptySpan = document.createElement('span');
+                emptySpan.className = 'dietaryEmptyText';
+                emptySpan.textContent = emptyMessage;
+                containerEl.appendChild(emptySpan);
+                return;
+            }
+
+            items.forEach(item => {
+                const tagEl = document.createElement('div');
+                tagEl.className = 'dietaryTag ' + type;
+                tagEl.dataset.id = item.id;
+                tagEl.dataset.type = type;
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'dietaryTagText';
+                textSpan.textContent = item.name;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'dietaryTagRemoveBtn';
+                removeBtn.title = DIETARY_I18N.deleteTitle;
+                removeBtn.setAttribute('aria-label', DIETARY_I18N.deleteTitle);
+                removeBtn.textContent = '✕';
+
+                removeBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    await deleteDietaryItem(item.id, type, tagEl, containerEl, countEl, emptyMessage);
+                });
+
+                tagEl.appendChild(textSpan);
+                tagEl.appendChild(removeBtn);
+                containerEl.appendChild(tagEl);
+            });
+        }
+
+        async function deleteDietaryItem(id, type, tagEl, containerEl, countEl, emptyMessage) {
+            try {
+                let url = '';
+                if (type === 'safe' || type === 'unsafe') {
+                    url = `/user/dietary-profile/food/${encodeURIComponent(id)}`;
+                } else if (type === 'sensory') {
+                    url = `/user/dietary-profile/sensory/${encodeURIComponent(id)}`;
+                }
+                if (!url) return;
+
+                tagEl.style.opacity = '0.4';
+                tagEl.style.pointerEvents = 'none';
+
+                const response = await fetch(url, { method: 'DELETE' });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    tagEl.remove();
+                    if (countEl) {
+                        const current = parseInt(countEl.textContent || '0', 10);
+                        const updated = Math.max(0, current - 1);
+                        countEl.textContent = updated;
+                        if (updated === 0 && containerEl) {
+                            const emptySpan = document.createElement('span');
+                            emptySpan.className = 'dietaryEmptyText';
+                            emptySpan.textContent = emptyMessage;
+                            containerEl.appendChild(emptySpan);
+                        }
+                    }
+                } else {
+                    tagEl.style.opacity = '1';
+                    tagEl.style.pointerEvents = 'auto';
+                    alert(result.error || 'Öğe silinemedi.');
+                }
+            } catch (err) {
+                console.error('Silme işlemi hatası:', err);
+                tagEl.style.opacity = '1';
+                tagEl.style.pointerEvents = 'auto';
+            }
+        }
+
         // Karşılama Ekranı & Input Konum Durum Yönetimi (Boş/Dolu Sohbet)
         function checkWelcomeState() {
             const hasMessages = chatArea && chatArea.children.length > 0;
@@ -376,6 +583,39 @@
         }
 
         // ==========================================
+        // İSTEMCİ TARAFI DİL ÇEVİRİLERİ (I18N)
+        // ==========================================
+        const I18N = {
+            today: "<%= t('chat.today') %>",
+            yesterday: "<%= t('chat.yesterday') %>",
+            thisWeek: "<%= t('chat.this_week') %>",
+            older: "<%= t('chat.older') %>",
+            pinned: "<%= t('chat.pinned') %>",
+            pinChat: "<%= t('chat.pin_chat') %>",
+            unpinChat: "<%= t('chat.unpin_chat') %>",
+            pinRecipe: "<%= t('chat.pin_recipe') %>",
+            unpinRecipe: "<%= t('chat.unpin_recipe') %>",
+            rename: "<%= t('chat.rename') %>",
+            delete: "<%= t('chat.delete') %>",
+            deleteRecipe: "<%= t('chat.delete_recipe') %>",
+            searchPlaceholderChats: "<%= t('chat.search_placeholder_chats') %>",
+            searchPlaceholderRecipes: "<%= t('chat.search_placeholder_recipes') %>",
+            emptyChats: "<%= t('chat.empty_chats') %>",
+            notFoundChats: "<%= t('chat.not_found_chats') %>",
+            emptyRecipes: "<%= t('chat.empty_recipes') %>",
+            notFoundRecipes: "<%= t('chat.not_found_recipes') %>",
+            jumpToChat: "<%= t('chat.jump_to_chat') %>",
+            recipe: "<%= t('chat.recipe') %>",
+            nutritionSummary: "<%= t('chat.nutrition_summary') %>",
+            confirmDeleteChat: "<%= t('chat.confirm_delete_chat') %>",
+            confirmDeleteRecipe: "<%= t('chat.confirm_delete_recipe') %>",
+            thinking: "<%= t('chat.thinking') %>",
+            recipeDefault: "<%= t('chat.recipe_default') %>",
+            portion: "<%= t('chat.portion') %>",
+            options: "<%= t('chat.options') %>"
+        };
+
+        // ==========================================
         // SOHBET OTURUMLARI (CONVERSATION) YÖNETİMİ
         // ==========================================
         const chatHistorySection = document.getElementById('chatHistorySection');
@@ -385,22 +625,22 @@
 
         // Tarih formatlama yardımcısı (Bugün, Dün, Bu Hafta, Daha Eski)
         function getDateCategory(timestampSeconds) {
-            if (!timestampSeconds) return "Daha Eski";
+            if (!timestampSeconds) return I18N.older;
             const date = new Date(timestampSeconds * 1000);
             const now = new Date();
             
             const isToday = date.toDateString() === now.toDateString();
-            if (isToday) return "Bugün";
+            if (isToday) return I18N.today;
 
             const yesterday = new Date();
             yesterday.setDate(now.getDate() - 1);
-            if (date.toDateString() === yesterday.toDateString()) return "Dün";
+            if (date.toDateString() === yesterday.toDateString()) return I18N.yesterday;
 
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(now.getDate() - 7);
-            if (date > sevenDaysAgo) return "Bu Hafta";
+            if (date > sevenDaysAgo) return I18N.thisWeek;
 
-            return "Daha Eski";
+            return I18N.older;
         }
 
         // Sidebar'da Grupları Render Etme (Sabitlenenler en üstte, diğerleri tarih gruplarında)
@@ -418,7 +658,7 @@
                 chatHistorySection.innerHTML = `
                     <div class="historyEmptyState">
                         <span class="emptyIcon">🥑</span>
-                        Henüz geçmiş bir sohbetiniz yok. Yeni bir soru sorarak başlayabilirsiniz!
+                        ${I18N.emptyChats}
                     </div>
                 `;
                 return;
@@ -427,7 +667,7 @@
             if (filteredSessions.length === 0) {
                 chatHistorySection.innerHTML = `
                     <div class="historyNotFound">
-                        "${escapeHtml(filterQuery)}" ile eşleşen sohbet bulunamadı.
+                        "${escapeHtml(filterQuery)}" ${I18N.notFoundChats}
                     </div>
                 `;
                 return;
@@ -439,10 +679,10 @@
 
             // 1. Varsa Sabitlenenler Grubu Render Et
             if (pinnedSessions.length > 0) {
-                renderGroupCategory("📌 Sabitlenenler", pinnedSessions);
+                renderGroupCategory("📌 " + I18N.pinned, pinnedSessions);
             }
 
-            // 2. Normal Tarih Gruplarını Render Et ("Bugün", "Dün", "Bu Hafta", "Daha Eski")
+            // 2. Normal Tarih Gruplarını Render Et (Bugün, Dün, Bu Hafta, Daha Eski)
             const categories = {};
             regularSessions.forEach(sess => {
                 const cat = sess.category || getDateCategory(sess.updated_at);
@@ -453,7 +693,7 @@
             });
 
             // Bilinen sıralama düzeni
-            const categoryOrder = ["Bugün", "Dün", "Bu Hafta", "Daha Eski"];
+            const categoryOrder = [I18N.today, I18N.yesterday, I18N.thisWeek, I18N.older];
             categoryOrder.forEach(catName => {
                 if (categories[catName] && categories[catName].length > 0) {
                     renderGroupCategory(catName, categories[catName]);
@@ -491,10 +731,10 @@
                 itemDiv.innerHTML = `
                     <div class="historyItemLeft">
                         <span class="historyDot"></span>
-                        ${isPinned ? '<span class="historyPinIcon" title="Sabitlendi">📌</span>' : ''}
+                        ${isPinned ? '<span class="historyPinIcon" title="' + I18N.pinned + '">📌</span>' : ''}
                         <span class="historyTitle">${escapeHtml(sess.title)}</span>
                     </div>
-                    <button type="button" class="historyItemMoreBtn" title="Seçenekler" aria-label="Seçenekler">
+                    <button type="button" class="historyItemMoreBtn" title="${I18N.options}" aria-label="${I18N.options}">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <circle cx="12" cy="5" r="2"></circle>
                             <circle cx="12" cy="12" r="2"></circle>
@@ -504,15 +744,15 @@
                     <div class="historyDropdownMenu">
                         <button type="button" class="dropdownActionItem actionPin">
                             <span class="dropdownActionIcon">${isPinned ? '📍' : '📌'}</span>
-                            <span>${isPinned ? 'Sabitlemeyi Kaldır' : 'Sohbeti Sabitle'}</span>
+                            <span>${isPinned ? I18N.unpinChat : I18N.pinChat}</span>
                         </button>
                         <button type="button" class="dropdownActionItem actionRename">
                             <span class="dropdownActionIcon">✏️</span>
-                            <span>Yeniden Adlandır</span>
+                            <span>${I18N.rename}</span>
                         </button>
                         <button type="button" class="dropdownActionItem danger actionDelete">
                             <span class="dropdownActionIcon">🗑️</span>
-                            <span>Sil</span>
+                            <span>${I18N.delete}</span>
                         </button>
                     </div>
                 `;
@@ -690,7 +930,7 @@
         // SOHBETİ SİLME EYLEMİ
         // ==========================================
         async function deleteSessionConfirmed(session) {
-            const isConfirmed = confirm(`"${session.title}" adlı sohbeti silmek istediğinize emin misiniz?`);
+            const isConfirmed = confirm(`"${session.title}" ${I18N.confirmDeleteChat}`);
             if (!isConfirmed) return;
 
             try {
@@ -827,7 +1067,7 @@
                 if (chatHistorySection) chatHistorySection.style.display = 'block';
                 if (savedWidgetsSection) savedWidgetsSection.style.display = 'none';
                 if (searchInput) {
-                    searchInput.placeholder = 'Sohbetlerde ara...';
+                    searchInput.placeholder = I18N.searchPlaceholderChats;
                     renderSidebarHistory(searchInput.value);
                 }
             } else if (tabName === 'recipes') {
@@ -836,7 +1076,7 @@
                 if (chatHistorySection) chatHistorySection.style.display = 'none';
                 if (savedWidgetsSection) savedWidgetsSection.style.display = 'flex';
                 if (searchInput) {
-                    searchInput.placeholder = 'Tarifler ve besinlerde ara...';
+                    searchInput.placeholder = I18N.searchPlaceholderRecipes;
                     renderSavedWidgets(searchInput.value);
                 }
             }
@@ -897,7 +1137,7 @@
                 savedWidgetsSection.innerHTML = `
                     <div class="historyEmptyState">
                         <span class="emptyIcon">🍲</span>
-                        Henüz kayıtlı bir tarif veya besin kartınız yok. Sohbet esnasında üretilen kartlar burada toplanır!
+                        ${I18N.emptyRecipes}
                     </div>
                 `;
                 return;
@@ -906,7 +1146,7 @@
             if (filtered.length === 0) {
                 savedWidgetsSection.innerHTML = `
                     <div class="historyNotFound">
-                        "${escapeHtml(filterQuery)}" ile eşleşen tarif bulunamadı.
+                        "${escapeHtml(filterQuery)}" ${I18N.notFoundRecipes}
                     </div>
                 `;
                 return;
@@ -920,15 +1160,15 @@
 
                 const isRecipe = w.type === 'recipe';
                 const icon = isRecipe ? '🍲' : '🥗';
-                const typeLabel = isRecipe ? 'Tarif' : 'Besin Özeti';
-                const title = escapeHtml(w.title || (isRecipe ? 'Yemek Tarifi' : 'Besin Özeti'));
+                const typeLabel = isRecipe ? I18N.recipe : I18N.nutritionSummary;
+                const title = escapeHtml(w.title || (isRecipe ? I18N.recipeDefault : I18N.nutritionSummary));
                 
                 let metaText = '';
                 if (isRecipe && w.data) {
                     const time = (w.data.prep_time_min || 10) + (w.data.cook_time_min || 20);
                     metaText = `⏱️ ${time} dk ${w.data.calories_approx ? `• ~${w.data.calories_approx} kcal` : ''}`;
                 } else if (w.data && w.data.total_calories) {
-                    metaText = `⚡ ${w.data.total_calories} kcal • ${escapeHtml(w.data.amount_label || 'Porsiyon')}`;
+                    metaText = `⚡ ${w.data.total_calories} kcal • ${escapeHtml(w.data.amount_label || I18N.portion)}`;
                 }
 
                 const dateStr = w.created_at
@@ -940,7 +1180,7 @@
                         <span class="savedWidgetIcon">${icon}</span>
                         <div class="savedWidgetInfo">
                             <div class="savedWidgetTitleRow">
-                                ${isPinned ? '<span class="savedWidgetPinIcon" title="Sabitlendi">📌</span>' : ''}
+                                ${isPinned ? '<span class="savedWidgetPinIcon" title="' + I18N.pinned + '">📌</span>' : ''}
                                 <span class="savedWidgetTitle">${title}</span>
                             </div>
                             <div class="savedWidgetMeta">
@@ -948,7 +1188,7 @@
                                 ${metaText ? `<span>${metaText}</span>` : ''}
                             </div>
                         </div>
-                        <button type="button" class="historyItemMoreBtn savedWidgetMoreBtn" title="Seçenekler" aria-label="Seçenekler">
+                        <button type="button" class="historyItemMoreBtn savedWidgetMoreBtn" title="${I18N.options}" aria-label="${I18N.options}">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                 <circle cx="12" cy="5" r="2"></circle>
                                 <circle cx="12" cy="12" r="2"></circle>
@@ -958,11 +1198,11 @@
                         <div class="historyDropdownMenu savedWidgetDropdownMenu">
                             <button type="button" class="dropdownActionItem actionPinWidget">
                                 <span class="dropdownActionIcon">${isPinned ? '📍' : '📌'}</span>
-                                <span>${isPinned ? 'Sabitlemeyi Kaldır' : 'Tarifi Sabitle'}</span>
+                                <span>${isPinned ? I18N.unpinRecipe : I18N.pinRecipe}</span>
                             </button>
                             <button type="button" class="dropdownActionItem danger actionDeleteWidget">
                                 <span class="dropdownActionIcon">🗑️</span>
-                                <span>Tarifi Sil</span>
+                                <span>${I18N.deleteRecipe}</span>
                             </button>
                         </div>
                     </div>
@@ -970,7 +1210,7 @@
                         <span class="savedWidgetDate">${dateStr}</span>
                         ${(w.conversation_id && w.related_message_id) ? `
                             <button type="button" class="savedWidgetJumpBtn" data-conv-id="${w.conversation_id}" data-msg-id="${w.related_message_id}">
-                                <span>Bu Sohbete Git</span>
+                                <span>${I18N.jumpToChat}</span>
                                 <span>↗</span>
                             </button>
                         ` : ''}
@@ -1048,7 +1288,7 @@
 
         // Kayıtlı Tarifi Silme Mantığı
         async function deleteWidgetConfirmed(widget) {
-            const isConfirmed = confirm(`"${widget.title || 'Bu tarif'}" kaydını silmek istediğinize emin misiniz?`);
+            const isConfirmed = confirm(`"${widget.title || I18N.recipeDefault}" ${I18N.confirmDeleteRecipe}`);
             if (!isConfirmed) return;
 
             try {
@@ -1143,7 +1383,7 @@
                 </div>
                 <div class="aiMessageBubble aiLoadingBubble">
                     <div class="loadingBubble">
-                        <span class="loadingText">Düşünüyor...</span>
+                        <span class="loadingText">${I18N.thinking}</span>
                         <div class="typingDots">
                             <div class="dot"></div>
                             <div class="dot"></div>

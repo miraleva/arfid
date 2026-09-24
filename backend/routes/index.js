@@ -9,11 +9,13 @@ const router = express.Router();
 const authRoutes = require("./authRoutes");
 const chatRoutes = require("./chatRoutes");
 const devRoutes = require("./devRoutes");
+const userRoutes = require("./userRoutes");
 
 // Mount sub-routers
 router.use("/", authRoutes);
 router.use("/", chatRoutes);
 router.use("/", devRoutes);
+router.use("/", userRoutes);
 
 /**
  * Route: Healthcheck root endpoint.

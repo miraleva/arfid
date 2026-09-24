@@ -96,7 +96,8 @@
 }
 
 /* Sol Navigasyon Sekmeleri */
-.settingsTabs {
+.settingsTabs,
+.settingsSidebar {
     width: 190px;
     border-right: 2.5px solid #2B2118;
     background-color: #F4ECE0;
@@ -106,7 +107,8 @@
     gap: 6px;
 }
 
-.settingsTabBtn {
+.settingsTabBtn,
+.settingsTabItem {
     width: 100%;
     padding: 12px 14px;
     border-radius: 16px;
@@ -124,17 +126,25 @@
     transition: all 0.2s ease;
 }
 
-.settingsTabBtn:hover {
+.settingsTabBtn:hover,
+.settingsTabItem:hover {
     background-color: #FAF3E7;
     color: #2B2118;
 }
 
-.settingsTabBtn.active {
+.settingsTabBtn.active,
+.settingsTabItem.active {
     background-color: #FFEF5A;
     color: #2B2118;
     font-weight: 800;
     border: 2px solid #2B2118;
     box-shadow: 0 3px 0 #2B2118;
+}
+
+.settingsTabIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 
 /* Sağ İçerik Alanı */
@@ -145,11 +155,13 @@
     background-color: #FFFDF9;
 }
 
-.settingsTabContent {
+.settingsTabContent,
+.settingsTabPane {
     display: none;
 }
 
-.settingsTabContent.active {
+.settingsTabContent.active,
+.settingsTabPane.active {
     display: block;
     animation: fadeInTab 0.2s ease-out;
 }
@@ -276,3 +288,130 @@
     transform: translateY(2px);
     box-shadow: 0 1px 0 #2B2118;
 }
+
+/* =========================================================
+   DİYET & BESLENME PROFİLİ (ARFID MEMORY) STİLLERİ
+   ========================================================= */
+.dietaryLoading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+    color: #6B5D52;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.dietaryGroup {
+    margin-bottom: 22px;
+    background: #FAF3E7;
+    border: 2.5px solid #2B2118;
+    border-radius: 20px;
+    padding: 16px 18px;
+    box-shadow: 0 3px 0 #2B2118;
+}
+
+.dietaryGroupHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.dietaryGroupBadge {
+    font-family: 'Nunito', cursive, sans-serif;
+    font-size: 15.5px;
+    font-weight: 800;
+    color: #2B2118;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dietaryCount {
+    background-color: #FFFFFF;
+    border: 1.5px solid #2B2118;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #2B2118;
+    box-shadow: 0 1.5px 0 #2B2118;
+}
+
+.dietaryTagsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 36px;
+    align-items: center;
+}
+
+.dietaryTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 14px;
+    border-radius: 9999px;
+    border: 2px solid #2B2118;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.15s ease;
+    animation: fadeInTag 0.2s ease-out;
+}
+
+@keyframes fadeInTag {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.dietaryTag.safe {
+    background-color: #EBF7D9;
+    color: #1E5128;
+    box-shadow: 0 2px 0 #2B2118;
+}
+
+.dietaryTag.unsafe {
+    background-color: #FDE6F0;
+    color: #9C1C3F;
+    box-shadow: 0 2px 0 #2B2118;
+}
+
+.dietaryTag.sensory {
+    background-color: #FFEBD1;
+    color: #8C4A00;
+    box-shadow: 0 2px 0 #2B2118;
+}
+
+.dietaryTagRemoveBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    line-height: 1;
+    color: inherit;
+    opacity: 0.65;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dietaryTagRemoveBtn:hover {
+    opacity: 1;
+    transform: scale(1.2);
+    background-color: rgba(43, 33, 24, 0.14);
+}
+
+.dietaryEmptyText {
+    font-size: 13.5px;
+    font-style: italic;
+    color: #8C7B6E;
+    font-weight: 600;
+    padding: 4px 0;
+}
+

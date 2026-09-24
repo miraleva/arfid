@@ -316,6 +316,47 @@ app.delete("/chat/session", isAuthenticated, async (req, res) => {
     }
 });
 
+// Dietary Profile GET - Proxy to Backend
+app.get("/user/dietary-profile", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+
+    try {
+        const result = await apiClient.getDietaryProfile(userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Get dietary profile proxy hatası:", error);
+        res.status(500).json({ safeFoods: [], unsafeFoods: [], sensoryTriggers: [] });
+    }
+});
+
+// Delete Food Preference DELETE - Proxy to Backend
+app.delete("/user/dietary-profile/food/:foodId", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const foodId = req.params.foodId;
+
+    try {
+        const result = await apiClient.deleteFoodPreference(userId, foodId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Delete food preference proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Silme hatası" });
+    }
+});
+
+// Delete Sensory Trigger DELETE - Proxy to Backend
+app.delete("/user/dietary-profile/sensory/:attributeId", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const attributeId = req.params.attributeId;
+
+    try {
+        const result = await apiClient.deleteSensoryTrigger(userId, attributeId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Delete sensory trigger proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Silme hatası" });
+    }
+});
+
 // Logout route
 app.get("/logout", (req, res) => {
     req.session.destroy();

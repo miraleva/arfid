@@ -98,13 +98,28 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 22px 20px 16px 22px;
+    padding: 18px 14px 14px 16px;
+}
+
+.sidebarHeaderActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebarHeaderActions .lang-toggle {
+    padding: 2px 7px;
+    font-size: 0.74rem;
+}
+
+.sidebarHeaderActions .lang-btn {
+    padding: 2px 5px;
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .brandLogo {

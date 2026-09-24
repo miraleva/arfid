@@ -266,17 +266,18 @@ function getMasterLists() {
  * Fetches user's raw food preferences list (safe/unsafe).
  * 
  * @param {number} userId - Target user ID
- * @returns {Promise<Array<{name: string, is_safe: number}>>}
+ * @returns {Promise<Array<{food_id: number, name: string, is_safe: number}>>}
  */
 function getUserFoodPreferences(userId) {
     return new Promise((resolve, reject) => {
         if (!userId) return resolve([]);
 
         const sql = `
-            SELECT f.name, ufp.is_safe 
+            SELECT f.id AS food_id, f.name, ufp.is_safe 
             FROM user_food_preferences ufp
             JOIN foods f ON ufp.food_id = f.id
             WHERE ufp.user_id = ?
+            ORDER BY f.name ASC
         `;
 
         db.all(sql, [userId], (err, rows) => {
@@ -292,22 +293,61 @@ function getUserFoodPreferences(userId) {
  * as sensory fit evaluation checks for friction against established triggers.
  * 
  * @param {number} userId - Target user ID
- * @returns {Promise<Array<{name: string, is_problematic: number}>>}
+ * @returns {Promise<Array<{attribute_id: number, name: string, is_problematic: number}>>}
  */
 function getUserSensoryTriggers(userId) {
     return new Promise((resolve, reject) => {
         if (!userId) return resolve([]);
 
         const sql = `
-            SELECT sa.name, ust.is_problematic 
+            SELECT sa.id AS attribute_id, sa.name, ust.is_problematic 
             FROM user_sensory_triggers ust
             JOIN sensory_attributes sa ON ust.attribute_id = sa.id
             WHERE ust.user_id = ? AND ust.is_problematic = 1
+            ORDER BY sa.name ASC
         `;
 
         db.all(sql, [userId], (err, rows) => {
             if (err) return reject(err);
             resolve(rows || []);
+        });
+    });
+}
+
+/**
+ * Deletes a food preference for a specific user.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {number} foodId - Food master ID
+ * @returns {Promise<boolean>}
+ */
+function deleteUserFoodPreference(userId, foodId) {
+    return new Promise((resolve, reject) => {
+        if (!userId || !foodId) return resolve(false);
+
+        const sql = `DELETE FROM user_food_preferences WHERE user_id = ? AND food_id = ?`;
+        db.run(sql, [userId, foodId], function (err) {
+            if (err) return reject(err);
+            resolve(this.changes > 0);
+        });
+    });
+}
+
+/**
+ * Deletes a sensory trigger preference for a specific user.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {number} attributeId - Sensory attribute master ID
+ * @returns {Promise<boolean>}
+ */
+function deleteUserSensoryTrigger(userId, attributeId) {
+    return new Promise((resolve, reject) => {
+        if (!userId || !attributeId) return resolve(false);
+
+        const sql = `DELETE FROM user_sensory_triggers WHERE user_id = ? AND attribute_id = ?`;
+        db.run(sql, [userId, attributeId], function (err) {
+            if (err) return reject(err);
+            resolve(this.changes > 0);
         });
     });
 }
@@ -318,5 +358,7 @@ module.exports = {
     getMasterLists,
     ensureMasterRecord,
     getUserFoodPreferences,
-    getUserSensoryTriggers
+    getUserSensoryTriggers,
+    deleteUserFoodPreference,
+    deleteUserSensoryTrigger
 };

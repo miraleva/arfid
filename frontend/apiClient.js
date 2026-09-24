@@ -215,6 +215,41 @@ async function deleteWidget(widgetId, userId) {
     return requestBackend(`/widgets/saved/${widgetId}`, "DELETE", null, extraHeaders);
 }
 
+/**
+ * Retrieves the user's dietary profile (safe/unsafe foods and sensory triggers).
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function getDietaryProfile(userId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend("/user/dietary-profile", "GET", null, extraHeaders);
+}
+
+/**
+ * Deletes a food preference for the user.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @param {number|string} foodId - Food master ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function deleteFoodPreference(userId, foodId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend(`/user/dietary-profile/food/${foodId}`, "DELETE", null, extraHeaders);
+}
+
+/**
+ * Deletes a sensory trigger preference for the user.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @param {number|string} attributeId - Sensory attribute master ID
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function deleteSensoryTrigger(userId, attributeId) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend(`/user/dietary-profile/sensory/${attributeId}`, "DELETE", null, extraHeaders);
+}
+
 module.exports = {
     signin,
     signup,
@@ -229,8 +264,12 @@ module.exports = {
     deleteWidget,
     getChatHistory,
     deleteChatSession,
+    getDietaryProfile,
+    deleteFoodPreference,
+    deleteSensoryTrigger,
     callBackend,
     requestBackend
 };
+
 
 
