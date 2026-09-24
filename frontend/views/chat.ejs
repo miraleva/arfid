@@ -1816,6 +1816,12 @@
                            </div>`
                         : '';
                     
+                    const realImgUrl = data.image_url || (data.image_placeholder && data.image_placeholder.image_url) || '';
+                    const imgStatus = realImgUrl ? 'loaded' : 'placeholder';
+                    const sourceUrl = (data.image_placeholder && data.image_placeholder.source_url) || 'https://world.openfoodfacts.org';
+                    const attributionHtml = realImgUrl
+                        ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer" class="widgetImageAttribution" title="Open Food Facts">📷 Open Food Facts</a>`
+                        : '';
                     const imageSlot = (data.image_placeholder && data.image_placeholder.slot_key) || 'recipe_default';
                     const altText = escapeHtml((data.image_placeholder && data.image_placeholder.alt_text) || title);
 
@@ -1850,13 +1856,14 @@
                                 </div>
                                 ${approxBadge}
                             </div>
-                            <div class="widgetImageContainer" data-image-slot="${escapeHtml(imageSlot)}" data-image-status="placeholder" title="${altText}">
+                            <div class="widgetImageContainer" data-image-slot="${escapeHtml(imageSlot)}" data-image-status="${imgStatus}" title="${altText}">
                                 <div class="widgetImagePlaceholder">
                                     <span class="placeholderIcon">🍲</span>
                                     <span class="placeholderTitle">${altText}</span>
                                     <span class="placeholderNote">Görsel Alanı (Placeholder)</span>
                                 </div>
-                                <img class="widgetRealImage" src="" alt="${altText}" />
+                                <img class="widgetRealImage" src="${escapeHtml(realImgUrl)}" alt="${altText}" loading="lazy" />
+                                ${attributionHtml}
                             </div>
                             <div class="widgetStatsRow">
                                 <div class="widgetStatItem">
@@ -1893,6 +1900,12 @@
                 const foodName = escapeHtml(data.food_name || title);
                 const amountLabel = escapeHtml(data.amount_label || '1 Porsiyon');
                 const totalCals = data.total_calories || 0;
+                const realImgUrl = data.image_url || (data.image_placeholder && data.image_placeholder.image_url) || '';
+                const imgStatus = realImgUrl ? 'loaded' : 'placeholder';
+                const sourceUrl = (data.image_placeholder && data.image_placeholder.source_url) || 'https://world.openfoodfacts.org';
+                const attributionHtml = realImgUrl
+                    ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer" class="widgetImageAttribution" title="Open Food Facts">📷 Open Food Facts</a>`
+                    : '';
                 const imageSlot = (data.image_placeholder && data.image_placeholder.slot_key) || 'food_default';
 
                 const macrosHtml = data.macros
@@ -1936,13 +1949,14 @@
                                 <span>Doğrulanmış</span>
                             </div>
                         </div>
-                        <div class="widgetImageContainer" style="height:120px;" data-image-slot="${escapeHtml(imageSlot)}" data-image-status="placeholder" title="${foodName}">
+                        <div class="widgetImageContainer" style="height:120px;" data-image-slot="${escapeHtml(imageSlot)}" data-image-status="${imgStatus}" title="${foodName}">
                             <div class="widgetImagePlaceholder">
                                 <span class="placeholderIcon">🥗</span>
                                 <span class="placeholderTitle">${foodName}</span>
                                 <span class="placeholderNote">Görsel Alanı (Placeholder)</span>
                             </div>
-                            <img class="widgetRealImage" src="" alt="${foodName}" />
+                            <img class="widgetRealImage" src="${escapeHtml(realImgUrl)}" alt="${foodName}" loading="lazy" />
+                            ${attributionHtml}
                         </div>
                         <div class="nutritionHeaderHero">
                             <div class="nutritionHeroMain">
@@ -2193,12 +2207,23 @@
                     </div>
                 `;
 
-                // Görsel Alanı Placeholder
+                // Görsel Alanı (Open Food Facts Entegrasyonu)
+                const realImgUrl = data.image_url || (data.image_placeholder && data.image_placeholder.image_url) || '';
+                const imgStatus = realImgUrl ? 'loaded' : 'placeholder';
+                const sourceUrl = (data.image_placeholder && data.image_placeholder.source_url) || 'https://world.openfoodfacts.org';
+                const attributionHtml = realImgUrl
+                    ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer" class="widgetImageAttribution" title="Open Food Facts">📷 Open Food Facts</a>`
+                    : '';
+
                 const imageHtml = `
-                    <div class="modalImagePlaceholder" data-image-slot="${escapeHtml(imageSlot)}" title="${altText}">
-                        <span class="icon">🍲</span>
-                        <span class="title">${altText}</span>
-                        <span class="note">Görsel Alanı (Open Food Facts Placeholder)</span>
+                    <div class="modalImageContainer" data-image-status="${imgStatus}" data-image-slot="${escapeHtml(imageSlot)}" title="${altText}">
+                        <div class="modalImagePlaceholder">
+                            <span class="icon">🍲</span>
+                            <span class="title">${altText}</span>
+                            <span class="note">Görsel Alanı (Placeholder)</span>
+                        </div>
+                        <img class="modalRealImage" src="${escapeHtml(realImgUrl)}" alt="${altText}" loading="lazy" />
+                        ${attributionHtml}
                     </div>
                 `;
 
@@ -2296,12 +2321,23 @@
                     </div>
                 `;
 
-                // Görsel Alanı Placeholder
+                // Görsel Alanı (Open Food Facts Entegrasyonu)
+                const realImgUrl = data.image_url || (data.image_placeholder && data.image_placeholder.image_url) || '';
+                const imgStatus = realImgUrl ? 'loaded' : 'placeholder';
+                const sourceUrl = (data.image_placeholder && data.image_placeholder.source_url) || 'https://world.openfoodfacts.org';
+                const attributionHtml = realImgUrl
+                    ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer" class="widgetImageAttribution" title="Open Food Facts">📷 Open Food Facts</a>`
+                    : '';
+
                 const imageHtml = `
-                    <div class="modalImagePlaceholder" style="height:130px;" data-image-slot="${escapeHtml(imageSlot)}" title="${foodName}">
-                        <span class="icon">🥗</span>
-                        <span class="title">${foodName}</span>
-                        <span class="note">Görsel Alanı (Open Food Facts Placeholder)</span>
+                    <div class="modalImageContainer" style="height:140px;" data-image-status="${imgStatus}" data-image-slot="${escapeHtml(imageSlot)}" title="${foodName}">
+                        <div class="modalImagePlaceholder">
+                            <span class="icon">🥗</span>
+                            <span class="title">${foodName}</span>
+                            <span class="note">Görsel Alanı (Placeholder)</span>
+                        </div>
+                        <img class="modalRealImage" src="${escapeHtml(realImgUrl)}" alt="${foodName}" loading="lazy" />
+                        ${attributionHtml}
                     </div>
                 `;
 

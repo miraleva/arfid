@@ -10,6 +10,7 @@ const chatRepository = require("../repositories/chatRepository");
 const { buildSystemPrompt, jsonSchemaConfig } = require("../promptBuilder");
 const { getRagContext } = require("../rag/ragClient");
 const { functionDeclarations, executeTool } = require("../tools");
+const openFoodFactsService = require("./openFoodFactsService");
 
 /**
  * Generates a short "Patient Card" summary using a second Gemini call.
@@ -207,6 +208,15 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
         let patientCard = "";
         if (userId && !isFallback) {
             patientCard = await generatePatientCard(userId);
+        }
+
+        // 7. Background Enrichment: Open Food Facts Image Lookup (Non-blocking fallback)
+        if (capturedWidget) {
+            try {
+                capturedWidget = await openFoodFactsService.enrichWidget(capturedWidget);
+            } catch (enrichErr) {
+                console.warn("[DietitianService] Widget enrichment skipped due to error:", enrichErr.message);
+            }
         }
 
         return {

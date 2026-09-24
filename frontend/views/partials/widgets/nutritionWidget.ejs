@@ -23,18 +23,25 @@
             </div>
         </div>
 
-        <!-- Görsel Placeholder (Open Food Facts Entegrasyon Alanı) -->
+        <% 
+            const realImgUrl = nData.image_url || (nData.image_placeholder && nData.image_placeholder.image_url);
+            const sourceUrl = (nData.image_placeholder && nData.image_placeholder.source_url) || 'https://world.openfoodfacts.org';
+        %>
+        <!-- Görsel Alanı (Open Food Facts Entegrasyonu) -->
         <div class="widgetImageContainer" 
              style="height: 120px;"
              data-image-slot="<%= (nData.image_placeholder && nData.image_placeholder.slot_key) || 'food_default' %>" 
-             data-image-status="placeholder"
+             data-image-status="<%= realImgUrl ? 'loaded' : 'placeholder' %>"
              title="<%= (nData.image_placeholder && nData.image_placeholder.alt_text) || nTitle %>">
             <div class="widgetImagePlaceholder">
                 <span class="placeholderIcon">🥗</span>
                 <span class="placeholderTitle"><%= nData.food_name || nTitle %></span>
                 <span class="placeholderNote">Görsel Alanı (Placeholder)</span>
             </div>
-            <img class="widgetRealImage" src="" alt="<%= nTitle %>" />
+            <img class="widgetRealImage" src="<%= realImgUrl || '' %>" alt="<%= nTitle %>" loading="lazy" />
+            <% if (realImgUrl) { %>
+                <a href="<%= sourceUrl %>" target="_blank" rel="noopener noreferrer" class="widgetImageAttribution" title="Open Food Facts">📷 Open Food Facts</a>
+            <% } %>
         </div>
 
         <!-- Hero Besin & Kalori Kutusu -->
