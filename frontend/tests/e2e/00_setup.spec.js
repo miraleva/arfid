@@ -6,10 +6,10 @@ const authFile = path.join(__dirname, '../../playwright/.auth/user.json');
 
 test.describe('Global Auth Setup', () => {
     test('Authenticate Golden User a@gmail.com and save storage state', async ({ page }) => {
-        // Ensure storage directory exists
-        const dir = path.dirname(authFile);
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
+
+        const dir = path.dirname(authFile); //auth klasörü var mı
+        if (!fs.existsSync(dir)) { //daha önce oluşturulmamışsa 
+            fs.mkdirSync(dir, { recursive: true }); //oluştur
         }
 
         await page.goto('/signin');

@@ -14,8 +14,8 @@ test.describe('01. Authentication & Security Regressions', () => {
         // Verify warning is displayed and user remains on signin page
         const warning = page.locator('#emailWarning');
         await expect(warning).toBeVisible({ timeout: 5000 });
-        await expect(warning).toHaveText(/E-posta veya şifre yanlış|Invalid email or password/i);
-        expect(page.url()).toContain('/signin');
+        await expect(warning).toHaveText(/E-posta veya şifre yanlış|Invalid email or password/i); //i case insensitive demek 
+        expect(page.url()).toContain('/signin'); //sayfa hala signin sayfasında mı
     });
 
     test('1.2 Login with wrong password for existing user shows error warning', async ({ page }) => {

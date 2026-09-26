@@ -1,29 +1,29 @@
 const { test, expect } = require('@playwright/test');
 const path = require('path');
 
-const authFile = path.join(__dirname, '../../playwright/.auth/user.json');
+const authFile = path.join(__dirname, '../../playwright/.auth/user.json'); //hazır giriş user
 
 test.describe('03. Settings Modal, Profile, Password Rejection & Danger Zone', () => {
     test.use({ storageState: authFile });
 
     test.beforeEach(async ({ page }) => {
-        await page.goto('/chat');
+        await page.goto('/chat'); //chat sayfasına gidiyo
         await expect(page.locator('#openSettingsBtn')).toBeVisible();
         await page.click('#openSettingsBtn');
-        await expect(page.locator('#settingsModal')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('#settingsModal')).toBeVisible({ timeout: 5000 }); //settings penceresi açıldı mı kontrol
     });
 
     test('3.1 Profile Avatar Area shows user email and does NOT contain confusing "Profil Avatarı" label', async ({ page }) => {
         const modal = page.locator('#settingsModal');
-        await expect(modal).toBeVisible();
+        await expect(modal).toBeVisible(); //settings penceresi görünürlüğü 
 
         // 1. Verify user email is rendered cleanly in avatar sub-label
-        const avatarSub = modal.locator('.settingsAvatarSub');
+        const avatarSub = modal.locator('.settingsAvatarSub'); //pp resmi altındaki yazı 
         await expect(avatarSub).toBeVisible();
-        await expect(avatarSub).toContainText('a@gmail.com');
+        await expect(avatarSub).toContainText('a@gmail.com'); //bu yazıyo mu
 
         // 2. Verify misleading old label "Profil Avatarı" is nowhere in the avatar section
-        const avatarRow = modal.locator('.settingsAvatarRow');
+        const avatarRow = modal.locator('.settingsAvatarRow'); //pp resmi satırı
         const textContent = await avatarRow.innerText();
         expect(textContent).not.toContain('Profil Avatarı');
     });
@@ -63,7 +63,7 @@ test.describe('03. Settings Modal, Profile, Password Rejection & Danger Zone', (
         await expect(deleteBtn).toHaveText(/Hesabımı Sil|Delete Account/i);
     });
 
-    test('3.4 Settings modal can be closed cleanly', async ({ page }) => {
+    test('3.4 Settings modal can be closed cleanly', async ({ page }) => {  //çarpı butonu kapama
         const closeBtn = page.locator('#closeSettingsBtn');
         await closeBtn.click();
         await expect(page.locator('#settingsModalOverlay')).not.toHaveClass(/active/);
