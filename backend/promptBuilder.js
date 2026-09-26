@@ -63,6 +63,20 @@ function formatMemorySection(memoryContext) {
     return memoryContext ? memoryContext : "None yet.";
 }
 
+function formatRecentChangesSection(recentChangesContext) {
+    if (!recentChangesContext || !recentChangesContext.trim()) return "";
+    return `
+    RECENT PREFERENCE CHANGES (AUDIT LOG - LAST 30 DAYS):
+    ${recentChangesContext.trim()}
+
+    INSTRUCTION FOR RECENT PREFERENCE CHANGES:
+    Yukarıdaki listede yer alan bir gıda veya tetikleyici kullanıcının mesajında geçiyorsa veya önerilecek tarifle/içerikle ilgiliyse:
+    1. Bu gıdanın önerilmesini veya tarifte yer almasını doğrudan ENGELLEME (Kullanıcı bu kısıtlamayı profilinden sildiği için artık yasaklı bir besin değildir).
+    2. Kullanıcıya bu tercihi daha önce profilden çıkardığını/sildiğini nazik, empatik ve destekleyici bir dille hatırlat (Örn: 'Daha önce pirinçten kaçındığını belirtmiştin, bu konuda bir değişiklik oldu mu? Hâlâ denemek istiyor musun?').
+    3. Kullanıcının güncel durumunu teyit ederek ve seçenek sunarak ilerle.
+    `;
+}
+
 function formatRagSection(ragContext) {
     return ragContext ? ragContext : "İlgili tarif bilgisi bulunamadı.";
 }
@@ -80,7 +94,9 @@ function formatChatHistory(recentChatContext) {
  * Note for future extensions (e.g. crisis/trigger directives):
  * Additional sections can be composed using helper functions when needed.
  */
-function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, recentChatContext }) {
+function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, recentChatContext, recentChangesContext }) {
+    const recentChangesBlock = formatRecentChangesSection(recentChangesContext);
+
     return `
     You are an expert ARFID Dietitian Assistant.
     Your goal is to provide supportive, safe, and encouraging advice to a user with Avoidant/Restrictive Food Intake Disorder.
@@ -122,7 +138,7 @@ function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, r
 
     KNOWN USER CONSTRAINTS (RESPECT THESE):
     ${formatMemorySection(memoryContext)}
-
+${recentChangesBlock}
     RAG INSTRUCTION:
     Aşağıda sağlanan "İLGİLİ TARİF / KİTAP BİLGİSİ" alanını SADECE kullanıcının mesajıyla gerçekten ilgiliyse ve faydalı bir tarif/öneri sunabileceksen kullan. Eğer bilgi kullanıcı mesajıyla alakasızsa tamamen görmezden gel ve normal diyetisyen tavsiyeni ver.
     ${formatRagSection(ragContext)}
@@ -156,5 +172,6 @@ function buildSystemPrompt({ userText, masterLists, memoryContext, ragContext, r
 
 module.exports = {
     buildSystemPrompt,
+    formatRecentChangesSection,
     jsonSchemaConfig
 };

@@ -315,7 +315,66 @@ function getUserSensoryTriggers(userId) {
 }
 
 /**
- * Deletes a food preference for a specific user.
+ * Logs a preference change (audit trail) into preference_change_log.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {'food'|'sensory'} itemType - Type of item ('food' or 'sensory')
+ * @param {string} itemName - Name of the item
+ * @param {'removed'|'added_manual'} action - Action taken
+ * @param {string} [previousValue] - Previous state ('safe', 'unsafe', 'problematic')
+ * @returns {Promise<boolean>}
+ */
+function logPreferenceChange(userId, itemType, itemName, action, previousValue = null) {
+    return new Promise((resolve, reject) => {
+        if (!userId || !itemType || !itemName || !action) return resolve(false);
+
+        const changedAt = Math.floor(Date.now() / 1000);
+        const sql = `
+            INSERT INTO preference_change_log (user_id, item_type, item_name, action, previous_value, changed_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        db.run(sql, [userId, itemType, itemName.trim(), action, previousValue, changedAt], function (err) {
+            if (err) {
+                console.error("[Memory Log Error] Failed to log preference change:", err);
+                return resolve(false);
+            }
+            console.log(`[Memory Log] Logged preference change: user=${userId}, type=${itemType}, item=${itemName}, action=${action}`);
+            resolve(true);
+        });
+    });
+}
+
+/**
+ * Retrieves preference changes for a user within the last N days (default 30 days).
+ * 
+ * @param {number} userId - Target user ID
+ * @param {number} [days=30] - Lookback window in days
+ * @returns {Promise<Array<{id: number, item_type: string, item_name: string, action: string, previous_value: string, changed_at: number, days_ago: number}>>}
+ */
+function getRecentPreferenceChanges(userId, days = 30) {
+    return new Promise((resolve, reject) => {
+        if (!userId) return resolve([]);
+
+        const sql = `
+            SELECT id, item_type, item_name, action, previous_value, changed_at,
+                   CAST((strftime('%s', 'now') - changed_at) / 86400 AS INTEGER) AS days_ago
+            FROM preference_change_log
+            WHERE user_id = ? AND changed_at >= (strftime('%s', 'now') - (? * 86400))
+            ORDER BY changed_at DESC
+        `;
+
+        db.all(sql, [userId, days], (err, rows) => {
+            if (err) {
+                console.error("[Memory Log Error] Failed to fetch recent preference changes:", err);
+                return resolve([]);
+            }
+            resolve(rows || []);
+        });
+    });
+}
+
+/**
+ * Deletes a food preference for a specific user and logs the removal to preference_change_log.
  * 
  * @param {number} userId - Target user ID
  * @param {number} foodId - Food master ID
@@ -325,16 +384,37 @@ function deleteUserFoodPreference(userId, foodId) {
     return new Promise((resolve, reject) => {
         if (!userId || !foodId) return resolve(false);
 
-        const sql = `DELETE FROM user_food_preferences WHERE user_id = ? AND food_id = ?`;
-        db.run(sql, [userId, foodId], function (err) {
-            if (err) return reject(err);
-            resolve(this.changes > 0);
+        // First find item details for audit log
+        const findSql = `
+            SELECT f.name, ufp.is_safe 
+            FROM user_food_preferences ufp
+            JOIN foods f ON ufp.food_id = f.id
+            WHERE ufp.user_id = ? AND ufp.food_id = ?
+        `;
+
+        db.get(findSql, [userId, foodId], (findErr, itemRow) => {
+            if (findErr) {
+                console.error("[Memory Error] Failed to inspect food preference before delete:", findErr);
+            }
+
+            const sql = `DELETE FROM user_food_preferences WHERE user_id = ? AND food_id = ?`;
+            db.run(sql, [userId, foodId], async function (err) {
+                if (err) return reject(err);
+                const changes = this.changes;
+
+                if (changes > 0 && itemRow && itemRow.name) {
+                    const prevVal = itemRow.is_safe === 1 ? 'safe' : 'unsafe';
+                    await logPreferenceChange(userId, 'food', itemRow.name, 'removed', prevVal);
+                }
+
+                resolve(changes > 0);
+            });
         });
     });
 }
 
 /**
- * Deletes a sensory trigger preference for a specific user.
+ * Deletes a sensory trigger preference for a specific user and logs the removal to preference_change_log.
  * 
  * @param {number} userId - Target user ID
  * @param {number} attributeId - Sensory attribute master ID
@@ -344,10 +424,31 @@ function deleteUserSensoryTrigger(userId, attributeId) {
     return new Promise((resolve, reject) => {
         if (!userId || !attributeId) return resolve(false);
 
-        const sql = `DELETE FROM user_sensory_triggers WHERE user_id = ? AND attribute_id = ?`;
-        db.run(sql, [userId, attributeId], function (err) {
-            if (err) return reject(err);
-            resolve(this.changes > 0);
+        // First find item details for audit log
+        const findSql = `
+            SELECT sa.name, ust.is_problematic 
+            FROM user_sensory_triggers ust
+            JOIN sensory_attributes sa ON ust.attribute_id = sa.id
+            WHERE ust.user_id = ? AND ust.attribute_id = ?
+        `;
+
+        db.get(findSql, [userId, attributeId], (findErr, itemRow) => {
+            if (findErr) {
+                console.error("[Memory Error] Failed to inspect sensory trigger before delete:", findErr);
+            }
+
+            const sql = `DELETE FROM user_sensory_triggers WHERE user_id = ? AND attribute_id = ?`;
+            db.run(sql, [userId, attributeId], async function (err) {
+                if (err) return reject(err);
+                const changes = this.changes;
+
+                if (changes > 0 && itemRow && itemRow.name) {
+                    const prevVal = itemRow.is_problematic === 1 ? 'problematic' : 'safe';
+                    await logPreferenceChange(userId, 'sensory', itemRow.name, 'removed', prevVal);
+                }
+
+                resolve(changes > 0);
+            });
         });
     });
 }
@@ -360,5 +461,7 @@ module.exports = {
     getUserFoodPreferences,
     getUserSensoryTriggers,
     deleteUserFoodPreference,
-    deleteUserSensoryTrigger
+    deleteUserSensoryTrigger,
+    logPreferenceChange,
+    getRecentPreferenceChanges
 };

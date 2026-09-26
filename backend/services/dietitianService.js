@@ -11,6 +11,48 @@ const { buildSystemPrompt, jsonSchemaConfig } = require("../promptBuilder");
 const { getRagContext } = require("../rag/ragClient");
 const { functionDeclarations, executeTool } = require("../tools");
 const openFoodFactsService = require("./openFoodFactsService");
+const { calorieDatabase } = require("../tools/data/calorieDatabase");
+
+// Fast alias lookup map for bilingual food/ingredient matching
+const aliasLookup = new Map();
+if (Array.isArray(calorieDatabase)) {
+    calorieDatabase.forEach(entry => {
+        const allTerms = [entry.name, ...(entry.aliases || [])].map(t => t.toLowerCase());
+        allTerms.forEach(term => {
+            if (!aliasLookup.has(term)) {
+                aliasLookup.set(term, allTerms);
+            }
+        });
+    });
+}
+
+/**
+ * Checks if a preference change is relevant to the user's current message.
+ * Supports direct match, sub-word match, and bilingual alias mapping.
+ * 
+ * @param {Object} change - Log entry
+ * @param {string} lowerUserText - Lowercase user message
+ * @returns {boolean}
+ */
+function isPreferenceChangeRelevant(change, lowerUserText) {
+    if (!change || !change.item_name || !lowerUserText) return false;
+    const nameLower = change.item_name.toLowerCase();
+
+    // 1. Direct substring match
+    if (lowerUserText.includes(nameLower)) return true;
+
+    // 2. Multi-word item checks (e.g. "mushy texture" -> "mushy")
+    const words = nameLower.split(/\s+/).filter(w => w.length > 2);
+    if (words.some(w => lowerUserText.includes(w))) return true;
+
+    // 3. Alias map match (e.g. "rice" <-> "pirinç", "bread" <-> "ekmek")
+    const aliases = aliasLookup.get(nameLower);
+    if (aliases && aliases.some(alias => lowerUserText.includes(alias))) {
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * Generates a short "Patient Card" summary using a second Gemini call.
@@ -98,13 +140,48 @@ async function getDietitianResponse(userText, userId, conversationId = null) {
     // 1.2 Fetch RAG Context (Knowledge Base)
     const ragContext = await getRagContext(userText);
 
+    // 1.3 Fetch & Filter Recent Preference Changes (Audit Log - Last 30 Days)
+    let recentChangesContext = "";
+    if (userId) {
+        try {
+            const auditStartTime = Date.now();
+            const recentChanges = await memoryRepository.getRecentPreferenceChanges(userId, 30);
+            const auditDurationMs = Date.now() - auditStartTime;
+            if (auditDurationMs > 50) {
+                console.warn(`[Audit Log Performance] Query took ${auditDurationMs}ms for user ${userId}`);
+            }
+
+            if (recentChanges && recentChanges.length > 0) {
+                const lowerUserText = userText.toLowerCase();
+                // Filter changes that are mentioned or closely related to the current user message
+                const relevantChanges = recentChanges.filter(change => isPreferenceChangeRelevant(change, lowerUserText));
+
+                if (relevantChanges.length > 0) {
+                    recentChangesContext = relevantChanges.map(change => {
+                        const typeLabel = change.item_type === "food" ? "Gıda" : "Duyusal Özellik";
+                        const stateLabel = change.previous_value === "safe"
+                            ? "'Güvenli' listesinden ÇIKARILDI (Silindi)"
+                            : change.previous_value === "problematic"
+                                ? "'Duyusal Tetikleyici' listesinden ÇIKARILDI (Silindi)"
+                                : "'Kaçınılan / Güvenli Olmayan' listesinden ÇIKARILDI (Silindi)";
+                        const timeLabel = change.days_ago === 0 ? "bugün" : `${change.days_ago} gün önce`;
+                        return `- ${change.item_name} (${typeLabel}): ${timeLabel} ${stateLabel}`;
+                    }).join("\n");
+                }
+            }
+        } catch (auditErr) {
+            console.error("Error fetching recent preference changes:", auditErr);
+        }
+    }
+
     // 2. Construct System Prompt
     const systemPrompt = buildSystemPrompt({
         userText,
         masterLists,
         memoryContext,
         ragContext,
-        recentChatContext
+        recentChatContext,
+        recentChangesContext
     });
 
     try {
@@ -241,5 +318,6 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
 
 module.exports = {
     getDietitianResponse,
-    generatePatientCard
+    generatePatientCard,
+    isPreferenceChangeRelevant
 };

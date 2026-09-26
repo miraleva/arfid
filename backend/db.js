@@ -140,7 +140,20 @@ db.serialize(() => {
     db.run(`ALTER TABLE off_image_cache ADD COLUMN source_domain TEXT`, () => {});
     db.run(`CREATE INDEX IF NOT EXISTS idx_off_cache_query ON off_image_cache(query_term)`);
 
-    // 6. Seed Data (Idempotent: INSERT OR IGNORE)
+    // 8. Preference Change Log (Audit Trail for Dietary Changes)
+    db.run(`CREATE TABLE IF NOT EXISTS preference_change_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        item_type TEXT NOT NULL CHECK (item_type IN ('food', 'sensory')),
+        item_name TEXT NOT NULL COLLATE NOCASE,
+        action TEXT NOT NULL CHECK (action IN ('removed', 'added_manual')),
+        previous_value TEXT,
+        changed_at INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_pref_log_user_changed ON preference_change_log(user_id, changed_at DESC)`);
+
+    // 9. Seed Data (Idempotent: INSERT OR IGNORE)
     // Foods
     const foods = [
         'Apple', 'Banana', 'Orange', 'Strawberry', 'Grapes',

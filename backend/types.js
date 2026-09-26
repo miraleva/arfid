@@ -73,6 +73,7 @@
  * @property {string} memoryContext - Formatted user constraints string
  * @property {string} ragContext - Formatted recipe/knowledge chunks string
  * @property {string} recentChatContext - Formatted recent conversation history
+ * @property {string} [recentChangesContext] - Formatted recent preference change audit log string
  */
 
 module.exports = {};
