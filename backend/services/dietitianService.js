@@ -343,7 +343,7 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
         // 8. Background Enrichment: Open Food Facts Image Lookup (Non-blocking fallback)
         if (capturedWidget) {
             try {
-                capturedWidget = await openFoodFactsService.enrichWidget(capturedWidget);
+                capturedWidget = await openFoodFactsService.enrichWidget(capturedWidget, { userText });
             } catch (enrichErr) {
                 console.warn("[DietitianService] Widget enrichment skipped due to error:", enrichErr.message);
             }

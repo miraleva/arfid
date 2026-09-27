@@ -11,8 +11,31 @@ const { GoogleGenAI } = require("@google/genai");
 const apiKey = (process.env.GOOGLE_API_KEY || "").trim();
 const ai = new GoogleGenAI({ apiKey: apiKey || undefined });
 
-const DEFAULT_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
-const FALLBACK_MODEL = "gemini-3.5-flash-lite";
+const MODEL_CASCADE = [
+    process.env.GEMINI_MODEL || "gemini-3.8-flash",
+    "gemini-3.7-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite"
+];
+
+const DEFAULT_MODEL = MODEL_CASCADE[0];
+
+/**
+ * Gets the next fallback model in the cascade given the current active model.
+ * 
+ * @param {string} currentModel 
+ * @returns {string} Next model in cascade
+ */
+function getNextFallbackModel(currentModel) {
+    const idx = MODEL_CASCADE.indexOf(currentModel);
+    if (idx !== -1 && idx + 1 < MODEL_CASCADE.length) {
+        return MODEL_CASCADE[idx + 1];
+    }
+    // If reached the end of list, cycle back to the lightest model or start
+    return MODEL_CASCADE[MODEL_CASCADE.length - 1];
+}
 
 /**
  * Sends a text prompt or content structure to Google Gemini model and returns the raw response text.
@@ -23,7 +46,7 @@ const FALLBACK_MODEL = "gemini-3.5-flash-lite";
  */
 async function geminiResponse(contents, config = {}) {
     let attempts = 0;
-    const maxAttempts = 3;
+    const maxAttempts = MODEL_CASCADE.length;
     let activeModel = config.model || DEFAULT_MODEL;
 
     while (attempts < maxAttempts) {
@@ -38,7 +61,7 @@ async function geminiResponse(contents, config = {}) {
         } catch (error) {
             if (attempts < maxAttempts && (error.status === 503 || error.status === 429)) {
                 const previousModel = activeModel;
-                activeModel = activeModel === DEFAULT_MODEL ? FALLBACK_MODEL : DEFAULT_MODEL;
+                activeModel = getNextFallbackModel(previousModel);
                 console.warn(`\n⚠️  [AI SERVICE FALLBACK] Gemini HTTP ${error.status} alındı (Deneme ${attempts}/${maxAttempts})!`);
                 console.warn(`   Model otomatik olarak devrediliyor: [${previousModel}] ➔ [${activeModel}] (${attempts}s sonra yeniden denenecek)...\n`);
                 await new Promise(r => setTimeout(r, 1000 * attempts));
@@ -60,7 +83,7 @@ async function geminiResponse(contents, config = {}) {
  */
 async function geminiRawCall(contents, config = {}) {
     let attempts = 0;
-    const maxAttempts = 3;
+    const maxAttempts = MODEL_CASCADE.length;
     let activeModel = config.model || DEFAULT_MODEL;
 
     while (attempts < maxAttempts) {
@@ -75,7 +98,7 @@ async function geminiRawCall(contents, config = {}) {
         } catch (error) {
             if (attempts < maxAttempts && (error.status === 503 || error.status === 429)) {
                 const previousModel = activeModel;
-                activeModel = activeModel === DEFAULT_MODEL ? FALLBACK_MODEL : DEFAULT_MODEL;
+                activeModel = getNextFallbackModel(previousModel);
                 console.warn(`\n⚠️  [AI SERVICE FALLBACK] Gemini Raw Call HTTP ${error.status} alındı (Deneme ${attempts}/${maxAttempts})!`);
                 console.warn(`   Model otomatik olarak devrediliyor: [${previousModel}] ➔ [${activeModel}] (${attempts}s sonra yeniden denenecek)...\n`);
                 await new Promise(r => setTimeout(r, 1000 * attempts));

@@ -126,7 +126,7 @@ db.serialize(() => {
     db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_conv_id ON saved_widgets(conversation_id)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_saved_widgets_message_id ON saved_widgets(related_message_id)`);
 
-    // 7. Open Food Facts Image Cache
+    // 7. Open Food Facts Image & Nutrition Cache
     db.run(`CREATE TABLE IF NOT EXISTS off_image_cache (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         query_term TEXT NOT NULL UNIQUE COLLATE NOCASE,
@@ -134,10 +134,18 @@ db.serialize(() => {
         product_name TEXT,
         source_url TEXT,
         source_domain TEXT,
+        calories_100g REAL,
+        protein_100g REAL,
+        carbs_100g REAL,
+        fat_100g REAL,
         fetched_at INTEGER NOT NULL,
         expires_at INTEGER NOT NULL
     )`);
     db.run(`ALTER TABLE off_image_cache ADD COLUMN source_domain TEXT`, () => {});
+    db.run(`ALTER TABLE off_image_cache ADD COLUMN calories_100g REAL`, () => {});
+    db.run(`ALTER TABLE off_image_cache ADD COLUMN protein_100g REAL`, () => {});
+    db.run(`ALTER TABLE off_image_cache ADD COLUMN carbs_100g REAL`, () => {});
+    db.run(`ALTER TABLE off_image_cache ADD COLUMN fat_100g REAL`, () => {});
     db.run(`CREATE INDEX IF NOT EXISTS idx_off_cache_query ON off_image_cache(query_term)`);
 
     // 8. Preference Change Log (Audit Trail for Dietary Changes)
