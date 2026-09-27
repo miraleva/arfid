@@ -138,10 +138,13 @@ app.post("/signin", async (req, res) => {
 
         if (result.ok) {
             req.session.user = { id: result.data.id, email: result.data.email, username: result.data.username };
-            if (isJson) {
-                return res.json({ success: true, redirect: "/chat" });
-            }
-            return res.redirect("/chat");
+            req.session.save((saveErr) => {
+                if (saveErr) console.error("Session save error:", saveErr);
+                if (isJson) {
+                    return res.json({ success: true, redirect: "/chat" });
+                }
+                return res.redirect("/chat");
+            });
         } else {
             const errorMsg = req.__ ? req.__("auth.err_auth_failed") : (result.data?.error || "Email veya şifre yanlış");
             const status = result.status || 401;
@@ -170,10 +173,13 @@ app.post("/signup", async (req, res) => {
 
         if (result.ok) {
             req.session.user = { id: result.data.id, email: result.data.email, username: result.data.username };
-            if (isJson) {
-                return res.json({ success: true, redirect: "/chat" });
-            }
-            return res.redirect("/chat");
+            req.session.save((saveErr) => {
+                if (saveErr) console.error("Session save error:", saveErr);
+                if (isJson) {
+                    return res.json({ success: true, redirect: "/chat" });
+                }
+                return res.redirect("/chat");
+            });
         } else {
             const errorMsg = result.data?.error || "Kayıt sırasında bir hata oluştu";
             const status = result.status || 400;

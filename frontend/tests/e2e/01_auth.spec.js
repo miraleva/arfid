@@ -56,4 +56,29 @@ test.describe('01. Authentication & Security Regressions', () => {
         await page.waitForURL('**/signin', { timeout: 10000 });
         expect(page.url()).toContain('/signin');
     });
+
+    test('1.5 Successful Sign Up automatically logs in and redirects directly to /chat', async ({ page }) => {
+        await page.context().clearCookies();
+        await page.goto('/signup');
+        await expect(page.locator('#signUpForm')).toBeVisible();
+
+        const uniqueEmail = `autologin_${Date.now()}@test.com`;
+        await page.fill('#username', 'AutoLoginUser');
+        await page.fill('#email', uniqueEmail);
+        await page.fill('#password', 'TestPass123!');
+        await page.fill('#passwordAgain', 'TestPass123!');
+
+        await page.click('button.signButton');
+
+        // Should be redirected directly to /chat
+        await page.waitForURL('**/chat', { timeout: 10000 });
+        expect(page.url()).toContain('/chat');
+        await expect(page.locator('#messageInput')).toBeVisible();
+
+        // Reload page to verify session persistence
+        await page.reload();
+        await expect(page.locator('#messageInput')).toBeVisible();
+        expect(page.url()).toContain('/chat');
+    });
 });
+

@@ -16,21 +16,31 @@ test.describe('02. Chat, Sidebar & Live Gemini Smoke Test', () => {
         await input.fill('merhaba');
         await sendBtn.click();
 
-        // 1. User message bubble should appear immediately
+        // 1. User message bubble should appear immediately with timestamp
         const userBubble = page.locator('.userMessage').last();
         await expect(userBubble).toBeVisible({ timeout: 5000 });
         await expect(userBubble).toContainText('merhaba');
+        const userTimestamp = userBubble.locator('.messageTimestamp');
+        await expect(userTimestamp).toBeVisible();
+        await expect(userTimestamp).toContainText(/az önce|just now/i);
 
         // 2. Real Assistant response should appear within 25 seconds (live Gemini call)
-        const assistantBubble = page.locator('.welcomeMessage .aiMessageBubble').last();
-        await expect(assistantBubble).toBeVisible({ timeout: 25000 });
+        // Wait for loading indicator to finish
+        const loadingIndicator = page.locator('#loadingIndicator');
+        await expect(loadingIndicator).toBeHidden({ timeout: 30000 });
+
+        const assistantBubble = page.locator('.welcomeMessage:not(#loadingIndicator) .aiMessageBubble').last();
+        await expect(assistantBubble).toBeVisible({ timeout: 10000 });
 
         // Wait a moment for typing reveal effect to finish
         await page.waitForTimeout(2000);
 
-        // Verify response contains non-empty text
+        // Verify response contains non-empty text and timestamp
         const responseText = await assistantBubble.innerText();
         expect(responseText.trim().length).toBeGreaterThan(5);
+        const aiTimestamp = page.locator('.welcomeMessage:not(#loadingIndicator) .messageTimestamp').last();
+        await expect(aiTimestamp).toBeVisible();
+        await expect(aiTimestamp).toContainText(/az önce|just now/i);
         console.log(`[Smoke Test] Live Gemini Response received: "${responseText.trim().slice(0, 60)}..."`);
     });
 

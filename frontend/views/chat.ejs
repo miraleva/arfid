@@ -986,6 +986,38 @@
             return I18N.older;
         }
 
+        // Mesaj Göreceli Zaman Formatlayıcı ("az önce", "5 dakika önce", "2 saat önce", "3 gün önce", "15 Eyl, 14:30")
+        function formatRelativeTime(timestampSeconds) {
+            if (!timestampSeconds) return "az önce";
+            const sec = timestampSeconds > 1e11 ? Math.floor(timestampSeconds / 1000) : Number(timestampSeconds);
+            const nowSec = Math.floor(Date.now() / 1000);
+            const diff = Math.max(0, nowSec - sec);
+
+            if (diff < 60) {
+                return "az önce";
+            }
+            const minutes = Math.floor(diff / 60);
+            if (minutes < 60) {
+                return `${minutes} dakika önce`;
+            }
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) {
+                return `${hours} saat önce`;
+            }
+            const days = Math.floor(hours / 24);
+            if (days < 7) {
+                return `${days} gün önce`;
+            }
+
+            const date = new Date(sec * 1000);
+            const day = date.getDate();
+            const months = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+            const month = months[date.getMonth()] || "";
+            const hoursStr = String(date.getHours()).padStart(2, '0');
+            const minsStr = String(date.getMinutes()).padStart(2, '0');
+            return `${day} ${month}, ${hoursStr}:${minsStr}`;
+        }
+
         // Sidebar'da Grupları Render Etme (Sabitlenenler en üstte, diğerleri tarih gruplarında)
         function renderSidebarHistory(filterQuery = '') {
             if (!chatHistorySection) return;
@@ -1337,9 +1369,14 @@
                     if (msg.id) {
                         messageDiv.dataset.messageId = msg.id;
                     }
+                    const timeLabel = formatRelativeTime(msg.created_at);
+
                     if (msg.role === 'user') {
                         messageDiv.className = 'userMessage';
-                        messageDiv.innerHTML = `<div class="userMessageBubble">${escapeHtml(msg.content.trim())}</div>`;
+                        messageDiv.innerHTML = `
+                            <div class="userMessageBubble">${escapeHtml(msg.content.trim())}</div>
+                            <span class="messageTimestamp">${escapeHtml(timeLabel)}</span>
+                        `;
                     } else {
                         messageDiv.className = 'welcomeMessage';
                         messageDiv.innerHTML = `
@@ -1348,6 +1385,7 @@
                             </div>
                             <div class="aiResponseContent">
                                 <div class="aiMessageBubble">${escapeHtml(msg.content.trim())}</div>
+                                <span class="messageTimestamp">${escapeHtml(timeLabel)}</span>
                             </div>
                         `;
                         if (msg.widget) {
@@ -1747,7 +1785,7 @@
             }
         }
 
-        function addUserMessage(message) {
+        function addUserMessage(message, timestamp = null) {
             finishActiveTyping();
             
             // İlk mesaj gönderildiğinde karşılama ekranını kaldır ve input'u alt konuma taşı
@@ -1758,9 +1796,13 @@
                 chatContainer.appendChild(messageInputContainer);
             }
 
+            const timeLabel = formatRelativeTime(timestamp || Math.floor(Date.now() / 1000));
             const messageDiv = document.createElement('div');
             messageDiv.className = 'userMessage';
-            messageDiv.innerHTML = `<div class="userMessageBubble">${escapeHtml(message.trim())}</div>`;
+            messageDiv.innerHTML = `
+                <div class="userMessageBubble">${escapeHtml(message.trim())}</div>
+                <span class="messageTimestamp">${escapeHtml(timeLabel)}</span>
+            `;
             chatArea.appendChild(messageDiv);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
@@ -1986,11 +2028,12 @@
             return container;
         }
 
-        function addAiMessage(message, widget = null) {
+        function addAiMessage(message, widget = null, timestamp = null) {
             removeLoading();
             finishActiveTyping();
 
             const cleanMessage = (message || '').trim();
+            const timeLabel = formatRelativeTime(timestamp || Math.floor(Date.now() / 1000));
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'welcomeMessage';
@@ -2007,6 +2050,11 @@
                 </div>
             `;
             responseContent.appendChild(bubbleDiv);
+
+            const timestampSpan = document.createElement('span');
+            timestampSpan.className = 'messageTimestamp';
+            timestampSpan.textContent = timeLabel;
+            responseContent.appendChild(timestampSpan);
 
             // Eğer yanıtla birlikte gelen bir widget varsa mesaj içeriğinin (balonun) altına iliştir
             if (widget) {
