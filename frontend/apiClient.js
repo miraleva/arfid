@@ -227,6 +227,31 @@ async function getDietaryProfile(userId) {
 }
 
 /**
+ * Adds or updates a food preference for the user.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @param {string} name - Food name
+ * @param {number} isSafe - 1 for Safe, 0 for Avoided
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function addFoodPreference(userId, name, isSafe) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend("/user/dietary-profile/food", "POST", { name, isSafe }, extraHeaders);
+}
+
+/**
+ * Adds a sensory trigger for the user.
+ * 
+ * @param {number|string} userId - Authenticated user ID
+ * @param {string} name - Sensory attribute name
+ * @returns {Promise<{ ok: boolean, status: number, data: any }>}
+ */
+async function addSensoryTrigger(userId, name) {
+    const extraHeaders = userId ? { "X-User-Id": String(userId) } : {};
+    return requestBackend("/user/dietary-profile/sensory", "POST", { name }, extraHeaders);
+}
+
+/**
  * Deletes a food preference for the user.
  * 
  * @param {number|string} userId - Authenticated user ID
@@ -301,6 +326,8 @@ module.exports = {
     getChatHistory,
     deleteChatSession,
     getDietaryProfile,
+    addFoodPreference,
+    addSensoryTrigger,
     deleteFoodPreference,
     deleteSensoryTrigger,
     updateProfile,

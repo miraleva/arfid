@@ -18,7 +18,7 @@ const { normalizeString } = require("../tools/utils/fuzzyMatch");
 
 const DEFAULT_TIMEOUT_MS = 3000;
 const CACHE_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
-const DEFAULT_USER_AGENT = "ArfidChatbot - Web - Surum 1.0 (iletisim@arfid.local)";
+const DEFAULT_USER_AGENT = "ArfidChatbot/1.0 (contact@arfid.org)";
 
 /**
  * Searches SQLite cache for a normalized query term.
@@ -348,8 +348,90 @@ async function enrichWidget(widget, options = {}) {
     }
 }
 
+/**
+ * Verifies if a food exists in Open Food Facts (TR or World catalog).
+ * Used for semantic validity checks when adding manual dietary profile preferences.
+ * 
+ * @param {string} rawTerm - Food name to verify
+ * @param {Object} [options={}] - Options (e.g. timeoutMs)
+ * @returns {Promise<{ exists: boolean, verified: boolean, networkError: boolean, productName?: string }>}
+ */
+async function checkFoodExists(rawTerm, options = {}) {
+    if (!rawTerm || typeof rawTerm !== "string" || rawTerm.trim() === "") {
+        return { exists: false, verified: false, networkError: false };
+    }
+
+    const normalizedTerm = normalizeString(rawTerm);
+    if (!normalizedTerm) {
+        return { exists: false, verified: false, networkError: false };
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+
+    try {
+        // 1. Check SQLite Cache
+        const cached = await getCachedProduct(normalizedTerm);
+        if (cached && cached.expires_at && cached.expires_at > now) {
+            if (cached.source_domain === "not_found") {
+                return { exists: false, verified: true, networkError: false, fromCache: true };
+            }
+            if (cached.image_url || cached.product_name) {
+                return { exists: true, verified: true, networkError: false, productName: cached.product_name || rawTerm, fromCache: true };
+            }
+        }
+
+        // 2. Query TR Catalog
+        const trResult = await fetchFromOpenFoodFacts(rawTerm, "tr.openfoodfacts.org", options);
+        if (trResult.ok && trResult.count > 0) {
+            await saveCachedProduct(
+                normalizedTerm,
+                trResult.image_url || null,
+                trResult.product_name || rawTerm,
+                trResult.source_url || null,
+                "tr.openfoodfacts.org",
+                options.ttlSeconds || CACHE_TTL_SECONDS
+            );
+            return { exists: true, verified: true, networkError: false, productName: trResult.product_name || rawTerm };
+        }
+
+        // 3. Fallback to World Catalog
+        const worldResult = await fetchFromOpenFoodFacts(rawTerm, "world.openfoodfacts.org", options);
+        if (worldResult.ok && worldResult.count > 0) {
+            await saveCachedProduct(
+                normalizedTerm,
+                worldResult.image_url || null,
+                worldResult.product_name || rawTerm,
+                worldResult.source_url || null,
+                "world.openfoodfacts.org",
+                options.ttlSeconds || CACHE_TTL_SECONDS
+            );
+            return { exists: true, verified: true, networkError: false, productName: worldResult.product_name || rawTerm };
+        }
+
+        // 4. If both domains responded cleanly with count === 0
+        if (trResult.ok && worldResult.ok && trResult.count === 0 && worldResult.count === 0) {
+            await saveCachedProduct(
+                normalizedTerm,
+                null,
+                null,
+                null,
+                "not_found",
+                options.ttlSeconds || CACHE_TTL_SECONDS
+            );
+            return { exists: false, verified: true, networkError: false };
+        }
+
+        // 5. Network / Timeout Error on both
+        return { exists: false, verified: false, networkError: true, error: worldResult.error || trResult.error };
+    } catch (err) {
+        console.warn(`[OpenFoodFacts] checkFoodExists error for "${rawTerm}":`, err.message);
+        return { exists: false, verified: false, networkError: true, error: err.message };
+    }
+}
+
 module.exports = {
     searchProductImage,
+    checkFoodExists,
     enrichWidget,
     getCachedProduct,
     saveCachedProduct,

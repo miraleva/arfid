@@ -241,6 +241,11 @@
                                         <span class="dietaryCount" id="safeFoodsCount">0</span>
                                     </div>
                                     <div class="dietaryTagsContainer" id="safeFoodsList"></div>
+                                    <div class="dietaryAddRow" id="safeFoodAddRow">
+                                        <input type="text" class="dietaryAddInput" id="safeFoodInput" placeholder="<%= (typeof currentLocale !== 'undefined' && currentLocale === 'en') ? 'Add safe food (e.g. Rice, Apple)...' : 'Güvenli gıda ekle (örn. Pirinç, Elma)...' %>" maxlength="40" autocomplete="off" />
+                                        <button type="button" class="dietaryAddSubmitBtn" id="safeFoodAddBtn">+ <%= (typeof currentLocale !== 'undefined' && currentLocale === 'en') ? 'Add' : 'Ekle' %></button>
+                                    </div>
+                                    <span class="dietaryAddNotice" id="safeFoodNotice"></span>
                                 </div>
 
                                 <!-- Kaçınılan Gıdalar -->
@@ -250,6 +255,11 @@
                                         <span class="dietaryCount" id="unsafeFoodsCount">0</span>
                                     </div>
                                     <div class="dietaryTagsContainer" id="unsafeFoodsList"></div>
+                                    <div class="dietaryAddRow" id="unsafeFoodAddRow">
+                                        <input type="text" class="dietaryAddInput" id="unsafeFoodInput" placeholder="<%= (typeof currentLocale !== 'undefined' && currentLocale === 'en') ? 'Add avoided food (e.g. Fish, Onion)...' : 'Kaçınılan gıda ekle (örn. Balık, Soğan)...' %>" maxlength="40" autocomplete="off" />
+                                        <button type="button" class="dietaryAddSubmitBtn" id="unsafeFoodAddBtn">+ <%= (typeof currentLocale !== 'undefined' && currentLocale === 'en') ? 'Add' : 'Ekle' %></button>
+                                    </div>
+                                    <span class="dietaryAddNotice" id="unsafeFoodNotice"></span>
                                 </div>
 
                                 <!-- Duyusal Tetikleyiciler -->
@@ -259,6 +269,11 @@
                                         <span class="dietaryCount" id="sensoryTriggersCount">0</span>
                                     </div>
                                     <div class="dietaryTagsContainer" id="sensoryTriggersList"></div>
+                                    <div class="dietaryAddRow" id="sensoryTriggerAddRow">
+                                        <input type="text" class="dietaryAddInput" id="sensoryTriggerInput" placeholder="<%= (typeof currentLocale !== 'undefined' && currentLocale === 'en') ? 'Add sensory trigger (e.g. Mushy, Sticky)...' : 'Duyusal tetikleyici ekle (örn. Püremsi, Yapışkan)...' %>" maxlength="40" autocomplete="off" />
+                                        <button type="button" class="dietaryAddSubmitBtn" id="sensoryTriggerAddBtn">+ <%= (typeof currentLocale !== 'undefined' && currentLocale === 'en') ? 'Add' : 'Ekle' %></button>
+                                    </div>
+                                    <span class="dietaryAddNotice" id="sensoryTriggerNotice"></span>
                                 </div>
 
                                 <!-- Düzenle Modu Alt Araç Çubuğu -->
@@ -752,7 +767,10 @@
             } else if (tabName === 'dietary') {
                 if (settingsTabDietary) settingsTabDietary.classList.add('active');
                 if (settingsTabProfile) settingsTabProfile.classList.remove('active');
-                if (settingsPaneDietary) settingsPaneDietary.classList.add('active');
+                if (settingsPaneDietary) {
+                    settingsPaneDietary.classList.add('active');
+                    settingsPaneDietary.dataset.loaded = 'false';
+                }
                 if (settingsPaneProfile) settingsPaneProfile.classList.remove('active');
                 toggleDietaryEditMode(false);
                 closeDietaryConfirmModal();
@@ -788,7 +806,37 @@
             } finally {
                 dietaryLoadingState.style.display = 'none';
                 dietaryContentContainer.style.display = 'block';
+                if (settingsPaneDietary) {
+                    settingsPaneDietary.dataset.loaded = 'true';
+                }
             }
+        }
+
+        function createDietaryTagElement(item, type, containerEl, countEl, emptyMessage) {
+            const tagEl = document.createElement('div');
+            tagEl.className = 'dietaryTag ' + type;
+            tagEl.dataset.id = item.id;
+            tagEl.dataset.type = type;
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'dietaryTagText';
+            textSpan.textContent = item.name;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'dietaryTagRemoveBtn';
+            removeBtn.title = DIETARY_I18N.deleteTitle;
+            removeBtn.setAttribute('aria-label', DIETARY_I18N.deleteTitle);
+            removeBtn.textContent = '✕';
+
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openDietaryConfirmModal(item, type, tagEl, containerEl, countEl, emptyMessage);
+            });
+
+            tagEl.appendChild(textSpan);
+            tagEl.appendChild(removeBtn);
+            return tagEl;
         }
 
         function renderDietaryCategory(containerEl, countEl, items, type, emptyMessage) {
@@ -805,29 +853,7 @@
             }
 
             items.forEach(item => {
-                const tagEl = document.createElement('div');
-                tagEl.className = 'dietaryTag ' + type;
-                tagEl.dataset.id = item.id;
-                tagEl.dataset.type = type;
-
-                const textSpan = document.createElement('span');
-                textSpan.className = 'dietaryTagText';
-                textSpan.textContent = item.name;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.type = 'button';
-                removeBtn.className = 'dietaryTagRemoveBtn';
-                removeBtn.title = DIETARY_I18N.deleteTitle;
-                removeBtn.setAttribute('aria-label', DIETARY_I18N.deleteTitle);
-                removeBtn.textContent = '✕';
-
-                removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openDietaryConfirmModal(item, type, tagEl, containerEl, countEl, emptyMessage);
-                });
-
-                tagEl.appendChild(textSpan);
-                tagEl.appendChild(removeBtn);
+                const tagEl = createDietaryTagElement(item, type, containerEl, countEl, emptyMessage);
                 containerEl.appendChild(tagEl);
             });
         }
@@ -871,6 +897,207 @@
                 tagEl.style.opacity = '1';
                 tagEl.style.pointerEvents = 'auto';
             }
+        }
+
+        // ==========================================
+        // MANUEL BESLENME PROFİLİ EKLEME İŞLEMLERİ
+        // ==========================================
+        function showDietaryNotice(noticeEl, msg, type = 'success') {
+            if (!noticeEl) return;
+            noticeEl.textContent = msg;
+            noticeEl.className = 'dietaryAddNotice ' + type;
+            setTimeout(() => {
+                if (noticeEl.textContent === msg) {
+                    noticeEl.textContent = '';
+                    noticeEl.className = 'dietaryAddNotice';
+                }
+            }, 3500);
+        }
+
+        const DIETARY_ALLOWED_CHARS_REGEX = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ\s\-]+$/;
+        const DIETARY_HAS_LETTER_REGEX = /[a-zA-ZçÇğĞıİöÖşŞüÜ]/;
+
+        function validateDietaryInputName(rawName) {
+            if (!rawName || typeof rawName !== 'string') {
+                return { valid: false, error: 'Lütfen bir isim girin.' };
+            }
+            const trimmed = rawName.trim();
+            if (trimmed.length < 2 || trimmed.length > 40) {
+                return { valid: false, error: 'Girdi 2 ile 40 karakter arasında olmalıdır.' };
+            }
+            if (!DIETARY_ALLOWED_CHARS_REGEX.test(trimmed)) {
+                return { valid: false, error: 'Yalnızca harf, rakam, boşluk ve tire (-) kullanabilirsiniz. Nokta veya özel karakter içeremez.' };
+            }
+            if (!DIETARY_HAS_LETTER_REGEX.test(trimmed)) {
+                return { valid: false, error: 'Girdi sadece rakamlardan oluşamaz, en az 1 harf içermelidir.' };
+            }
+            return { valid: true, cleanName: trimmed };
+        }
+
+        async function handleAddFoodItem(inputEl, btnEl, noticeEl, isSafe) {
+            const rawName = inputEl ? inputEl.value : '';
+            const validation = validateDietaryInputName(rawName);
+            if (!validation.valid) {
+                showDietaryNotice(noticeEl, validation.error, 'warning');
+                return;
+            }
+
+            try {
+                if (btnEl) { btnEl.disabled = true; btnEl.style.opacity = '0.7'; }
+                const response = await fetch('/user/dietary-profile/food', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: validation.cleanName, isSafe })
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    if (result.alreadyExists) {
+                        showDietaryNotice(noticeEl, `"${result.food.name}" zaten bu listenizde mevcut.`, 'warning');
+                        inputEl.value = '';
+                        return;
+                    }
+
+                    const targetType = isSafe === 1 ? 'safe' : 'unsafe';
+                    const targetContainer = isSafe === 1 ? safeFoodsList : unsafeFoodsList;
+                    const targetCountEl = isSafe === 1 ? safeFoodsCount : unsafeFoodsCount;
+                    const targetEmptyMsg = isSafe === 1 ? DIETARY_I18N.emptySafe : DIETARY_I18N.emptyUnsafe;
+
+                    const otherType = isSafe === 1 ? 'unsafe' : 'safe';
+                    const otherContainer = isSafe === 1 ? unsafeFoodsList : safeFoodsList;
+                    const otherCountEl = isSafe === 1 ? unsafeFoodsCount : safeFoodsCount;
+                    const otherEmptyMsg = isSafe === 1 ? DIETARY_I18N.emptyUnsafe : DIETARY_I18N.emptySafe;
+
+                    // Eğer gıda diğer listeden buraya taşındıysa diğer listeden temizle
+                    if (result.updated && otherContainer) {
+                        const existingOtherTag = otherContainer.querySelector(`.dietaryTag[data-id="${result.food.id}"]`);
+                        if (existingOtherTag) {
+                            existingOtherTag.remove();
+                            if (otherCountEl) {
+                                const currOther = parseInt(otherCountEl.textContent || '0', 10);
+                                const updatedOther = Math.max(0, currOther - 1);
+                                otherCountEl.textContent = updatedOther;
+                                if (updatedOther === 0) {
+                                    const emptySpan = document.createElement('span');
+                                    emptySpan.className = 'dietaryEmptyText';
+                                    emptySpan.textContent = otherEmptyMsg;
+                                    otherContainer.appendChild(emptySpan);
+                                }
+                            }
+                        }
+                    }
+
+                    // Boşluk yazısını kaldır
+                    const emptyTextEl = targetContainer.querySelector('.dietaryEmptyText');
+                    if (emptyTextEl) emptyTextEl.remove();
+
+                    // Yeni etiketi hedef listeye ekle
+                    const newTag = createDietaryTagElement(result.food, targetType, targetContainer, targetCountEl, targetEmptyMsg);
+                    targetContainer.appendChild(newTag);
+
+                    if (targetCountEl) {
+                        const currTarget = parseInt(targetCountEl.textContent || '0', 10);
+                        targetCountEl.textContent = currTarget + 1;
+                    }
+
+                    inputEl.value = '';
+                    const successMsg = result.unverified
+                        ? `"${result.food.name}" listeye eklendi (doğrulama şu an yapılamadı).`
+                        : `"${result.food.name}" listeye eklendi.`;
+                    showDietaryNotice(noticeEl, successMsg, 'success');
+                } else {
+                    showDietaryNotice(noticeEl, result.error || 'Eklenirken bir hata oluştu.', 'error');
+                }
+            } catch (err) {
+                console.error('Gıda ekleme hatası:', err);
+                showDietaryNotice(noticeEl, 'Sunucu ile iletişim hatası.', 'error');
+            } finally {
+                if (btnEl) { btnEl.disabled = false; btnEl.style.opacity = '1'; }
+            }
+        }
+
+        async function handleAddSensoryItem(inputEl, btnEl, noticeEl) {
+            const rawName = inputEl ? inputEl.value : '';
+            const validation = validateDietaryInputName(rawName);
+            if (!validation.valid) {
+                showDietaryNotice(noticeEl, validation.error, 'warning');
+                return;
+            }
+
+            try {
+                if (btnEl) { btnEl.disabled = true; btnEl.style.opacity = '0.7'; }
+                const response = await fetch('/user/dietary-profile/sensory', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: rawName })
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    if (result.alreadyExists) {
+                        showDietaryNotice(noticeEl, `"${result.trigger.name}" zaten tetikleyicilerinizde mevcut.`, 'warning');
+                        inputEl.value = '';
+                        return;
+                    }
+
+                    // Boşluk yazısını kaldır
+                    const emptyTextEl = sensoryTriggersList.querySelector('.dietaryEmptyText');
+                    if (emptyTextEl) emptyTextEl.remove();
+
+                    // Yeni duyusal tetikleyici etiketini ekle
+                    const newTag = createDietaryTagElement(result.trigger, 'sensory', sensoryTriggersList, sensoryTriggersCount, DIETARY_I18N.emptySensory);
+                    sensoryTriggersList.appendChild(newTag);
+
+                    if (sensoryTriggersCount) {
+                        const curr = parseInt(sensoryTriggersCount.textContent || '0', 10);
+                        sensoryTriggersCount.textContent = curr + 1;
+                    }
+
+                    inputEl.value = '';
+                    showDietaryNotice(noticeEl, `"${result.trigger.name}" tetikleyicilere eklendi.`, 'success');
+                } else {
+                    showDietaryNotice(noticeEl, result.error || 'Eklenirken bir hata oluştu.', 'error');
+                }
+            } catch (err) {
+                console.error('Duyusal tetikleyici ekleme hatası:', err);
+                showDietaryNotice(noticeEl, 'Sunucu ile iletişim hatası.', 'error');
+            } finally {
+                if (btnEl) { btnEl.disabled = false; btnEl.style.opacity = '1'; }
+            }
+        }
+
+        // Element Bağıntıları (Event Listeners)
+        const safeFoodInput = document.getElementById('safeFoodInput');
+        const safeFoodAddBtn = document.getElementById('safeFoodAddBtn');
+        const safeFoodNotice = document.getElementById('safeFoodNotice');
+
+        const unsafeFoodInput = document.getElementById('unsafeFoodInput');
+        const unsafeFoodAddBtn = document.getElementById('unsafeFoodAddBtn');
+        const unsafeFoodNotice = document.getElementById('unsafeFoodNotice');
+
+        const sensoryTriggerInput = document.getElementById('sensoryTriggerInput');
+        const sensoryTriggerAddBtn = document.getElementById('sensoryTriggerAddBtn');
+        const sensoryTriggerNotice = document.getElementById('sensoryTriggerNotice');
+
+        if (safeFoodAddBtn && safeFoodInput) {
+            safeFoodAddBtn.addEventListener('click', () => handleAddFoodItem(safeFoodInput, safeFoodAddBtn, safeFoodNotice, 1));
+            safeFoodInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAddFoodItem(safeFoodInput, safeFoodAddBtn, safeFoodNotice, 1);
+            });
+        }
+
+        if (unsafeFoodAddBtn && unsafeFoodInput) {
+            unsafeFoodAddBtn.addEventListener('click', () => handleAddFoodItem(unsafeFoodInput, unsafeFoodAddBtn, unsafeFoodNotice, 0));
+            unsafeFoodInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAddFoodItem(unsafeFoodInput, unsafeFoodAddBtn, unsafeFoodNotice, 0);
+            });
+        }
+
+        if (sensoryTriggerAddBtn && sensoryTriggerInput) {
+            sensoryTriggerAddBtn.addEventListener('click', () => handleAddSensoryItem(sensoryTriggerInput, sensoryTriggerAddBtn, sensoryTriggerNotice));
+            sensoryTriggerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAddSensoryItem(sensoryTriggerInput, sensoryTriggerAddBtn, sensoryTriggerNotice);
+            });
         }
 
         // Karşılama Ekranı & Input Konum Durum Yönetimi (Boş/Dolu Sohbet)

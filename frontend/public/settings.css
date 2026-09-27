@@ -715,3 +715,87 @@
     box-shadow: 0 4px 0 #2B2118;
 }
 
+/* =========================================================
+   DİYET & BESLENME PROFİLİ MANUEL EKLEME FORMLARI
+   ========================================================= */
+.dietaryAddRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1.5px dashed rgba(43, 33, 24, 0.15);
+}
+
+.dietaryAddInput {
+    flex: 1;
+    padding: 7px 14px;
+    border-radius: 9999px;
+    border: 2px solid #2B2118;
+    background-color: #FFFFFF;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #2B2118;
+    outline: none;
+    box-shadow: 0 2px 0 #EADBCC;
+    transition: all 0.15s ease;
+}
+
+.dietaryAddInput:focus {
+    border-color: #00A0B5;
+    box-shadow: 0 2px 0 #00A0B5;
+}
+
+.dietaryAddSubmitBtn {
+    padding: 7px 16px;
+    border-radius: 9999px;
+    border: 2px solid #2B2118;
+    background-color: #FFEF5A;
+    color: #2B2118;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #2B2118;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dietaryAddSubmitBtn:hover {
+    background-color: #FFE700;
+    transform: translateY(-1px);
+    box-shadow: 0 3.5px 0 #2B2118;
+}
+
+.dietaryAddSubmitBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #2B2118;
+}
+
+.dietaryAddNotice {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 4px;
+    padding-left: 6px;
+    min-height: 16px;
+    transition: all 0.2s ease;
+}
+
+.dietaryAddNotice.success {
+    color: #1E5128;
+}
+
+.dietaryAddNotice.warning {
+    color: #C05621;
+}
+
+.dietaryAddNotice.error {
+    color: #C92A2A;
+}
+
+

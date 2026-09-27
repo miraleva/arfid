@@ -51,6 +51,99 @@ async function getDietaryProfile(req, res) {
     }
 }
 
+const DIETARY_ALLOWED_CHARS_REGEX = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ\s\-]+$/;
+const DIETARY_HAS_LETTER_REGEX = /[a-zA-ZçÇğĞıİöÖşŞüÜ]/;
+
+function validateDietaryName(rawName) {
+    if (!rawName || typeof rawName !== 'string') {
+        return { valid: false, error: "Lütfen bir isim girin." };
+    }
+    const trimmed = rawName.trim();
+    if (trimmed.length < 2 || trimmed.length > 40) {
+        return { valid: false, error: "Girdi 2 ile 40 karakter arasında olmalıdır." };
+    }
+    if (!DIETARY_ALLOWED_CHARS_REGEX.test(trimmed)) {
+        return { valid: false, error: "Yalnızca harf, rakam, boşluk ve tire (-) kullanabilirsiniz. Nokta veya özel karakter içeremez." };
+    }
+    if (!DIETARY_HAS_LETTER_REGEX.test(trimmed)) {
+        return { valid: false, error: "Girdi sadece rakamlardan oluşamaz, en az 1 harf içermelidir." };
+    }
+    return { valid: true, cleanName: trimmed };
+}
+
+/**
+ * Adds or updates a food preference for the authenticated user.
+ * 
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ */
+async function addFoodPreference(req, res) {
+    try {
+        const userId = req.get("X-User-Id");
+        const { name, isSafe } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Kullanıcı doğrulanamadı" });
+        }
+
+        const validation = validateDietaryName(name);
+        if (!validation.valid) {
+            return res.status(400).json({ success: false, error: validation.error });
+        }
+
+        const safeVal = (isSafe === 1 || isSafe === true || isSafe === "1") ? 1 : 0;
+        const result = await memoryRepository.addUserFoodPreference(userId, validation.cleanName, safeVal);
+
+        res.json({
+            success: true,
+            alreadyExists: result.alreadyExists || false,
+            updated: result.updated || false,
+            unverified: result.unverified || false,
+            previousState: result.previousState || null,
+            food: result.food
+        });
+    } catch (err) {
+        if (err.message && err.message.includes("tanınan bir gıda olarak bulunamadı")) {
+            return res.status(400).json({ success: false, error: err.message });
+        }
+        console.error("addFoodPreference error:", err);
+        res.status(500).json({ success: false, error: err.message || "Gıda tercihi eklenemedi" });
+    }
+}
+
+/**
+ * Adds a sensory trigger for the authenticated user.
+ * 
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ */
+async function addSensoryTrigger(req, res) {
+    try {
+        const userId = req.get("X-User-Id");
+        const { name } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: "Kullanıcı doğrulanamadı" });
+        }
+
+        const validation = validateDietaryName(name);
+        if (!validation.valid) {
+            return res.status(400).json({ success: false, error: validation.error });
+        }
+
+        const result = await memoryRepository.addUserSensoryTrigger(userId, validation.cleanName, 1);
+
+        res.json({
+            success: true,
+            alreadyExists: result.alreadyExists || false,
+            trigger: result.trigger
+        });
+    } catch (err) {
+        console.error("addSensoryTrigger error:", err);
+        res.status(500).json({ success: false, error: err.message || "Duyusal tetikleyici eklenemedi" });
+    }
+}
+
 /**
  * Deletes a food preference for the authenticated user.
  * 
@@ -201,6 +294,8 @@ async function deleteAccount(req, res) {
 
 module.exports = {
     getDietaryProfile,
+    addFoodPreference,
+    addSensoryTrigger,
     deleteFoodPreference,
     deleteSensoryTrigger,
     updateProfile,

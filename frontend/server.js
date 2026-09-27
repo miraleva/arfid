@@ -363,6 +363,64 @@ app.get("/user/dietary-profile", isAuthenticated, async (req, res) => {
     }
 });
 
+const DIETARY_ALLOWED_CHARS_REGEX = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ\s\-]+$/;
+const DIETARY_HAS_LETTER_REGEX = /[a-zA-ZçÇğĞıİöÖşŞüÜ]/;
+
+function validateDietaryName(rawName) {
+    if (!rawName || typeof rawName !== 'string') {
+        return { valid: false, error: "Lütfen bir isim girin." };
+    }
+    const trimmed = rawName.trim();
+    if (trimmed.length < 2 || trimmed.length > 40) {
+        return { valid: false, error: "Girdi 2 ile 40 karakter arasında olmalıdır." };
+    }
+    if (!DIETARY_ALLOWED_CHARS_REGEX.test(trimmed)) {
+        return { valid: false, error: "Yalnızca harf, rakam, boşluk ve tire (-) kullanabilirsiniz. Nokta veya özel karakter içeremez." };
+    }
+    if (!DIETARY_HAS_LETTER_REGEX.test(trimmed)) {
+        return { valid: false, error: "Girdi sadece rakamlardan oluşamaz, en az 1 harf içermelidir." };
+    }
+    return { valid: true, cleanName: trimmed };
+}
+
+// Add Food Preference POST - Proxy to Backend
+app.post("/user/dietary-profile/food", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { name, isSafe } = req.body;
+
+    const validation = validateDietaryName(name);
+    if (!validation.valid) {
+        return res.status(400).json({ success: false, error: validation.error });
+    }
+
+    try {
+        const result = await apiClient.addFoodPreference(userId, validation.cleanName, isSafe);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Add food preference proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Gıda ekleme hatası" });
+    }
+});
+
+// Add Sensory Trigger POST - Proxy to Backend
+app.post("/user/dietary-profile/sensory", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { name } = req.body;
+
+    const validation = validateDietaryName(name);
+    if (!validation.valid) {
+        return res.status(400).json({ success: false, error: validation.error });
+    }
+
+    try {
+        const result = await apiClient.addSensoryTrigger(userId, validation.cleanName);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Add sensory trigger proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Duyusal tetikleyici ekleme hatası" });
+    }
+});
+
 // Delete Food Preference DELETE - Proxy to Backend
 app.delete("/user/dietary-profile/food/:foodId", isAuthenticated, async (req, res) => {
     const userId = req.session.user ? req.session.user.id : null;

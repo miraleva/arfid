@@ -16,6 +16,19 @@ const { verifyInternalToken } = require("../middleware/internalAuth");
 router.get("/user/dietary-profile", verifyInternalToken, userController.getDietaryProfile);
 
 /**
+ * Route: Add or update food preference
+ * Path: POST /user/dietary-profile/food
+ */
+router.post("/user/dietary-profile/food", verifyInternalToken, userController.addFoodPreference);
+
+/**
+ * Route: Add sensory trigger
+ * Path: POST /user/dietary-profile/sensory
+ */
+router.post("/user/dietary-profile/sensory", verifyInternalToken, userController.addSensoryTrigger);
+
+
+/**
  * Route: Delete specific food preference
  * Path: DELETE /user/dietary-profile/food/:foodId
  */

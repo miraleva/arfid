@@ -160,11 +160,20 @@ async function getDietitianResponse(userText, userId, conversationId = null) {
                 if (relevantChanges.length > 0) {
                     recentChangesContext = relevantChanges.map(change => {
                         const typeLabel = change.item_type === "food" ? "Gıda" : "Duyusal Özellik";
-                        const stateLabel = change.previous_value === "safe"
-                            ? "'Güvenli' listesinden ÇIKARILDI (Silindi)"
-                            : change.previous_value === "problematic"
-                                ? "'Duyusal Tetikleyici' listesinden ÇIKARILDI (Silindi)"
-                                : "'Kaçınılan / Güvenli Olmayan' listesinden ÇIKARILDI (Silindi)";
+                        let stateLabel = "";
+                        if (change.action === "added_manual") {
+                            stateLabel = change.previous_value === "safe"
+                                ? "'Güvenli Gıdalar' listesine MANUEL EKLENDİ"
+                                : change.previous_value === "problematic"
+                                    ? "'Duyusal Tetikleyiciler' listesine MANUEL EKLENDİ"
+                                    : "'Kaçınılan Gıdalar' listesine MANUEL EKLENDİ";
+                        } else {
+                            stateLabel = change.previous_value === "safe"
+                                ? "'Güvenli' listesinden ÇIKARILDI (Silindi)"
+                                : change.previous_value === "problematic"
+                                    ? "'Duyusal Tetikleyici' listesinden ÇIKARILDI (Silindi)"
+                                    : "'Kaçınılan / Güvenli Olmayan' listesinden ÇIKARILDI (Silindi)";
+                        }
                         const timeLabel = change.days_ago === 0 ? "bugün" : `${change.days_ago} gün önce`;
                         return `- ${change.item_name} (${typeLabel}): ${timeLabel} ${stateLabel}`;
                     }).join("\n");

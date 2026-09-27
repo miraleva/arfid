@@ -964,7 +964,7 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     white-space: pre-wrap;
 }
 
-/* Mesaj Zaman Damgası (Relative Timestamp) */
+/* Mesaj Zaman Damgası (Relative Timestamp - Hover ile Görünür) */
 .messageTimestamp {
     font-size: 11.5px;
     font-weight: 600;
@@ -973,7 +973,14 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     padding: 0 4px;
     user-select: none;
     letter-spacing: -0.01em;
-    opacity: 0.85;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.userMessage:hover .messageTimestamp,
+.welcomeMessage:hover .messageTimestamp {
+    opacity: 1;
 }
 
 .userMessage .messageTimestamp {

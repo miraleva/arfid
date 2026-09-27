@@ -71,8 +71,8 @@ function formatRecentChangesSection(recentChangesContext) {
 
     INSTRUCTION FOR RECENT PREFERENCE CHANGES:
     Yukarıdaki listede yer alan bir gıda veya tetikleyici kullanıcının mesajında geçiyorsa veya önerilecek tarifle/içerikle ilgiliyse:
-    1. Bu gıdanın önerilmesini veya tarifte yer almasını doğrudan ENGELLEME (Kullanıcı bu kısıtlamayı profilinden sildiği için artık yasaklı bir besin değildir).
-    2. Kullanıcıya bu tercihi daha önce profilden çıkardığını/sildiğini nazik, empatik ve destekleyici bir dille hatırlat (Örn: 'Daha önce pirinçten kaçındığını belirtmiştin, bu konuda bir değişiklik oldu mu? Hâlâ denemek istiyor musun?').
+    1. Eğer gıda 'ÇIKARILDI (Silindi)' olarak görünüyorsa: Bu gıdanın önerilmesini veya tarifte yer almasını doğrudan ENGELLEME; kullanıcıya bu tercihi daha önce profilden çıkardığını nazikçe hatırlat (Örn: 'Daha önce pirinçten kaçındığını belirtmiştin, bu konuda bir değişiklik oldu mu? Hâlâ denemek istiyor musun?').
+    2. Eğer gıda 'MANUEL EKLENDİ' olarak görünüyorsa: Kullanıcının bu tercihi yakın zamanda profiline manuel eklediğini dikkate alarak empatik ve destekleyici bir dille onaylayıcı yaklaşım sergile (Örn: 'Güvenli gıda listene yakın zamanda brokoli eklediğini gördüm, harika bir adım!').
     3. Kullanıcının güncel durumunu teyit ederek ve seçenek sunarak ilerle.
     `;
 }

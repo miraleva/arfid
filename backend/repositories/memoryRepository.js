@@ -453,6 +453,269 @@ function deleteUserSensoryTrigger(userId, attributeId) {
     });
 }
 
+const DIETARY_ALLOWED_CHARS_REGEX = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ\s\-]+$/;
+const DIETARY_HAS_LETTER_REGEX = /[a-zA-ZçÇğĞıİöÖşŞüÜ]/;
+
+function validateDietaryInputName(rawName) {
+    if (!rawName || typeof rawName !== 'string') {
+        throw new Error("Geçersiz parametreler");
+    }
+    const trimmed = rawName.trim();
+    if (trimmed.length < 2 || trimmed.length > 40) {
+        throw new Error("Girdi 2 ile 40 karakter arasında olmalıdır");
+    }
+    if (!DIETARY_ALLOWED_CHARS_REGEX.test(trimmed)) {
+        throw new Error("Yalnızca harf, rakam, boşluk ve tire (-) kullanabilirsiniz. Nokta veya özel karakter içeremez.");
+    }
+    if (!DIETARY_HAS_LETTER_REGEX.test(trimmed)) {
+        throw new Error("Girdi sadece rakamlardan oluşamaz, en az 1 harf içermelidir.");
+    }
+    return trimmed;
+}
+
+/**
+ * Adds or updates a food preference for a specific user.
+ * 4-Step Verification Chain:
+ * 1. Local master foods fuzzy match
+ * 2. calorieDatabase TR/EN alias resolution (e.g. Elma -> Apple)
+ * 3. Open Food Facts real-world product verification (with cache)
+ * 4. Strict rejection for non-existent foods, best-effort fallback on network errors.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {string} rawFoodName - Food name entered by user
+ * @param {number} isSafe - 1 for Safe, 0 for Avoided
+ * @param {Object} [options={}] - Options (e.g. mockOffResult for unit testing)
+ * @returns {Promise<{ success: boolean, alreadyExists?: boolean, updated?: boolean, unverified?: boolean, previousState?: string, food?: { id: number, name: string, is_safe: number } }>}
+ */
+async function addUserFoodPreference(userId, rawFoodName, isSafe, options = {}) {
+    if (!userId) {
+        throw new Error("Geçersiz parametreler");
+    }
+
+    const cleanName = validateDietaryInputName(rawFoodName);
+
+    const { normalizeString, createFuzzyMatcher } = require("../tools/utils/fuzzyMatch");
+    const { findMasterFoodMatchViaAliases } = require("../tools/data/calorieDatabase");
+    const { checkFoodExists } = require("../services/openFoodFactsService");
+
+    // 1. Fetch existing master foods
+    const masterFoods = await new Promise((resolve, reject) => {
+        db.all("SELECT id, name FROM foods", [], (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows || []);
+        });
+    });
+
+    const normInput = normalizeString(cleanName);
+    let matchedFood = null;
+
+    // Step 1: Local Master Match (Exact normalized match)
+    matchedFood = masterFoods.find(f => normalizeString(f.name) === normInput);
+
+    // If no exact match, try Fuse.js fuzzy match (threshold 0.25)
+    if (!matchedFood && masterFoods.length > 0) {
+        const matcher = createFuzzyMatcher(masterFoods, ["name"], { threshold: 0.25 });
+        const results = matcher.search(cleanName);
+        if (results && results.length > 0 && results[0].score <= 0.25) {
+            matchedFood = results[0].item;
+        }
+    }
+
+    let foodId = null;
+    let foodName = null;
+    let isAliasMatch = false;
+    let isUnverified = false;
+
+    if (matchedFood) {
+        foodId = matchedFood.id;
+        foodName = matchedFood.name;
+    } else {
+        // Step 2: Check TR/EN Aliases in calorieDatabase.js (e.g. "Elma" -> "Apple")
+        const aliasResult = findMasterFoodMatchViaAliases(cleanName, masterFoods);
+
+        if (aliasResult.matchedMaster) {
+            foodId = aliasResult.matchedMaster.id;
+            foodName = aliasResult.matchedMaster.name;
+            isAliasMatch = true;
+        } else {
+            // Step 3: Open Food Facts Real-World Verification
+            let offResult;
+            if (options.mockOffResult) {
+                offResult = options.mockOffResult;
+            } else {
+                offResult = await checkFoodExists(cleanName, { timeoutMs: options.timeoutMs || 3000 });
+            }
+
+            // Step 4: Strict rejection if definitively not found
+            if (offResult.verified && !offResult.exists) {
+                throw new Error(`'${cleanName}' tanınan bir gıda olarak bulunamadı. Lütfen yazımını kontrol edin.`);
+            }
+
+            if (offResult.networkError) {
+                isUnverified = true;
+                console.warn(`[Memory] Open Food Facts unreachable for "${cleanName}", proceeding with best-effort addition.`);
+            }
+
+            // Create new master food record
+            const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+            foodId = await new Promise((resolve, reject) => {
+                db.run("INSERT INTO foods (name) VALUES (?)", [formattedName], function (err) {
+                    if (err) return reject(err);
+                    resolve(this.lastID);
+                });
+            });
+            foodName = formattedName;
+        }
+    }
+
+    // Check existing user preference
+    const existingPref = await new Promise((resolve, reject) => {
+        db.get("SELECT is_safe FROM user_food_preferences WHERE user_id = ? AND food_id = ?",
+            [userId, foodId], (err, row) => {
+                if (err) return reject(err);
+                resolve(row);
+            });
+    });
+
+    const targetSafe = (isSafe === 1 || isSafe === true || isSafe === "1") ? 1 : 0;
+
+    if (existingPref && existingPref.is_safe === targetSafe) {
+        const displayName = isAliasMatch ? `${foodName} (${cleanName})` : foodName;
+        return {
+            success: true,
+            alreadyExists: true,
+            unverified: isUnverified,
+            food: { id: foodId, name: displayName, is_safe: targetSafe }
+        };
+    }
+
+    const isUpdated = Boolean(existingPref);
+    const previousState = existingPref ? (existingPref.is_safe === 1 ? 'safe' : 'unsafe') : null;
+
+    // Upsert user preference
+    await new Promise((resolve, reject) => {
+        db.run(
+            "INSERT OR REPLACE INTO user_food_preferences (user_id, food_id, is_safe) VALUES (?, ?, ?)",
+            [userId, foodId, targetSafe],
+            (err) => {
+                if (err) return reject(err);
+                resolve();
+            }
+        );
+    });
+
+    // Record audit log
+    const stateValue = targetSafe === 1 ? 'safe' : 'unsafe';
+    await logPreferenceChange(userId, 'food', foodName, 'added_manual', stateValue);
+
+    return {
+        success: true,
+        alreadyExists: false,
+        updated: isUpdated,
+        unverified: isUnverified,
+        previousState,
+        food: { id: foodId, name: foodName, is_safe: targetSafe }
+    };
+}
+
+/**
+ * Adds or updates a sensory trigger for a specific user.
+ * Uses fuzzy matching against master sensory_attributes list.
+ * Logs the action as 'added_manual' in preference_change_log.
+ * 
+ * @param {number} userId - Target user ID
+ * @param {string} rawAttributeName - Sensory attribute name entered by user
+ * @param {number} [isProblematic=1] - 1 for Problematic
+ * @returns {Promise<{ success: boolean, alreadyExists?: boolean, trigger?: { id: number, name: string, is_problematic: number } }>}
+ */
+async function addUserSensoryTrigger(userId, rawAttributeName, isProblematic = 1) {
+    if (!userId) {
+        throw new Error("Geçersiz parametreler");
+    }
+
+    const cleanName = validateDietaryInputName(rawAttributeName);
+
+    const { normalizeString, createFuzzyMatcher } = require("../tools/utils/fuzzyMatch");
+
+    // 1. Fetch existing master sensory attributes
+    const masterAttrs = await new Promise((resolve, reject) => {
+        db.all("SELECT id, name FROM sensory_attributes", [], (err, rows) => {
+            if (err) return reject(err);
+            resolve(rows || []);
+        });
+    });
+
+    const normInput = normalizeString(cleanName);
+    let matchedAttr = null;
+
+    // Exact normalized match
+    matchedAttr = masterAttrs.find(a => normalizeString(a.name) === normInput);
+
+    // If no exact match, try Fuse.js fuzzy match
+    if (!matchedAttr && masterAttrs.length > 0) {
+        const matcher = createFuzzyMatcher(masterAttrs, ["name"], { threshold: 0.3 });
+        const results = matcher.search(cleanName);
+        if (results && results.length > 0 && results[0].score <= 0.3) {
+            matchedAttr = results[0].item;
+        }
+    }
+
+    let attributeId;
+    let attributeName;
+
+    if (matchedAttr) {
+        attributeId = matchedAttr.id;
+        attributeName = matchedAttr.name;
+    } else {
+        const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+        attributeId = await new Promise((resolve, reject) => {
+            db.run("INSERT INTO sensory_attributes (name) VALUES (?)", [formattedName], function (err) {
+                if (err) return reject(err);
+                resolve(this.lastID);
+            });
+        });
+        attributeName = formattedName;
+    }
+
+    // 2. Check existing user trigger
+    const existingTrigger = await new Promise((resolve, reject) => {
+        db.get("SELECT is_problematic FROM user_sensory_triggers WHERE user_id = ? AND attribute_id = ?",
+            [userId, attributeId], (err, row) => {
+                if (err) return reject(err);
+                resolve(row);
+            });
+    });
+
+    if (existingTrigger && existingTrigger.is_problematic === 1) {
+        return {
+            success: true,
+            alreadyExists: true,
+            trigger: { id: attributeId, name: attributeName, is_problematic: 1 }
+        };
+    }
+
+    // 3. Upsert user trigger
+    await new Promise((resolve, reject) => {
+        db.run(
+            "INSERT OR REPLACE INTO user_sensory_triggers (user_id, attribute_id, is_problematic) VALUES (?, ?, 1)",
+            [userId, attributeId],
+            (err) => {
+                if (err) return reject(err);
+                resolve();
+            }
+        );
+    });
+
+    // 4. Record audit log
+    await logPreferenceChange(userId, 'sensory', attributeName, 'added_manual', 'problematic');
+
+    return {
+        success: true,
+        alreadyExists: false,
+        trigger: { id: attributeId, name: attributeName, is_problematic: 1 }
+    };
+}
+
 module.exports = {
     getUserConstraints,
     applyMemoryUpdates,
@@ -460,8 +723,11 @@ module.exports = {
     ensureMasterRecord,
     getUserFoodPreferences,
     getUserSensoryTriggers,
+    addUserFoodPreference,
+    addUserSensoryTrigger,
     deleteUserFoodPreference,
     deleteUserSensoryTrigger,
     logPreferenceChange,
     getRecentPreferenceChanges
 };
+
