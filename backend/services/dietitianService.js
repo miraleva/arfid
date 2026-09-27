@@ -12,6 +12,7 @@ const { getRagContext } = require("../rag/ragClient");
 const { functionDeclarations, executeTool } = require("../tools");
 const openFoodFactsService = require("./openFoodFactsService");
 const { calorieDatabase } = require("../tools/data/calorieDatabase");
+const { validateDietaryOutput, createSafetyFallbackResponse } = require("../guardrails/dietaryGuardrail");
 
 // Fast alias lookup map for bilingual food/ingredient matching
 const aliasLookup = new Map();
@@ -281,13 +282,33 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
 
         let assistantResponse = (parsedData.assistant_response || "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?").trim();
 
-        // 6. Generate Patient Card (Call #2) - Skip if fallback occurred
+        // 6. Layer 3 Deterministic Guardrail Check (AVOID FOODS)
+        if (userId && !isFallback) {
+            try {
+                const userFoodPrefs = await memoryRepository.getUserFoodPreferences(userId);
+                const unsafeFoods = userFoodPrefs
+                    .filter(f => f.is_safe === 0)
+                    .map(f => f.name);
+
+                const guardrailResult = validateDietaryOutput(assistantResponse, unsafeFoods);
+                if (!guardrailResult.isSafe) {
+                    console.warn(`[Dietary Guardrail BREACH BLOCKED] User[${userId}] - Output contained avoid foods:`, guardrailResult.blockedFoods);
+                    assistantResponse = createSafetyFallbackResponse(guardrailResult.blockedFoods);
+                    // Discard widget if it contained or was generated alongside the unsafe food
+                    capturedWidget = null;
+                }
+            } catch (guardrailErr) {
+                console.error("[Dietary Guardrail] Error during output validation:", guardrailErr);
+            }
+        }
+
+        // 7. Generate Patient Card (Call #2) - Skip if fallback occurred
         let patientCard = "";
         if (userId && !isFallback) {
             patientCard = await generatePatientCard(userId);
         }
 
-        // 7. Background Enrichment: Open Food Facts Image Lookup (Non-blocking fallback)
+        // 8. Background Enrichment: Open Food Facts Image Lookup (Non-blocking fallback)
         if (capturedWidget) {
             try {
                 capturedWidget = await openFoodFactsService.enrichWidget(capturedWidget);

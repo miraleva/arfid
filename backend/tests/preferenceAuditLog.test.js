@@ -15,6 +15,7 @@ const db = require("../db");
 const memoryRepository = require("../repositories/memoryRepository");
 const { buildSystemPrompt, formatRecentChangesSection } = require("../promptBuilder");
 const { isPreferenceChangeRelevant } = require("../services/dietitianService");
+const { validateDietaryOutput } = require("../guardrails/dietaryGuardrail");
 
 console.log("=================================================");
 console.log("🧪 RUNNING PREFERENCE AUDIT LOG TEST SUITE");
@@ -286,6 +287,70 @@ async function runAuditLogTests() {
 
         assert.ok(avgDuration < 20, `Average latency (${avgDuration}ms) must be under 20ms SLA`);
         assert.ok(maxDuration < 20, `Max latency (${maxDuration}ms) must be under 20ms SLA`);
+    });
+
+    // ----------------------------------------------------
+    // Test 8 (Doğrulama Adım 2): Silinmiş Gıda + Audit Log + Guardrail Birlikte Çalışma & Çakışmasızlık Testi
+    // ----------------------------------------------------
+    await it("8. Deleted food passes Guardrail (isSafe: true) with reminder while active unsafe food is BLOCKED (isSafe: false)", async () => {
+        // Setup: Ensure Rice and Mushroom exist
+        const riceMasterId = await memoryRepository.ensureMasterRecord('foods', 'Rice', 'rice');
+        const mushroomMasterId = await memoryRepository.ensureMasterRecord('foods', 'Mushroom', 'mushroom');
+
+        // Clean user preferences
+        await new Promise(resolve => {
+            db.run(`DELETE FROM user_food_preferences WHERE user_id = ?`, [testUserId], () => {
+                db.run(`DELETE FROM preference_change_log WHERE user_id = ?`, [testUserId], () => resolve());
+            });
+        });
+
+        // 1. User initially had Rice AND Mushroom as unsafe
+        await new Promise(resolve => {
+            db.run(
+                `INSERT INTO user_food_preferences (user_id, food_id, is_safe) VALUES (?, ?, 0), (?, ?, 0)`,
+                [testUserId, riceMasterId, testUserId, mushroomMasterId],
+                () => resolve()
+            );
+        });
+
+        // 2. User DELETES Rice from profile (Audit log gets "removed" for Rice)
+        const deletedRice = await memoryRepository.deleteUserFoodPreference(testUserId, riceMasterId);
+        assert.strictEqual(deletedRice, true, "Rice must be successfully deleted");
+
+        // Verify active preferences: only Mushroom remains
+        const activePrefs = await memoryRepository.getUserFoodPreferences(testUserId);
+        assert.strictEqual(activePrefs.length, 1, "Only 1 active preference should remain");
+        assert.strictEqual(activePrefs[0].name.toLowerCase(), "mushroom");
+
+        // Verify audit log has Rice marked as removed
+        const auditLogs = await memoryRepository.getRecentPreferenceChanges(testUserId, 30);
+        assert.strictEqual(auditLogs.length, 1, "Audit log should have Rice");
+        assert.strictEqual(auditLogs[0].item_name.toLowerCase(), "rice");
+        assert.strictEqual(auditLogs[0].action, "removed");
+
+        // 3. User says "Sushi veya pirinç pilavı öner"
+        // Active unsafe foods for Guardrail:
+        const currentUnsafeFoods = activePrefs.filter(f => f.is_safe === 0).map(f => f.name);
+        console.log(`    [Test 8 Info] Active Unsafe Foods for Guardrail: [${currentUnsafeFoods.join(", ")}]`);
+
+        // Simulated Assistant Response suggesting Rice + Gentle Reminder from Audit Log
+        const assistantResponseSushi = "Akşam için hafif bir sebzeli sushi veya sade pirinç pilavı tercih edebilirsiniz. Daha önce pirinçten kaçındığınızı belirtmiştiniz, bu konuda bir değişiklik oldu mu? Hâlâ denemek istiyor musunuz?";
+
+        // Run Guardrail on Sushi/Rice response
+        const guardrailResultSushi = validateDietaryOutput(assistantResponseSushi, currentUnsafeFoods);
+        console.log(`    [Test 8 Info] Guardrail Result for Sushi/Rice: isSafe=${guardrailResultSushi.isSafe}, blockedFoods=[${guardrailResultSushi.blockedFoods.join(", ")}]`);
+
+        assert.strictEqual(guardrailResultSushi.isSafe, true, "Guardrail must NOT block deleted food (Rice)!");
+        assert.strictEqual(guardrailResultSushi.blockedFoods.length, 0);
+
+        // 4. In the same system, if model accidentally suggests active unsafe food "Mantar"
+        const assistantResponseMushroomBreach = "Size fırında nefis bir mantar sote ve yanında pilav öneriyorum.";
+        const guardrailResultMushroom = validateDietaryOutput(assistantResponseMushroomBreach, currentUnsafeFoods);
+        console.log(`    [Test 8 Info] Guardrail Result for Active Unsafe (Mushroom): isSafe=${guardrailResultMushroom.isSafe}, blockedFoods=[${guardrailResultMushroom.blockedFoods.join(", ")}]`);
+
+        assert.strictEqual(guardrailResultMushroom.isSafe, false, "Guardrail MUST block active unsafe food (Mushroom)!");
+        assert.strictEqual(guardrailResultMushroom.blockedFoods.length, 1);
+        assert.strictEqual(guardrailResultMushroom.blockedFoods[0].toLowerCase(), "mushroom");
     });
 
     // Teardown test user data

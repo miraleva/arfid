@@ -214,6 +214,16 @@ const calorieDatabase = [
         servingGrams: 100,
         note: "Varsayılan olarak standart derin yağda kızartılmış patates baz alınmıştır."
     },
+    {
+        id: "mantar",
+        name: "kültür mantarı",
+        aliases: ["mantar", "mushroom", "mushrooms", "kültür mantarı", "beyaz mantar"],
+        caloriesPer100g: 22,
+        defaultUnit: "gram",
+        servingUnit: "adet",
+        servingGrams: 20,
+        note: "Varsayılan olarak taze beyaz kültür mantarı baz alınmıştır."
+    },
 
     // --- MEYVELER ---
     // Varsayılan: Orta boy taze muz (kabuksuz ~100-110g) baz alınmıştır.
