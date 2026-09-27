@@ -299,12 +299,35 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
                     .filter(f => f.is_safe === 0)
                     .map(f => f.name);
 
-                const guardrailResult = validateDietaryOutput(assistantResponse, unsafeFoods);
+                // Intent Disambiguation Rule (Fail-Safe):
+                // Soft mode is activated ONLY when explicit informational tools (e.g. calculateCalories, calculateSensoryFit, queryKnowledgeBase)
+                // were executed AND no recipe presentation was triggered.
+                // If no tools were called (pure text response) or a recipe widget was called, stay in Hard Mode (Safe Default).
+                const hasRecipeWidget = Boolean(capturedWidget && (capturedWidget.type === "recipe" || capturedWidget.type === "recipe_card" || capturedWidget.widget_type === "recipe"));
+                const hasRecipeToolCall = accumulatedToolResults.some(t =>
+                    t.toolName === "presentAsWidget" && t.args && (t.args.type === "recipe" || t.args.widget_type === "recipe" || Boolean(t.args.recipe_data) || t.output?.widget?.type === "recipe")
+                );
+                const isInfoOnlyToolCall = accumulatedToolResults.length > 0 && accumulatedToolResults.every(t =>
+                    t.toolName === "calculateCalories" ||
+                    t.toolName === "calculateSensoryFit" ||
+                    t.toolName === "queryKnowledgeBase" ||
+                    (t.toolName === "presentAsWidget" && (t.args?.widget_type === "nutrition" || t.args?.type === "nutrition" || Boolean(t.args?.nutrition_data)))
+                );
+
+                const isRecipeRecommendation = !isInfoOnlyToolCall || hasRecipeWidget || hasRecipeToolCall;
+
+                const guardrailResult = validateDietaryOutput(assistantResponse, unsafeFoods, {
+                    isRecipeRecommendation
+                });
+
                 if (!guardrailResult.isSafe) {
                     console.warn(`[Dietary Guardrail BREACH BLOCKED] User[${userId}] - Output contained avoid foods:`, guardrailResult.blockedFoods);
                     assistantResponse = createSafetyFallbackResponse(guardrailResult.blockedFoods);
                     // Discard widget if it contained or was generated alongside the unsafe food
                     capturedWidget = null;
+                } else if (guardrailResult.warningNotice) {
+                    console.log(`[Dietary Guardrail SOFT NOTICE] User[${userId}] - Added informational notice for:`, guardrailResult.blockedFoods);
+                    assistantResponse += guardrailResult.warningNotice;
                 }
             } catch (guardrailErr) {
                 console.error("[Dietary Guardrail] Error during output validation:", guardrailErr);
