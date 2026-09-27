@@ -3,10 +3,10 @@ const { test, expect } = require('@playwright/test');
 test.describe('06. Isolated Account Deletion Life Cycle (Ephemeral User)', () => {
     // Run without storage state (clean context)
     test('6.1 Register new temporary user, delete account, and verify deleted user cannot sign in', async ({ page }) => {
-        const timestamp = Date.now();
-        const tempEmail = `e2e_del_${timestamp}@temp.local`;
-        const tempPassword = `TempPass${timestamp}`;
-        const tempUsername = `DelUser${timestamp.toString().slice(-4)}`;
+        const timestamp = Date.now();  //geçici kullanıcı 
+        const tempEmail = `e2e_del_${timestamp}@temp.local`; //şu anki saatte bakar
+        const tempPassword = `TempPass${timestamp}`; //şifre 
+        const tempUsername = `DelUser${timestamp.toString().slice(-4)}`; //ad benzersiz olsın diye en sonda 4 rakamı yaz, deluser1234 gibi
 
         // 1. Sign Up new ephemeral user
         await page.goto('/signup');

@@ -26,7 +26,7 @@ test.describe('02. Chat, Sidebar & Live Gemini Smoke Test', () => {
 
         // 2. Real Assistant response should appear within 25 seconds (live Gemini call)
         // Wait for loading indicator to finish
-        const loadingIndicator = page.locator('#loadingIndicator');
+        const loadingIndicator = page.locator('#loadingIndicator'); // #loadingIndicator
         await expect(loadingIndicator).toBeHidden({ timeout: 30000 });
 
         const assistantBubble = page.locator('.welcomeMessage:not(#loadingIndicator) .aiMessageBubble').last();
@@ -36,12 +36,12 @@ test.describe('02. Chat, Sidebar & Live Gemini Smoke Test', () => {
         await page.waitForTimeout(2000);
 
         // Verify response contains non-empty text and timestamp
-        const responseText = await assistantBubble.innerText();
-        expect(responseText.trim().length).toBeGreaterThan(5);
+        const responseText = await assistantBubble.innerText(); //balon içindeki metni alır inner text
+        expect(responseText.trim().length).toBeGreaterThan(5); //harf sayısı
         const aiTimestamp = page.locator('.welcomeMessage:not(#loadingIndicator) .messageTimestamp').last();
         await expect(aiTimestamp).toBeVisible();
         await expect(aiTimestamp).toContainText(/az önce|just now/i);
-        console.log(`[Smoke Test] Live Gemini Response received: "${responseText.trim().slice(0, 60)}..."`);
+        console.log(`[Smoke Test] Live Gemini Response received: "${responseText.trim().slice(0, 60)}..."`); //gelen cevabın ilk 60 harfini yazdır
     });
 
     test('2.2 Settings modal language toggle switches UI language', async ({ page }) => {

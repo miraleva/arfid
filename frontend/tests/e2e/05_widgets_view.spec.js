@@ -91,11 +91,11 @@ test.describe('05. Widget Presentation & Open Food Facts Image Rendering (Mocked
         const tabRecipesBtn = page.locator('#tabRecipesBtn');
         await expect(tabRecipesBtn).toBeVisible();
 
-        await tabRecipesBtn.click();
-        await expect(tabRecipesBtn).toHaveClass(/active/);
+        await tabRecipesBtn.click(); //tariflerim butonuna tıklar 
+        await expect(tabRecipesBtn).toHaveClass(/active/); //active mi teyit eder
 
         // Switch back to chats tab
-        const tabChatsBtn = page.locator('#tabChatsBtn');
+        const tabChatsBtn = page.locator('#tabChatsBtn'); //sohbetlerim butonu
         await tabChatsBtn.click();
         await expect(tabChatsBtn).toHaveClass(/active/);
     });

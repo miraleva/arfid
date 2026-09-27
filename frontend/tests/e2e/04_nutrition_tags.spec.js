@@ -29,7 +29,7 @@ test.describe('04. Settings Modal - Nutrition Profile "Edit Mode" Flow', () => {
 
         // Content container should NOT have editMode class
         const container = modal.locator('#dietaryContentContainer');
-        await expect(container).not.toHaveClass(/editMode/);
+        await expect(container).not.toHaveClass(/editMode/);  //edit mode yoksa çalıştır
     });
 
     test('4.2 Clicking "Düzenle" enters editMode and toggles button text to "Bitti"', async ({ page }) => {
