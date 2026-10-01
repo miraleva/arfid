@@ -108,24 +108,92 @@
               </div>
             </div>
 
-            <!-- Hero Interactive Preview Card -->
+            <!-- Hero Interactive Preview Card (Playful Neo-Brutalist Multi-Widget) -->
             <div class="hero-visual">
-              <div class="hero-card-stack">
-                <div class="hero-badge-floating"><%= t('hero.card_support') %></div>
-                <div class="hero-visual-header">
-                  <div class="hero-avatar">🥣</div>
-                  <div class="hero-avatar-text">
-                    <h4><%= t('hero.card_title') %></h4>
-                    <p><%= t('hero.card_desc') %></p>
+              <div class="neo-phone-frame">
+                <!-- Top Phone Notch & Retro Sparkles -->
+                <div class="neo-phone-topbar">
+                  <span class="retro-dot red"></span>
+                  <span class="retro-dot yellow"></span>
+                  <span class="retro-dot green"></span>
+                  <span class="phone-pill-badge">✨ ARFID Food Chaining OS</span>
+                </div>
+
+                <!-- Segmented Control Filters (Pill Buttons) -->
+                <div class="neo-segmented-tabs">
+                  <button type="button" class="neo-tab-pill active" onclick="switchNeoTab(this, 'texture')">Doku (Texture)</button>
+                  <button type="button" class="neo-tab-pill" onclick="switchNeoTab(this, 'aroma')">Koku (Aroma)</button>
+                  <button type="button" class="neo-tab-pill" onclick="switchNeoTab(this, 'chain')">Zincirleme</button>
+                </div>
+
+                <!-- Interactive Main Card Content -->
+                <div class="hero-card-stack">
+                  <div class="hero-badge-floating">
+                    <span class="sparkle-star">★</span> <%= t('hero.card_support') %>
                   </div>
-                </div>
-                <div class="hero-chat-bubble">
-                  "<%= t('hero.card_bubble') %>"
-                </div>
-                <div class="hero-feature-pills">
-                  <span class="hero-pill"><%= t('hero.pill_food_analysis') %></span>
-                  <span class="hero-pill"><%= t('hero.pill_friendly_recipes') %></span>
-                  <span class="hero-pill"><%= t('hero.pill_sensory_fit') %></span>
+                  
+                  <div class="hero-visual-header">
+                    <div class="hero-avatar">🥑</div>
+                    <div class="hero-avatar-text">
+                      <h4><%= t('hero.card_title') %></h4>
+                      <p><%= t('hero.card_desc') %></p>
+                    </div>
+                  </div>
+
+                  <!-- Capsule Vertical Sensory Tubes (Inspired by image 1 & 2) -->
+                  <div class="sensory-tubes-wrapper">
+                    <div class="sensory-tubes-header">
+                      <span>Duyusal Tolerans Testi</span>
+                      <span class="tube-match-pill">%94 Eşleşme</span>
+                    </div>
+                    <div class="sensory-tubes-grid">
+                      <div class="tube-col">
+                        <div class="tube-bar"><div class="tube-fill fill-green" style="height: 85%;"></div></div>
+                        <span class="tube-label">Kıtır</span>
+                      </div>
+                      <div class="tube-col">
+                        <div class="tube-bar"><div class="tube-fill fill-orange" style="height: 40%;"></div></div>
+                        <span class="tube-label">Pütür</span>
+                      </div>
+                      <div class="tube-col">
+                        <div class="tube-bar"><div class="tube-fill fill-blue" style="height: 70%;"></div></div>
+                        <span class="tube-label">Koku</span>
+                      </div>
+                      <div class="tube-col">
+                        <div class="tube-bar"><div class="tube-fill fill-purple" style="height: 90%;"></div></div>
+                        <span class="tube-label">Renk</span>
+                      </div>
+                      <div class="tube-col">
+                        <div class="tube-bar"><div class="tube-fill fill-pink" style="height: 30%;"></div></div>
+                        <span class="tube-label">Kaygan</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Retro Character Speech Bubble -->
+                  <div class="hero-chat-bubble">
+                    <div class="bubble-bot-badge">🤖 Asistan Tavsiyesi:</div>
+                    "<%= t('hero.card_bubble') %>"
+                  </div>
+
+                  <!-- Interactive Food Chain Bridge Demo -->
+                  <div class="neo-food-chain-bridge">
+                    <div class="chain-step safe">
+                      <span class="chain-tag">Güvenli Gıda</span>
+                      <strong>Kraker / Cips</strong>
+                    </div>
+                    <div class="chain-arrow">➔</div>
+                    <div class="chain-step bridge">
+                      <span class="chain-tag">Mikro Geçiş</span>
+                      <strong>Kıtır Sebze Cipsi</strong>
+                    </div>
+                  </div>
+
+                  <div class="hero-feature-pills">
+                    <span class="hero-pill badge-green"><%= t('hero.pill_food_analysis') %></span>
+                    <span class="hero-pill badge-yellow"><%= t('hero.pill_friendly_recipes') %></span>
+                    <span class="hero-pill badge-pink"><%= t('hero.pill_sensory_fit') %></span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -403,25 +471,39 @@
               <div class="assistant-card-icon">
                 <span>🛡️</span>
               </div>
+              <div class="assistant-card-badge">Profilleme</div>
               <h3><%= t('assistant_sec.card1_title') %></h3>
               <p><%= t('assistant_sec.card1_desc') %></p>
             </div>
 
             <div class="assistant-card a-card-2">
               <div class="assistant-card-icon">
-                <span>🍲</span>
+                <span>🔗</span>
               </div>
+              <div class="assistant-card-badge">Zincirleme</div>
               <h3><%= t('assistant_sec.card2_title') %></h3>
               <p><%= t('assistant_sec.card2_desc') %></p>
             </div>
 
             <div class="assistant-card a-card-3">
               <div class="assistant-card-icon">
-                <span>⚖️</span>
+                <span>🍲</span>
               </div>
+              <div class="assistant-card-badge">Tarif Uyarlama</div>
               <h3><%= t('assistant_sec.card3_title') %></h3>
               <p><%= t('assistant_sec.card3_desc') %></p>
             </div>
+
+            <% if (t('assistant_sec.card4_title') !== 'assistant_sec.card4_title') { %>
+            <div class="assistant-card a-card-4">
+              <div class="assistant-card-icon">
+                <span>🧘</span>
+              </div>
+              <div class="assistant-card-badge">Kaygı Yönetimi</div>
+              <h3><%= t('assistant_sec.card4_title') %></h3>
+              <p><%= t('assistant_sec.card4_desc') %></p>
+            </div>
+            <% } %>
           </div>
 
           <!-- Asistan Sorumluluk Reddi (Zorunlu Uyarı) -->
@@ -473,9 +555,42 @@
           </div>
         </div>
         <div class="footer-bottom">
-          <p><%= t('footer.copyright') %></p>
         </div>
-      </div>
     </footer>
+
+    <!-- Interactive Neo-Brutalist Scripts -->
+    <script>
+      function switchNeoTab(btn, mode) {
+        document.querySelectorAll('.neo-tab-pill').forEach(function(el) { el.classList.remove('active'); });
+        btn.classList.add('active');
+        
+        var tubes = document.querySelectorAll('.tube-fill');
+        var matchPill = document.querySelector('.tube-match-pill');
+        var bubble = document.querySelector('.hero-chat-bubble');
+        
+        if (mode === 'texture') {
+          tubes[0].style.height = '85%';
+          tubes[1].style.height = '40%';
+          tubes[2].style.height = '70%';
+          tubes[3].style.height = '90%';
+          tubes[4].style.height = '30%';
+          if (matchPill) matchPill.textContent = '%94 Doku Uyumu';
+        } else if (mode === 'aroma') {
+          tubes[0].style.height = '45%';
+          tubes[1].style.height = '20%';
+          tubes[2].style.height = '95%';
+          tubes[3].style.height = '60%';
+          tubes[4].style.height = '15%';
+          if (matchPill) matchPill.textContent = '%98 Nötr Koku Eşiği';
+        } else if (mode === 'chain') {
+          tubes[0].style.height = '75%';
+          tubes[1].style.height = '65%';
+          tubes[2].style.height = '80%';
+          tubes[3].style.height = '85%';
+          tubes[4].style.height = '50%';
+          if (matchPill) matchPill.textContent = '3 Kademeli Köprü';
+        }
+      }
+    </script>
   </body>
 </html>
