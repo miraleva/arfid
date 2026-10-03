@@ -15,9 +15,10 @@
 
 const db = require("../db");
 const { normalizeString } = require("../tools/utils/fuzzyMatch");
+const { findLocalFoodImage } = require("../tools/data/localFoodImages");
 
 const DEFAULT_TIMEOUT_MS = 3000;
-const CACHE_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
+const CACHE_TTL_SECONDS = 2 * 24 * 60 * 60; // 2 days (48 hours)
 const DEFAULT_USER_AGENT = "ArfidChatbot/1.0 (contact@arfid.org)";
 
 // Common Turkish to English mapping for food terms (for fallback global queries)
@@ -415,6 +416,21 @@ async function searchProductImage(rawTerm, options = {}) {
         return null;
     }
 
+    // 0. Check Curated Local Food Images (Skip OFF entirely for pure/whole fresh produce)
+    const localFood = findLocalFoodImage(rawTerm);
+    if (localFood && localFood.imageUrl) {
+        console.log(`[LocalFoodLibrary] [HIT] "${rawTerm}" yerel küratörlü kütüphaneden getirildi (OFF atlandı) -> Görsel: ${localFood.imageUrl} | Ürün: "${localFood.name}"`);
+        return {
+            image_url: localFood.imageUrl,
+            product_name: localFood.name,
+            source_url: "https://unsplash.com",
+            source_domain: "local_curated",
+            attribution: localFood.attribution || "Unsplash",
+            from_cache: false,
+            from_local_library: true
+        };
+    }
+
     const now = Math.floor(Date.now() / 1000);
 
     try {
@@ -571,11 +587,12 @@ async function enrichWidget(widget, options = {}) {
             }
             widget.data.image_placeholder.image_url = imageInfo.image_url;
             widget.data.image_placeholder.source_url = imageInfo.source_url || (imageInfo.source_domain ? `https://${imageInfo.source_domain}` : "https://openfoodfacts.org");
-            widget.data.image_placeholder.source_name = "Open Food Facts";
+            widget.data.image_placeholder.source_name = imageInfo.from_local_library ? "Arfid Kütüphanesi (Unsplash)" : "Open Food Facts";
             widget.data.image_placeholder.source_domain = imageInfo.source_domain || null;
             widget.data.image_placeholder.product_name = imageInfo.product_name || searchTerm;
 
-            console.log(`[OpenFoodFacts Enrichment] [BAŞARILI] Widget'a atanan Görsel Linki: ${imageInfo.image_url} (Kaynak: ${imageInfo.from_cache ? "Cache" : "Canlı API"})`);
+            const sourceDesc = imageInfo.from_local_library ? "Yerel Kütüphane (Unsplash)" : (imageInfo.from_cache ? "Cache" : "Canlı API");
+            console.log(`[OpenFoodFacts Enrichment] [BAŞARILI] Widget'a atanan Görsel Linki: ${imageInfo.image_url} (Kaynak: ${sourceDesc})`);
         } else {
             console.log(`[OpenFoodFacts Enrichment] [GÖRSEL YOK] "${searchTerm}" için görsel bulunamadı, varsayılan placeholder kullanılacak.`);
         }
@@ -603,6 +620,18 @@ async function checkFoodExists(rawTerm, options = {}) {
     const normalizedTerm = normalizeString(rawTerm);
     if (!normalizedTerm) {
         return { exists: false, verified: false, networkError: false };
+    }
+
+    // 0. Check Curated Local Food Images (If it's in our curated library, it definitely exists)
+    const localFood = findLocalFoodImage(rawTerm);
+    if (localFood) {
+        return {
+            exists: true,
+            verified: true,
+            networkError: false,
+            productName: localFood.name,
+            fromLocalLibrary: true
+        };
     }
 
     const now = Math.floor(Date.now() / 1000);

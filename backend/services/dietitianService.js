@@ -262,7 +262,23 @@ ${systemPrompt}
 TOOL EXECUTION RESULTS (Use these exact verified calculations in your response):
 ${JSON.stringify(accumulatedToolResults, null, 2)}
 `;
-            rawText = await geminiResponse(finalPrompt, jsonSchemaConfig);
+            try {
+                rawText = await geminiResponse(finalPrompt, jsonSchemaConfig);
+            } catch (finalGenErr) {
+                console.warn("[Dietitian Service] Final structured generation failed, using emergency tool synthesis:", finalGenErr.message);
+                // If a calculation tool was successfully executed, formulate a direct friendly response from tool results
+                const calcResult = accumulatedToolResults.find(t => t.toolName === "calculateCalories" && t.output?.status === "success")?.output;
+                if (calcResult && Array.isArray(calcResult.items) && calcResult.items.length > 0) {
+                    const itemDesc = calcResult.items.map(it => `${it.amount} ${it.unit} ${it.name} yaklaşık ${it.calories} kcal`).join(", ");
+                    const primaryFood = calcResult.items[0]?.name || "yiyecek";
+                    rawText = JSON.stringify({
+                        assistant_response: `Belirttiğiniz ${primaryFood} için hesaplanan toplam enerji yaklaşık ${calcResult.total_calories} kaloridir (${itemDesc}). Sağlıklı ve dengeli beslenme planınız için başka bir besin değeri öğrenmek ister misiniz?`,
+                        memory_updates: { foods: [], sensory: [], conditions: [] }
+                    });
+                } else {
+                    throw finalGenErr;
+                }
+            }
         }
 
         // 4. Direct JSON Parsing with Defensive Fallback
@@ -357,9 +373,9 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
 
     } catch (error) {
         console.error("Dietitian Assistant Error:", error.message);
-        let errorMsg = "I'm having trouble connecting to my knowledge base right now. Please try again later.";
+        let errorMsg = "Şu anda yapay zeka sunucusuna geçici olarak ulaşılamıyor. Lütfen birkaç saniye sonra tekrar deneyin.";
         if (error.status === 429) {
-            errorMsg = "I'm a bit overwhelmed right now. Please try again in a moment.";
+            errorMsg = "Şu an yoğunluk nedeniyle biraz yavaş yanıt verebiliyorum. Lütfen biraz bekleyip tekrar deneyin.";
         }
         return {
             assistant_response: errorMsg,

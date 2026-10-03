@@ -23,6 +23,36 @@ const MODEL_CASCADE = [
 const DEFAULT_MODEL = MODEL_CASCADE[0];
 
 /**
+ * Determines whether a Gemini API error is transient and can be retried with the next fallback model.
+ * Handles HTTP 503, 429, 500, 502, 504 as well as Node.js / undici network level 'fetch failed' errors.
+ * 
+ * @param {any} error 
+ * @returns {boolean}
+ */
+function isRetryableError(error) {
+    if (!error) return false;
+
+    // 1. HTTP Status Codes
+    const retryableStatuses = [429, 500, 502, 503, 504];
+    if (retryableStatuses.includes(error.status)) return true;
+
+    // 2. Fetch / Network level exceptions (undici / Node.js)
+    const msg = (error.message || "").toLowerCase();
+    if (msg.includes("fetch failed") || msg.includes("network") || msg.includes("timeout") || msg.includes("econnreset")) {
+        return true;
+    }
+
+    // 3. Nested cause codes
+    const code = error.code || (error.cause && error.cause.code);
+    const networkCodes = ["ECONNRESET", "ETIMEDOUT", "ECONNREFUSED", "EAI_AGAIN", "UND_ERR_CONNECT_TIMEOUT", "UND_ERR_SOCKET"];
+    if (code && networkCodes.includes(code)) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
  * Gets the next fallback model in the cascade given the current active model.
  * 
  * @param {string} currentModel 
@@ -59,10 +89,11 @@ async function geminiResponse(contents, config = {}) {
             });
             return response.text || "";
         } catch (error) {
-            if (attempts < maxAttempts && (error.status === 503 || error.status === 429)) {
+            if (attempts < maxAttempts && isRetryableError(error)) {
                 const previousModel = activeModel;
                 activeModel = getNextFallbackModel(previousModel);
-                console.warn(`\n⚠️  [AI SERVICE FALLBACK] Gemini HTTP ${error.status} alındı (Deneme ${attempts}/${maxAttempts})!`);
+                const reason = error.status ? `HTTP ${error.status}` : (error.message || "Ağ Hatası");
+                console.warn(`\n⚠️  [AI SERVICE FALLBACK] Gemini Hatası [${reason}] alındı (Deneme ${attempts}/${maxAttempts})!`);
                 console.warn(`   Model otomatik olarak devrediliyor: [${previousModel}] ➔ [${activeModel}] (${attempts}s sonra yeniden denenecek)...\n`);
                 await new Promise(r => setTimeout(r, 1000 * attempts));
                 continue;
@@ -96,10 +127,11 @@ async function geminiRawCall(contents, config = {}) {
             });
             return response;
         } catch (error) {
-            if (attempts < maxAttempts && (error.status === 503 || error.status === 429)) {
+            if (attempts < maxAttempts && isRetryableError(error)) {
                 const previousModel = activeModel;
                 activeModel = getNextFallbackModel(previousModel);
-                console.warn(`\n⚠️  [AI SERVICE FALLBACK] Gemini Raw Call HTTP ${error.status} alındı (Deneme ${attempts}/${maxAttempts})!`);
+                const reason = error.status ? `HTTP ${error.status}` : (error.message || "Ağ Hatası");
+                console.warn(`\n⚠️  [AI SERVICE FALLBACK] Gemini Raw Call Hatası [${reason}] alındı (Deneme ${attempts}/${maxAttempts})!`);
                 console.warn(`   Model otomatik olarak devrediliyor: [${previousModel}] ➔ [${activeModel}] (${attempts}s sonra yeniden denenecek)...\n`);
                 await new Promise(r => setTimeout(r, 1000 * attempts));
                 continue;
