@@ -24,17 +24,24 @@
             <% } %>
         </div>
 
-        <!-- Görsel Placeholder (Open Food Facts Entegrasyon Alanı) -->
+        <% 
+            const realImgUrl = rData.image_url || (rData.image_placeholder && rData.image_placeholder.image_url);
+            const sourceUrl = (rData.image_placeholder && rData.image_placeholder.source_url) || 'https://world.openfoodfacts.org';
+        %>
+        <!-- Görsel Alanı (Open Food Facts Entegrasyonu) -->
         <div class="widgetImageContainer" 
              data-image-slot="<%= (rData.image_placeholder && rData.image_placeholder.slot_key) || 'recipe_default' %>" 
-             data-image-status="placeholder"
+             data-image-status="<%= realImgUrl ? 'loaded' : 'placeholder' %>"
              title="<%= (rData.image_placeholder && rData.image_placeholder.alt_text) || rTitle %>">
             <div class="widgetImagePlaceholder">
                 <span class="placeholderIcon">🍲</span>
                 <span class="placeholderTitle"><%= (rData.image_placeholder && rData.image_placeholder.alt_text) || rTitle %></span>
                 <span class="placeholderNote">Görsel Alanı (Placeholder)</span>
             </div>
-            <img class="widgetRealImage" src="" alt="<%= rTitle %>" />
+            <img class="widgetRealImage" src="<%= realImgUrl || '' %>" alt="<%= rTitle %>" loading="lazy" />
+            <% if (realImgUrl) { %>
+                <a href="<%= sourceUrl %>" target="_blank" rel="noopener noreferrer" class="widgetImageAttribution" title="Open Food Facts">📷 Open Food Facts</a>
+            <% } %>
         </div>
 
         <!-- Süre, Porsiyon ve Tahmini Değer İstatistikleri -->

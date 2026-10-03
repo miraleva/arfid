@@ -214,6 +214,16 @@ const calorieDatabase = [
         servingGrams: 100,
         note: "Varsayılan olarak standart derin yağda kızartılmış patates baz alınmıştır."
     },
+    {
+        id: "mantar",
+        name: "kültür mantarı",
+        aliases: ["mantar", "mushroom", "mushrooms", "kültür mantarı", "beyaz mantar"],
+        caloriesPer100g: 22,
+        defaultUnit: "gram",
+        servingUnit: "adet",
+        servingGrams: 20,
+        note: "Varsayılan olarak taze beyaz kültür mantarı baz alınmıştır."
+    },
 
     // --- MEYVELER ---
     // Varsayılan: Orta boy taze muz (kabuksuz ~100-110g) baz alınmıştır.
@@ -418,6 +428,79 @@ const calorieDatabase = [
     }
 ];
 
+const { normalizeString } = require('../utils/fuzzyMatch');
+
+/**
+ * Searches calorieDatabase for TR/EN aliases of a term and resolves to an existing master food record.
+ * 
+ * @param {string} rawTerm - Input term (e.g. 'elma' or 'yeşil elma')
+ * @param {Array<{ id: number, name: string }>} masterFoodsList - Current master foods list
+ * @returns {{ matchedMaster: { id: number, name: string }|null, entryName: string|null, aliasMatched: boolean }}
+ */
+function findMasterFoodMatchViaAliases(rawTerm, masterFoodsList = []) {
+    if (!rawTerm || typeof rawTerm !== 'string') {
+        return { matchedMaster: null, entryName: null, aliasMatched: false };
+    }
+
+    const normInput = normalizeString(rawTerm);
+    if (!normInput) {
+        return { matchedMaster: null, entryName: null, aliasMatched: false };
+    }
+
+    // 1. Find entry in calorieDatabase matching the alias
+    let matchedEntry = calorieDatabase.find(item => {
+        if (!item.aliases || !Array.isArray(item.aliases)) return false;
+        return item.aliases.some(alias => normalizeString(alias) === normInput);
+    });
+
+    if (!matchedEntry && normInput.length >= 4) {
+        // Flatten aliases for precise string-to-string fuzzy matching
+        const flatAliases = [];
+        for (const item of calorieDatabase) {
+            if (Array.isArray(item.aliases)) {
+                for (const alias of item.aliases) {
+                    flatAliases.push({ alias, entry: item });
+                }
+            }
+        }
+
+        const { createFuzzyMatcher } = require('../utils/fuzzyMatch');
+        const aliasMatcher = createFuzzyMatcher(flatAliases, ["alias"], { threshold: 0.3, distance: 20 });
+        const results = aliasMatcher.search(normInput);
+        const validResults = (results || []).filter(r => {
+            if (r.score > 0.28) return false;
+            const targetAliasNorm = normalizeString(r.item.alias);
+            return Math.abs(targetAliasNorm.length - normInput.length) <= 2;
+        });
+
+        if (validResults.length > 0) {
+            matchedEntry = validResults[0].item.entry;
+        }
+    }
+
+    if (!matchedEntry) {
+        return { matchedMaster: null, entryName: null, aliasMatched: false };
+    }
+
+    // 2. Try to map to an existing master food using any alias of this entry
+    const normAliases = matchedEntry.aliases.map(a => normalizeString(a));
+    let matchedMaster = null;
+
+    if (Array.isArray(masterFoodsList) && masterFoodsList.length > 0) {
+        matchedMaster = masterFoodsList.find(mf => {
+            const normMaster = normalizeString(mf.name);
+            return normAliases.includes(normMaster);
+        });
+    }
+
+    return {
+        matchedMaster: matchedMaster || null,
+        entryName: matchedEntry.name,
+        aliasMatched: true
+    };
+}
+
 module.exports = {
-    calorieDatabase
+    calorieDatabase,
+    findMasterFoodMatchViaAliases
 };

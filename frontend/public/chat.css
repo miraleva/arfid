@@ -98,13 +98,28 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 22px 20px 16px 22px;
+    padding: 18px 14px 14px 16px;
+}
+
+.sidebarHeaderActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebarHeaderActions .lang-toggle {
+    padding: 2px 7px;
+    font-size: 0.74rem;
+}
+
+.sidebarHeaderActions .lang-btn {
+    padding: 2px 5px;
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .brandLogo {
@@ -926,7 +941,8 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
 
 .userMessage {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
     animation: messageSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
@@ -946,6 +962,35 @@ body.hasOpenHistoryMenu .historyItem:not(.hasOpenMenu):hover {
     box-shadow: 0 2px 8px rgba(139, 191, 61, 0.18);
     word-break: break-word;
     white-space: pre-wrap;
+}
+
+/* Mesaj Zaman Damgası (Relative Timestamp - Hover ile Görünür) */
+.messageTimestamp {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #9C8E82;
+    margin-top: 3px;
+    padding: 0 4px;
+    user-select: none;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.userMessage:hover .messageTimestamp,
+.welcomeMessage:hover .messageTimestamp {
+    opacity: 1;
+}
+
+.userMessage .messageTimestamp {
+    text-align: right;
+    margin-right: 4px;
+}
+
+.aiResponseContent .messageTimestamp {
+    text-align: left;
+    margin-left: 2px;
 }
 
 @keyframes messageSlideIn {

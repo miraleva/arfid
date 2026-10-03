@@ -461,100 +461,457 @@ body {
     border: 2px solid var(--text-title);
 }
 
-/* Hero Görsel Kart (Meelo Arch & Warm Card Style) */
+/* Hero Görsel Kart (Playful Neo-Brutalist Multi-Widget) */
 .hero-visual {
     position: relative;
     display: flex;
     justify-content: center;
 }
 
-.hero-card-stack {
-    position: relative;
+/* =========================================================
+   HERO CANLI CHAT ÖNİZLEME PENCERESİ (CHAT ARAYÜZÜ İLE %100 UYUMLU)
+   ========================================================= */
+.neo-chat-window {
     width: 100%;
-    max-width: 440px;
-    background-color: var(--color-tangerine-soft);
+    max-width: 500px;
+    background-color: #FFFDF9;
     border: 3px solid var(--text-title);
-    border-radius: var(--radius-xl);
-    padding: 34px;
-    box-shadow: 6px 10px 0 var(--text-title);
+    border-radius: 26px;
+    box-shadow: 8px 12px 0 var(--text-title);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
 }
 
-.hero-badge-floating {
-    position: absolute;
-    top: -18px;
-    right: 24px;
-    background-color: var(--color-tangerine);
-    border: 2.5px solid var(--text-title);
-    color: var(--text-title);
-    font-size: 0.9rem;
-    font-weight: 800;
-    padding: 6px 18px;
-    border-radius: var(--radius-full);
-    box-shadow: none;
-    letter-spacing: 0.02em;
+.neo-chat-window:hover {
+    transform: translateY(-4px);
+    box-shadow: 10px 16px 0 var(--text-title);
 }
 
-.hero-visual-header {
+/* Chat Üst Başlık Barı (Pencere Kontrolleri + Durum) */
+.neo-chat-header {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    padding: 14px 18px;
+    background-color: var(--bg-card-neutral);
+    border-bottom: 2.5px solid var(--border-warm);
     gap: 16px;
-    margin-bottom: 24px;
 }
 
-.hero-avatar {
-    width: 58px;
-    height: 58px;
-    border-radius: 20px;
+.neo-window-controls {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.retro-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1.8px solid var(--text-title);
+    display: inline-block;
+}
+
+.retro-dot.red { background-color: #FF5A5F; }
+.retro-dot.yellow { background-color: #FFEF5A; }
+.retro-dot.green { background-color: #A8D46C; }
+
+.neo-chat-header-center {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chat-status-dot {
+    width: 9px;
+    height: 9px;
+    background-color: var(--color-bell-pepper);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(106, 176, 76, 0.25);
+    animation: pulseStatus 2s infinite ease-in-out;
+}
+
+@keyframes pulseStatus {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.chat-header-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-title);
+    font-family: 'Nunito', cursive, sans-serif;
+}
+
+.neo-chat-badge {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--text-title);
     background-color: var(--color-banana);
-    border: 2.5px solid var(--text-title);
+    border: 2px solid var(--text-title);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    box-shadow: 0 2px 0 var(--text-title);
+}
+
+/* Chat Akış Gövdesi */
+.neo-chat-body {
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #FAF6EE;
+}
+
+.neo-msg-row {
+    display: flex;
+    width: 100%;
+}
+
+.neo-msg-row.user-row {
+    justify-content: flex-end;
+}
+
+.neo-user-bubble {
+    max-width: 82%;
+    background-color: var(--color-avocado-pastel);
+    color: var(--text-title);
+    border: 2px solid var(--text-title);
+    border-radius: 20px 20px 4px 20px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.neo-user-bubble p {
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 0 0 4px 0;
+}
+
+.neo-msg-time {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: rgba(30, 81, 40, 0.8);
+    display: block;
+    text-align: right;
+}
+
+/* Asistan Mesajı ve Avatarı */
+.neo-msg-row.assistant-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.neo-assistant-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    border: 2px solid var(--text-title);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 30px;
+    box-shadow: 0 2.5px 0 var(--text-title);
+    flex-shrink: 0;
 }
 
-.hero-avatar-text h4 {
-    font-family: 'Nunito', cursive, sans-serif;
-    font-size: 1.25rem;
+.neo-assistant-avatar img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+}
+
+.neo-assistant-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.neo-assistant-bubble {
+    background-color: #FFFFFF;
+    color: var(--text-primary);
+    border: 2px solid var(--text-title);
+    border-radius: 4px 20px 20px 20px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.neo-bubble-author {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--color-ocean-blue);
+    margin-bottom: 5px;
+}
+
+.neo-assistant-bubble p {
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+/* Chat İçi Widget */
+.neo-chat-widget {
+    background-color: #FFFFFF;
+    border: 2.5px solid var(--text-title);
+    border-radius: 20px;
+    padding: 14px;
+    box-shadow: 0 4px 0 var(--text-title);
+}
+
+.neo-assistant-content > .neo-msg-time {
+    text-align: left;
+    color: var(--text-secondary);
+    padding-left: 2px;
+}
+
+/* Segmented Control (Pill Tabs) */
+.neo-segmented-tabs {
+    display: flex;
+    background-color: var(--bg-page-alt);
+    border: 2px solid var(--text-title);
+    border-radius: var(--radius-full);
+    padding: 3px;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.neo-tab-pill {
+    flex: 1;
+    border: 1.5px solid transparent;
+    background: transparent;
+    padding: 6px 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.neo-tab-pill.active, .neo-tab-pill:hover {
+    background-color: #FFFFFF;
+    color: var(--text-title);
+    border-color: var(--text-title);
+    box-shadow: 0 2px 0 var(--text-title);
+}
+
+.neo-tab-pill:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 var(--text-title);
+}
+
+/* Sensory Capsule Tubes */
+.sensory-tubes-wrapper {
+    background: #FAF6EE;
+    border: 2px solid var(--text-title);
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 4px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.sensory-tubes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text-title);
+    margin-bottom: 12px;
+}
+
+.tube-title-text {
+    font-size: 0.85rem;
     font-weight: 800;
     color: var(--text-title);
 }
 
-.hero-avatar-text p {
-    font-size: 0.92rem;
+.tube-match-pill {
+    background-color: var(--color-avocado-pastel);
+    border: 1.8px solid var(--text-title);
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--text-title);
+}
+
+.sensory-tubes-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    text-align: center;
+}
+
+.tube-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.tube-bar {
+    width: 22px;
+    height: 74px;
+    background-color: #F1ECE4;
+    border: 2px solid var(--text-title);
+    border-radius: var(--radius-full);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.tube-fill {
+    width: 100%;
+    transition: height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: var(--radius-full);
+}
+
+.tube-fill.fill-green { background-color: var(--color-avocado-pastel); }
+.tube-fill.fill-orange { background-color: var(--color-tangerine); }
+.tube-fill.fill-blue { background-color: var(--color-ocean-blue); }
+.tube-fill.fill-purple { background-color: var(--color-purple); }
+.tube-fill.fill-pink { background-color: var(--color-bubblegum); }
+
+.tube-label {
+    font-size: 0.8rem;
+    font-weight: 800;
     color: var(--text-secondary);
-    font-weight: 600;
 }
 
 .hero-chat-bubble {
     background-color: #FFFFFF;
     border: 2.5px solid var(--text-title);
-    border-radius: 24px 24px 24px 6px;
-    padding: 18px 22px;
-    margin-bottom: 20px;
-    font-size: 1.05rem;
+    border-radius: 20px 20px 20px 6px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    font-size: 0.98rem;
     color: var(--text-primary);
-    line-height: 1.55;
+    line-height: 1.5;
+    font-weight: 700;
+    box-shadow: 0 4px 0 var(--text-title);
+}
+
+.bubble-bot-badge {
+    font-size: 0.82rem;
+    font-weight: 900;
+    color: var(--color-ocean-blue);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Food Chain Bridge */
+.neo-food-chain-bridge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FAF6EE;
+    border: 2px solid var(--text-title);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.chain-step {
+    display: flex;
+    flex-direction: column;
+}
+
+.chain-tag {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.chain-step strong {
+    font-size: 0.88rem;
+    color: var(--text-title);
+}
+
+.chain-step.safe strong { color: var(--color-bell-pepper); }
+.chain-step.bridge strong { color: #C5377B; }
+
+.chain-arrow {
+    width: 28px;
+    height: 28px;
+    background: var(--color-banana);
+    border: 1.8px solid var(--text-title);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 13px;
+    box-shadow: 0 2px 0 var(--text-title);
+}
+
+/* Chat Input Bar Mockup (Chat Sayfasındaki ile Birebir Uyumlu) */
+.neo-chat-inputbar {
+    padding: 12px 18px 16px 18px;
+    background-color: var(--bg-card-neutral);
+    border-top: 2.5px solid var(--border-warm);
+}
+
+.neo-input-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #FFFFFF;
+    border: 2px solid var(--text-title);
+    border-radius: var(--radius-full);
+    padding: 8px 12px 8px 18px;
+    box-shadow: 0 2.5px 0 var(--text-title);
+}
+
+.neo-input-placeholder {
+    font-size: 0.88rem;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
-.hero-feature-pills {
+.neo-input-send-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--color-avocado-pastel);
+    border: 1.8px solid var(--text-title);
+    color: var(--text-title);
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    box-shadow: 0 2px 0 var(--text-title);
 }
 
-.hero-pill {
-    background-color: #FFFFFF;
-    border: 2px solid var(--border-warm);
-    padding: 8px 16px;
+.assistant-card-badge {
+    display: inline-block;
+    width: fit-content;
+    padding: 3px 10px;
     border-radius: var(--radius-full);
-    font-size: 0.9rem;
-    font-weight: 700;
+    border: 1.5px solid var(--text-title);
+    background-color: #FFFFFF;
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-bottom: 10px;
     color: var(--text-title);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+}
+
+.assistant-card.a-card-4 {
+    background-color: var(--color-purple-soft);
 }
 
 /* =========================================================
@@ -990,12 +1347,12 @@ body {
 }
 
 /* =========================================================
-   BÖLÜM 6: ASİSTAN NASIL YARDIMCI OLUR? (MEELO KARTLAR)
+   BÖLÜM 6: ASİSTAN NASIL YARDIMCI OLUR? (PLAYFUL NEO-BRUTALIST KARTLAR)
    ========================================================= */
 .assistant-features-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
     margin-bottom: 40px;
 }
 

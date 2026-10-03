@@ -131,36 +131,70 @@ const apiClient = require("./apiClient");
 // Signin POST - Backend API'ye bağlı
 app.post("/signin", async (req, res) => {
     const { email, password } = req.body;
+    const isJson = req.xhr || (req.headers["content-type"] && req.headers["content-type"].includes("application/json")) || (req.headers.accept && req.headers.accept.includes("application/json"));
 
     try {
         const result = await apiClient.signin(email, password);
 
         if (result.ok) {
             req.session.user = { id: result.data.id, email: result.data.email, username: result.data.username };
-            res.redirect("/chat");
+            req.session.save((saveErr) => {
+                if (saveErr) console.error("Session save error:", saveErr);
+                if (isJson) {
+                    return res.json({ success: true, redirect: "/chat" });
+                }
+                return res.redirect("/chat");
+            });
         } else {
-            res.render("signin", { error: result.data.error || "Email veya şifre yanlış" });
+            const errorMsg = req.__ ? req.__("auth.err_auth_failed") : (result.data?.error || "Email veya şifre yanlış");
+            const status = result.status || 401;
+            if (isJson) {
+                return res.status(status).json({ success: false, error: errorMsg });
+            }
+            return res.status(status).render("signin", { error: errorMsg });
         }
     } catch (error) {
-        res.render("signin", { error: "Bağlantı hatası" });
+        console.error("Signin proxy hatası:", error);
+        const errorMsg = req.__ ? req.__("auth.err_network") : "Bağlantı hatası";
+        if (isJson) {
+            return res.status(500).json({ success: false, error: errorMsg });
+        }
+        return res.status(500).render("signin", { error: errorMsg });
     }
 });
 
 // Signup POST - Backend API'ye bağlı
 app.post("/signup", async (req, res) => {
     const { email, password, username } = req.body;
+    const isJson = req.xhr || (req.headers["content-type"] && req.headers["content-type"].includes("application/json")) || (req.headers.accept && req.headers.accept.includes("application/json"));
 
     try {
         const result = await apiClient.signup(email, password, username);
 
         if (result.ok) {
             req.session.user = { id: result.data.id, email: result.data.email, username: result.data.username };
-            res.redirect("/chat");
+            req.session.save((saveErr) => {
+                if (saveErr) console.error("Session save error:", saveErr);
+                if (isJson) {
+                    return res.json({ success: true, redirect: "/chat" });
+                }
+                return res.redirect("/chat");
+            });
         } else {
-            res.render("signup", { error: result.data.error || "Kayıt sırasında bir hata oluştu" });
+            const errorMsg = result.data?.error || "Kayıt sırasında bir hata oluştu";
+            const status = result.status || 400;
+            if (isJson) {
+                return res.status(status).json({ success: false, error: errorMsg });
+            }
+            return res.status(status).render("signup", { error: errorMsg });
         }
     } catch (error) {
-        res.render("signup", { error: "Bağlantı hatası" });
+        console.error("Signup proxy hatası:", error);
+        const errorMsg = "Bağlantı hatası";
+        if (isJson) {
+            return res.status(500).json({ success: false, error: errorMsg });
+        }
+        return res.status(500).render("signup", { error: errorMsg });
     }
 });
 
@@ -313,6 +347,156 @@ app.delete("/chat/session", isAuthenticated, async (req, res) => {
     } catch (error) {
         console.error("Delete session proxy hatası:", error);
         res.status(500).json({ success: false });
+    }
+});
+
+// Dietary Profile GET - Proxy to Backend
+app.get("/user/dietary-profile", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+
+    try {
+        const result = await apiClient.getDietaryProfile(userId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Get dietary profile proxy hatası:", error);
+        res.status(500).json({ safeFoods: [], unsafeFoods: [], sensoryTriggers: [] });
+    }
+});
+
+const DIETARY_ALLOWED_CHARS_REGEX = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ\s\-]+$/;
+const DIETARY_HAS_LETTER_REGEX = /[a-zA-ZçÇğĞıİöÖşŞüÜ]/;
+
+function validateDietaryName(rawName) {
+    if (!rawName || typeof rawName !== 'string') {
+        return { valid: false, error: "Lütfen bir isim girin." };
+    }
+    const trimmed = rawName.trim();
+    if (trimmed.length < 2 || trimmed.length > 40) {
+        return { valid: false, error: "Girdi 2 ile 40 karakter arasında olmalıdır." };
+    }
+    if (!DIETARY_ALLOWED_CHARS_REGEX.test(trimmed)) {
+        return { valid: false, error: "Yalnızca harf, rakam, boşluk ve tire (-) kullanabilirsiniz. Nokta veya özel karakter içeremez." };
+    }
+    if (!DIETARY_HAS_LETTER_REGEX.test(trimmed)) {
+        return { valid: false, error: "Girdi sadece rakamlardan oluşamaz, en az 1 harf içermelidir." };
+    }
+    return { valid: true, cleanName: trimmed };
+}
+
+// Add Food Preference POST - Proxy to Backend
+app.post("/user/dietary-profile/food", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { name, isSafe } = req.body;
+
+    const validation = validateDietaryName(name);
+    if (!validation.valid) {
+        return res.status(400).json({ success: false, error: validation.error });
+    }
+
+    try {
+        const result = await apiClient.addFoodPreference(userId, validation.cleanName, isSafe);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Add food preference proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Gıda ekleme hatası" });
+    }
+});
+
+// Add Sensory Trigger POST - Proxy to Backend
+app.post("/user/dietary-profile/sensory", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { name } = req.body;
+
+    const validation = validateDietaryName(name);
+    if (!validation.valid) {
+        return res.status(400).json({ success: false, error: validation.error });
+    }
+
+    try {
+        const result = await apiClient.addSensoryTrigger(userId, validation.cleanName);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Add sensory trigger proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Duyusal tetikleyici ekleme hatası" });
+    }
+});
+
+// Delete Food Preference DELETE - Proxy to Backend
+app.delete("/user/dietary-profile/food/:foodId", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const foodId = req.params.foodId;
+
+    try {
+        const result = await apiClient.deleteFoodPreference(userId, foodId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Delete food preference proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Silme hatası" });
+    }
+});
+
+// Delete Sensory Trigger DELETE - Proxy to Backend
+app.delete("/user/dietary-profile/sensory/:attributeId", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const attributeId = req.params.attributeId;
+
+    try {
+        const result = await apiClient.deleteSensoryTrigger(userId, attributeId);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Delete sensory trigger proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Silme hatası" });
+    }
+});
+
+// Update Profile PUT - Proxy to Backend
+app.put("/user/profile", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { username, email } = req.body;
+
+    try {
+        const result = await apiClient.updateProfile(userId, { username, email });
+        if (result.ok && result.data && result.data.user) {
+            req.session.user.username = result.data.user.username;
+            req.session.user.email = result.data.user.email;
+        }
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Update profile proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Profil güncelleme hatası" });
+    }
+});
+
+// Change Password PUT - Proxy to Backend
+app.put("/user/password", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+        const result = await apiClient.changePassword(userId, currentPassword, newPassword);
+        res.status(result.status).json(result.data);
+    } catch (error) {
+        console.error("Change password proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Şifre değiştirme hatası" });
+    }
+});
+
+// Delete Account DELETE - Proxy to Backend
+app.delete("/user/account", isAuthenticated, async (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+
+    try {
+        const result = await apiClient.deleteAccount(userId);
+        if (result.ok && result.data && result.data.success) {
+            req.session.destroy(() => {
+                res.status(200).json({ success: true, redirect: "/signin" });
+            });
+        } else {
+            res.status(result.status).json(result.data);
+        }
+    } catch (error) {
+        console.error("Delete account proxy hatası:", error);
+        res.status(500).json({ success: false, error: "Hesap silme hatası" });
     }
 });
 

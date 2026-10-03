@@ -5,6 +5,7 @@
 
 const { calorieDatabase } = require("./data/calorieDatabase");
 const { normalizeString, createFuzzyMatcher } = require("./utils/fuzzyMatch");
+const { getFoodNutrition } = require("../services/openFoodFactsService");
 
 const toolDeclaration = {
     name: "calculateCalories",
@@ -171,14 +172,40 @@ async function calculateCalories(args) {
         const amount = isNaN(rawAmount) || rawAmount <= 0 ? 1 : rawAmount;
         const unit = ing.unit || "adet";
 
-        const food = findFoodMatch(ing.name);
+        let food = findFoodMatch(ing.name);
+
+        // Fallback: If not in static calorieDatabase, check SQLite cache or Open Food Facts API
+        if (!food) {
+            try {
+                const offFood = await getFoodNutrition(ing.name);
+                if (offFood && typeof offFood.caloriesPer100g === "number") {
+                    food = {
+                        id: normalizeString(ing.name),
+                        name: offFood.name,
+                        caloriesPer100g: offFood.caloriesPer100g,
+                        servingGrams: 100,
+                        unitGrams: 1.0,
+                        note: offFood.note,
+                        macros: {
+                            protein_g: offFood.proteinPer100g,
+                            carbs_g: offFood.carbsPer100g,
+                            fat_g: offFood.fatPer100g
+                        },
+                        source: "openfoodfacts"
+                    };
+                    console.log(`[calculateCalories] Fallback to Open Food Facts successful for "${ing.name}": ${food.caloriesPer100g} kcal/100g`);
+                }
+            } catch (offErr) {
+                console.warn(`[calculateCalories] Open Food Facts lookup failed for "${ing.name}":`, offErr.message);
+            }
+        }
 
         if (!food) {
             unmatched.push({
                 requested_name: ing.name,
                 amount: amount,
                 unit: unit,
-                reason: "Veritabanında eşleşen gıda bulunamadı."
+                reason: "Veritabanında veya Open Food Facts kataloğunda eşleşen gıda bulunamadı."
             });
             continue;
         }
@@ -195,7 +222,8 @@ async function calculateCalories(args) {
             unit: unit,
             estimated_grams: Math.round(calculatedGrams),
             calories: itemCalories,
-            note: food.note || null
+            note: food.note || null,
+            source: food.source || "local_db"
         });
     }
 

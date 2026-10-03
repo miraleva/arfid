@@ -10,6 +10,50 @@ const chatRepository = require("../repositories/chatRepository");
 const { buildSystemPrompt, jsonSchemaConfig } = require("../promptBuilder");
 const { getRagContext } = require("../rag/ragClient");
 const { functionDeclarations, executeTool } = require("../tools");
+const openFoodFactsService = require("./openFoodFactsService");
+const { calorieDatabase } = require("../tools/data/calorieDatabase");
+const { validateDietaryOutput, createSafetyFallbackResponse } = require("../guardrails/dietaryGuardrail");
+
+// Fast alias lookup map for bilingual food/ingredient matching
+const aliasLookup = new Map();
+if (Array.isArray(calorieDatabase)) {
+    calorieDatabase.forEach(entry => {
+        const allTerms = [entry.name, ...(entry.aliases || [])].map(t => t.toLowerCase());
+        allTerms.forEach(term => {
+            if (!aliasLookup.has(term)) {
+                aliasLookup.set(term, allTerms);
+            }
+        });
+    });
+}
+
+/**
+ * Checks if a preference change is relevant to the user's current message.
+ * Supports direct match, sub-word match, and bilingual alias mapping.
+ * 
+ * @param {Object} change - Log entry
+ * @param {string} lowerUserText - Lowercase user message
+ * @returns {boolean}
+ */
+function isPreferenceChangeRelevant(change, lowerUserText) {
+    if (!change || !change.item_name || !lowerUserText) return false;
+    const nameLower = change.item_name.toLowerCase();
+
+    // 1. Direct substring match
+    if (lowerUserText.includes(nameLower)) return true;
+
+    // 2. Multi-word item checks (e.g. "mushy texture" -> "mushy")
+    const words = nameLower.split(/\s+/).filter(w => w.length > 2);
+    if (words.some(w => lowerUserText.includes(w))) return true;
+
+    // 3. Alias map match (e.g. "rice" <-> "pirinç", "bread" <-> "ekmek")
+    const aliases = aliasLookup.get(nameLower);
+    if (aliases && aliases.some(alias => lowerUserText.includes(alias))) {
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * Generates a short "Patient Card" summary using a second Gemini call.
@@ -97,13 +141,57 @@ async function getDietitianResponse(userText, userId, conversationId = null) {
     // 1.2 Fetch RAG Context (Knowledge Base)
     const ragContext = await getRagContext(userText);
 
+    // 1.3 Fetch & Filter Recent Preference Changes (Audit Log - Last 30 Days)
+    let recentChangesContext = "";
+    if (userId) {
+        try {
+            const auditStartTime = Date.now();
+            const recentChanges = await memoryRepository.getRecentPreferenceChanges(userId, 30);
+            const auditDurationMs = Date.now() - auditStartTime;
+            if (auditDurationMs > 50) {
+                console.warn(`[Audit Log Performance] Query took ${auditDurationMs}ms for user ${userId}`);
+            }
+
+            if (recentChanges && recentChanges.length > 0) {
+                const lowerUserText = userText.toLowerCase();
+                // Filter changes that are mentioned or closely related to the current user message
+                const relevantChanges = recentChanges.filter(change => isPreferenceChangeRelevant(change, lowerUserText));
+
+                if (relevantChanges.length > 0) {
+                    recentChangesContext = relevantChanges.map(change => {
+                        const typeLabel = change.item_type === "food" ? "Gıda" : "Duyusal Özellik";
+                        let stateLabel = "";
+                        if (change.action === "added_manual") {
+                            stateLabel = change.previous_value === "safe"
+                                ? "'Güvenli Gıdalar' listesine MANUEL EKLENDİ"
+                                : change.previous_value === "problematic"
+                                    ? "'Duyusal Tetikleyiciler' listesine MANUEL EKLENDİ"
+                                    : "'Kaçınılan Gıdalar' listesine MANUEL EKLENDİ";
+                        } else {
+                            stateLabel = change.previous_value === "safe"
+                                ? "'Güvenli' listesinden ÇIKARILDI (Silindi)"
+                                : change.previous_value === "problematic"
+                                    ? "'Duyusal Tetikleyici' listesinden ÇIKARILDI (Silindi)"
+                                    : "'Kaçınılan / Güvenli Olmayan' listesinden ÇIKARILDI (Silindi)";
+                        }
+                        const timeLabel = change.days_ago === 0 ? "bugün" : `${change.days_ago} gün önce`;
+                        return `- ${change.item_name} (${typeLabel}): ${timeLabel} ${stateLabel}`;
+                    }).join("\n");
+                }
+            }
+        } catch (auditErr) {
+            console.error("Error fetching recent preference changes:", auditErr);
+        }
+    }
+
     // 2. Construct System Prompt
     const systemPrompt = buildSystemPrompt({
         userText,
         masterLists,
         memoryContext,
         ragContext,
-        recentChatContext
+        recentChatContext,
+        recentChangesContext
     });
 
     try {
@@ -174,7 +262,23 @@ ${systemPrompt}
 TOOL EXECUTION RESULTS (Use these exact verified calculations in your response):
 ${JSON.stringify(accumulatedToolResults, null, 2)}
 `;
-            rawText = await geminiResponse(finalPrompt, jsonSchemaConfig);
+            try {
+                rawText = await geminiResponse(finalPrompt, jsonSchemaConfig);
+            } catch (finalGenErr) {
+                console.warn("[Dietitian Service] Final structured generation failed, using emergency tool synthesis:", finalGenErr.message);
+                // If a calculation tool was successfully executed, formulate a direct friendly response from tool results
+                const calcResult = accumulatedToolResults.find(t => t.toolName === "calculateCalories" && t.output?.status === "success")?.output;
+                if (calcResult && Array.isArray(calcResult.items) && calcResult.items.length > 0) {
+                    const itemDesc = calcResult.items.map(it => `${it.amount} ${it.unit} ${it.name} yaklaşık ${it.calories} kcal`).join(", ");
+                    const primaryFood = calcResult.items[0]?.name || "yiyecek";
+                    rawText = JSON.stringify({
+                        assistant_response: `Belirttiğiniz ${primaryFood} için hesaplanan toplam enerji yaklaşık ${calcResult.total_calories} kaloridir (${itemDesc}). Sağlıklı ve dengeli beslenme planınız için başka bir besin değeri öğrenmek ister misiniz?`,
+                        memory_updates: { foods: [], sensory: [], conditions: [] }
+                    });
+                } else {
+                    throw finalGenErr;
+                }
+            }
         }
 
         // 4. Direct JSON Parsing with Defensive Fallback
@@ -203,10 +307,62 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
 
         let assistantResponse = (parsedData.assistant_response || "Üzgünüm, cevabınızı işlerken bir sorun oluştu, tekrar deneyebilir misiniz?").trim();
 
-        // 6. Generate Patient Card (Call #2) - Skip if fallback occurred
+        // 6. Layer 3 Deterministic Guardrail Check (AVOID FOODS)
+        if (userId && !isFallback) {
+            try {
+                const userFoodPrefs = await memoryRepository.getUserFoodPreferences(userId);
+                const unsafeFoods = userFoodPrefs
+                    .filter(f => f.is_safe === 0)
+                    .map(f => f.name);
+
+                // Intent Disambiguation Rule (Fail-Safe):
+                // Soft mode is activated ONLY when explicit informational tools (e.g. calculateCalories, calculateSensoryFit, queryKnowledgeBase)
+                // were executed AND no recipe presentation was triggered.
+                // If no tools were called (pure text response) or a recipe widget was called, stay in Hard Mode (Safe Default).
+                const hasRecipeWidget = Boolean(capturedWidget && (capturedWidget.type === "recipe" || capturedWidget.type === "recipe_card" || capturedWidget.widget_type === "recipe"));
+                const hasRecipeToolCall = accumulatedToolResults.some(t =>
+                    t.toolName === "presentAsWidget" && t.args && (t.args.type === "recipe" || t.args.widget_type === "recipe" || Boolean(t.args.recipe_data) || t.output?.widget?.type === "recipe")
+                );
+                const isInfoOnlyToolCall = accumulatedToolResults.length > 0 && accumulatedToolResults.every(t =>
+                    t.toolName === "calculateCalories" ||
+                    t.toolName === "calculateSensoryFit" ||
+                    t.toolName === "queryKnowledgeBase" ||
+                    (t.toolName === "presentAsWidget" && (t.args?.widget_type === "nutrition" || t.args?.type === "nutrition" || Boolean(t.args?.nutrition_data)))
+                );
+
+                const isRecipeRecommendation = !isInfoOnlyToolCall || hasRecipeWidget || hasRecipeToolCall;
+
+                const guardrailResult = validateDietaryOutput(assistantResponse, unsafeFoods, {
+                    isRecipeRecommendation
+                });
+
+                if (!guardrailResult.isSafe) {
+                    console.warn(`[Dietary Guardrail BREACH BLOCKED] User[${userId}] - Output contained avoid foods:`, guardrailResult.blockedFoods);
+                    assistantResponse = createSafetyFallbackResponse(guardrailResult.blockedFoods);
+                    // Discard widget if it contained or was generated alongside the unsafe food
+                    capturedWidget = null;
+                } else if (guardrailResult.warningNotice) {
+                    console.log(`[Dietary Guardrail SOFT NOTICE] User[${userId}] - Added informational notice for:`, guardrailResult.blockedFoods);
+                    assistantResponse += guardrailResult.warningNotice;
+                }
+            } catch (guardrailErr) {
+                console.error("[Dietary Guardrail] Error during output validation:", guardrailErr);
+            }
+        }
+
+        // 7. Generate Patient Card (Call #2) - Skip if fallback occurred
         let patientCard = "";
         if (userId && !isFallback) {
             patientCard = await generatePatientCard(userId);
+        }
+
+        // 8. Background Enrichment: Open Food Facts Image Lookup (Non-blocking fallback)
+        if (capturedWidget) {
+            try {
+                capturedWidget = await openFoodFactsService.enrichWidget(capturedWidget, { userText });
+            } catch (enrichErr) {
+                console.warn("[DietitianService] Widget enrichment skipped due to error:", enrichErr.message);
+            }
         }
 
         return {
@@ -217,9 +373,9 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
 
     } catch (error) {
         console.error("Dietitian Assistant Error:", error.message);
-        let errorMsg = "I'm having trouble connecting to my knowledge base right now. Please try again later.";
+        let errorMsg = "Şu anda yapay zeka sunucusuna geçici olarak ulaşılamıyor. Lütfen birkaç saniye sonra tekrar deneyin.";
         if (error.status === 429) {
-            errorMsg = "I'm a bit overwhelmed right now. Please try again in a moment.";
+            errorMsg = "Şu an yoğunluk nedeniyle biraz yavaş yanıt verebiliyorum. Lütfen biraz bekleyip tekrar deneyin.";
         }
         return {
             assistant_response: errorMsg,
@@ -231,5 +387,6 @@ ${JSON.stringify(accumulatedToolResults, null, 2)}
 
 module.exports = {
     getDietitianResponse,
-    generatePatientCard
+    generatePatientCard,
+    isPreferenceChangeRelevant
 };
