@@ -468,37 +468,50 @@ body {
     justify-content: center;
 }
 
-.neo-phone-frame {
+/* =========================================================
+   HERO CANLI CHAT ÖNİZLEME PENCERESİ (CHAT ARAYÜZÜ İLE %100 UYUMLU)
+   ========================================================= */
+.neo-chat-window {
     width: 100%;
-    max-width: 460px;
+    max-width: 500px;
     background-color: #FFFDF9;
-    border: 3.5px solid var(--text-title);
-    border-radius: 36px;
-    padding: 24px;
+    border: 3px solid var(--text-title);
+    border-radius: 26px;
     box-shadow: 8px 12px 0 var(--text-title);
     position: relative;
+    overflow: hidden;
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
 }
 
-.neo-phone-frame:hover {
+.neo-chat-window:hover {
     transform: translateY(-4px);
     box-shadow: 10px 16px 0 var(--text-title);
 }
 
-.neo-phone-topbar {
+/* Chat Üst Başlık Barı (Pencere Kontrolleri + Durum) */
+.neo-chat-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
+    justify-content: flex-start;
+    padding: 14px 18px;
+    background-color: var(--bg-card-neutral);
     border-bottom: 2.5px solid var(--border-warm);
+    gap: 16px;
+}
+
+.neo-window-controls {
+    display: flex;
+    align-items: center;
+    gap: 7px;
 }
 
 .retro-dot {
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    border: 2px solid var(--text-title);
+    border: 1.8px solid var(--text-title);
     display: inline-block;
 }
 
@@ -506,35 +519,177 @@ body {
 .retro-dot.yellow { background-color: #FFEF5A; }
 .retro-dot.green { background-color: #A8D46C; }
 
-.phone-pill-badge {
-    margin-left: auto;
-    font-size: 0.82rem;
-    font-weight: 800;
-    color: var(--text-title);
-    background-color: var(--color-purple-soft);
-    border: 2px solid var(--text-title);
-    padding: 4px 12px;
-    border-radius: var(--radius-full);
+.neo-chat-header-center {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Neo-Segmented Control (Pill Tabs) */
+.chat-status-dot {
+    width: 9px;
+    height: 9px;
+    background-color: var(--color-bell-pepper);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(106, 176, 76, 0.25);
+    animation: pulseStatus 2s infinite ease-in-out;
+}
+
+@keyframes pulseStatus {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.chat-header-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-title);
+    font-family: 'Nunito', cursive, sans-serif;
+}
+
+.neo-chat-badge {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--text-title);
+    background-color: var(--color-banana);
+    border: 2px solid var(--text-title);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    box-shadow: 0 2px 0 var(--text-title);
+}
+
+/* Chat Akış Gövdesi */
+.neo-chat-body {
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #FAF6EE;
+}
+
+.neo-msg-row {
+    display: flex;
+    width: 100%;
+}
+
+.neo-msg-row.user-row {
+    justify-content: flex-end;
+}
+
+.neo-user-bubble {
+    max-width: 82%;
+    background-color: var(--color-avocado-pastel);
+    color: var(--text-title);
+    border: 2px solid var(--text-title);
+    border-radius: 20px 20px 4px 20px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.neo-user-bubble p {
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 0 0 4px 0;
+}
+
+.neo-msg-time {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: rgba(30, 81, 40, 0.8);
+    display: block;
+    text-align: right;
+}
+
+/* Asistan Mesajı ve Avatarı */
+.neo-msg-row.assistant-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.neo-assistant-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    border: 2px solid var(--text-title);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2.5px 0 var(--text-title);
+    flex-shrink: 0;
+}
+
+.neo-assistant-avatar img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+}
+
+.neo-assistant-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.neo-assistant-bubble {
+    background-color: #FFFFFF;
+    color: var(--text-primary);
+    border: 2px solid var(--text-title);
+    border-radius: 4px 20px 20px 20px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 0 var(--text-title);
+}
+
+.neo-bubble-author {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--color-ocean-blue);
+    margin-bottom: 5px;
+}
+
+.neo-assistant-bubble p {
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+/* Chat İçi Widget */
+.neo-chat-widget {
+    background-color: #FFFFFF;
+    border: 2.5px solid var(--text-title);
+    border-radius: 20px;
+    padding: 14px;
+    box-shadow: 0 4px 0 var(--text-title);
+}
+
+.neo-assistant-content > .neo-msg-time {
+    text-align: left;
+    color: var(--text-secondary);
+    padding-left: 2px;
+}
+
+/* Segmented Control (Pill Tabs) */
 .neo-segmented-tabs {
     display: flex;
     background-color: var(--bg-page-alt);
-    border: 2.5px solid var(--text-title);
+    border: 2px solid var(--text-title);
     border-radius: var(--radius-full);
-    padding: 4px;
-    gap: 6px;
-    margin-bottom: 22px;
+    padding: 3px;
+    gap: 4px;
+    margin-bottom: 12px;
 }
 
 .neo-tab-pill {
     flex: 1;
-    border: 2px solid transparent;
+    border: 1.5px solid transparent;
     background: transparent;
-    padding: 8px 10px;
+    padding: 6px 8px;
     font-family: 'Nunito', sans-serif;
-    font-size: 0.92rem;
+    font-size: 0.82rem;
     font-weight: 800;
     color: var(--text-secondary);
     border-radius: var(--radius-full);
@@ -546,106 +701,48 @@ body {
     background-color: #FFFFFF;
     color: var(--text-title);
     border-color: var(--text-title);
-    box-shadow: 0 3px 0 var(--text-title);
+    box-shadow: 0 2px 0 var(--text-title);
 }
 
 .neo-tab-pill:active {
-    transform: translateY(2px);
+    transform: translateY(1px);
     box-shadow: 0 1px 0 var(--text-title);
-}
-
-.hero-card-stack {
-    position: relative;
-    width: 100%;
-    background-color: var(--color-tangerine-soft);
-    border: 3px solid var(--text-title);
-    border-radius: 28px;
-    padding: 26px 22px;
-    box-shadow: 5px 8px 0 var(--text-title);
-}
-
-.hero-badge-floating {
-    position: absolute;
-    top: -16px;
-    right: 20px;
-    background-color: var(--color-tangerine);
-    border: 2.5px solid var(--text-title);
-    color: var(--text-title);
-    font-size: 0.88rem;
-    font-weight: 900;
-    padding: 6px 16px;
-    border-radius: var(--radius-full);
-    box-shadow: 0 3px 0 var(--text-title);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.hero-badge-floating .sparkle-star {
-    font-size: 1.1rem;
-    color: #FFFFFF;
-}
-
-.hero-visual-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-}
-
-.hero-avatar {
-    width: 54px;
-    height: 54px;
-    border-radius: 18px;
-    background-color: var(--color-banana);
-    border: 2.5px solid var(--text-title);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    box-shadow: 0 3px 0 var(--text-title);
-}
-
-.hero-avatar-text h4 {
-    font-family: 'Nunito', cursive, sans-serif;
-    font-size: 1.25rem;
-    font-weight: 900;
-    color: var(--text-title);
-}
-
-.hero-avatar-text p {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: 700;
 }
 
 /* Sensory Capsule Tubes */
 .sensory-tubes-wrapper {
-    background: #FFFFFF;
-    border: 2.5px solid var(--text-title);
-    border-radius: 22px;
-    padding: 16px 18px;
-    margin-bottom: 18px;
-    box-shadow: 0 4px 0 var(--text-title);
+    background: #FAF6EE;
+    border: 2px solid var(--text-title);
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 4px;
+    box-shadow: 0 3px 0 var(--text-title);
 }
 
 .sensory-tubes-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
     color: var(--text-title);
     margin-bottom: 12px;
 }
 
+.tube-title-text {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text-title);
+}
+
 .tube-match-pill {
     background-color: var(--color-avocado-pastel);
-    border: 2px solid var(--text-title);
+    border: 1.8px solid var(--text-title);
     padding: 3px 10px;
     border-radius: var(--radius-full);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 800;
+    color: var(--text-title);
 }
 
 .sensory-tubes-grid {
@@ -720,12 +817,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #FFFFFF;
-    border: 2.5px solid var(--text-title);
-    border-radius: 20px;
-    padding: 12px 16px;
-    margin-bottom: 18px;
-    box-shadow: 0 4px 0 var(--text-title);
+    background: #FAF6EE;
+    border: 2px solid var(--text-title);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    box-shadow: 0 3px 0 var(--text-title);
 }
 
 .chain-step {
@@ -734,14 +831,14 @@ body {
 }
 
 .chain-tag {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
     color: var(--text-muted);
 }
 
 .chain-step strong {
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     color: var(--text-title);
 }
 
@@ -749,47 +846,56 @@ body {
 .chain-step.bridge strong { color: #C5377B; }
 
 .chain-arrow {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     background: var(--color-banana);
-    border: 2px solid var(--text-title);
+    border: 1.8px solid var(--text-title);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 15px;
+    font-size: 13px;
     box-shadow: 0 2px 0 var(--text-title);
 }
 
-.hero-feature-pills {
+/* Chat Input Bar Mockup (Chat Sayfasındaki ile Birebir Uyumlu) */
+.neo-chat-inputbar {
+    padding: 12px 18px 16px 18px;
+    background-color: var(--bg-card-neutral);
+    border-top: 2.5px solid var(--border-warm);
+}
+
+.neo-input-pill {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.hero-pill {
-    padding: 7px 14px;
-    border-radius: var(--radius-full);
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: var(--text-title);
-    display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: space-between;
+    background-color: #FFFFFF;
     border: 2px solid var(--text-title);
+    border-radius: var(--radius-full);
+    padding: 8px 12px 8px 18px;
     box-shadow: 0 2.5px 0 var(--text-title);
-    transition: var(--transition);
 }
 
-.hero-pill:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 0 var(--text-title);
+.neo-input-placeholder {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
-.hero-pill.badge-green { background-color: var(--color-avocado-soft); }
-.hero-pill.badge-yellow { background-color: var(--color-banana-soft); }
-.hero-pill.badge-pink { background-color: var(--color-bubblegum-soft); }
+.neo-input-send-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--color-avocado-pastel);
+    border: 1.8px solid var(--text-title);
+    color: var(--text-title);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    box-shadow: 0 2px 0 var(--text-title);
+}
 
 .assistant-card-badge {
     display: inline-block;

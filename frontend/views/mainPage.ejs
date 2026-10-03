@@ -108,91 +108,111 @@
               </div>
             </div>
 
-            <!-- Hero Interactive Preview Card (Playful Neo-Brutalist Multi-Widget) -->
+            <!-- Hero Interactive Preview Card (Playful Neo-Brutalist Live Chat Window) -->
             <div class="hero-visual">
-              <div class="neo-phone-frame">
-                <!-- Top Phone Notch & Retro Sparkles -->
-                <div class="neo-phone-topbar">
-                  <span class="retro-dot red"></span>
-                  <span class="retro-dot yellow"></span>
-                  <span class="retro-dot green"></span>
-                  <span class="phone-pill-badge">✨ ARFID Food Chaining OS</span>
+              <div class="neo-chat-window">
+                <!-- Chat Window Header with Status -->
+                <div class="neo-chat-header">
+                  <div class="neo-window-controls">
+                    <span class="retro-dot red"></span>
+                    <span class="retro-dot yellow"></span>
+                    <span class="retro-dot green"></span>
+                  </div>
+                  <div class="neo-chat-header-center">
+                    <span class="chat-status-dot"></span>
+                    <span class="chat-header-title">ARFID Beslenme Asistanı</span>
+                  </div>
                 </div>
 
-                <!-- Segmented Control Filters (Pill Buttons) -->
-                <div class="neo-segmented-tabs">
-                  <button type="button" class="neo-tab-pill active" onclick="switchNeoTab(this, 'texture')">Doku (Texture)</button>
-                  <button type="button" class="neo-tab-pill" onclick="switchNeoTab(this, 'aroma')">Koku (Aroma)</button>
-                  <button type="button" class="neo-tab-pill" onclick="switchNeoTab(this, 'chain')">Zincirleme</button>
+                <!-- Chat Messages Stream Preview -->
+                <div class="neo-chat-body">
+                  <!-- User Message Bubble -->
+                  <div class="neo-msg-row user-row">
+                    <div class="neo-user-bubble">
+                      <p>Kıtır ekmek seviyorum ama sebze yiyemiyorum, nasıl bir geçiş yapabilirim?</p>
+                      <span class="neo-msg-time">14:24</span>
+                    </div>
+                  </div>
+
+                  <!-- Assistant Message with Avatar and Analysis -->
+                  <div class="neo-msg-row assistant-row">
+                    <div class="neo-assistant-avatar">
+                      <img src="/image/arfid_icon.png" alt="ARFID Asistanı">
+                    </div>
+                    <div class="neo-assistant-content">
+                      <div class="neo-assistant-bubble">
+                        <div class="neo-bubble-author">🥑 Diyetisyen & Duyusal Analiz</div>
+                        <p>Harika bir soru! Güvenli listenizdeki kıtır doku profilini koruyarak pütür ve koku eşiğinizi zorlamadan sebzeye mikro geçiş planladım:</p>
+                      </div>
+
+                      <!-- Interactive Widget Sample: Sensory Tubes -->
+                      <div class="neo-chat-widget">
+                        <!-- Segmented Mode Tabs inside the widget -->
+                        <div class="neo-segmented-tabs">
+                          <button type="button" class="neo-tab-pill active" onclick="switchNeoTab(this, 'texture')">Doku Uyumu</button>
+                          <button type="button" class="neo-tab-pill" onclick="switchNeoTab(this, 'aroma')">Koku Eşiği</button>
+                          <button type="button" class="neo-tab-pill" onclick="switchNeoTab(this, 'chain')">Zincirleme</button>
+                        </div>
+
+                        <!-- Capsule Vertical Sensory Tubes -->
+                        <div class="sensory-tubes-wrapper">
+                          <div class="sensory-tubes-header">
+                            <span class="tube-title-text">📊 Duyusal Eşleşme Analizi</span>
+                            <span class="tube-match-pill">%94 Doku Uyumu</span>
+                          </div>
+                          <div class="sensory-tubes-grid">
+                            <div class="tube-col">
+                              <div class="tube-bar"><div class="tube-fill fill-green" style="height: 85%;"></div></div>
+                              <span class="tube-label">Kıtır</span>
+                            </div>
+                            <div class="tube-col">
+                              <div class="tube-bar"><div class="tube-fill fill-orange" style="height: 40%;"></div></div>
+                              <span class="tube-label">Pütür</span>
+                            </div>
+                            <div class="tube-col">
+                              <div class="tube-bar"><div class="tube-fill fill-blue" style="height: 70%;"></div></div>
+                              <span class="tube-label">Koku</span>
+                            </div>
+                            <div class="tube-col">
+                              <div class="tube-bar"><div class="tube-fill fill-purple" style="height: 90%;"></div></div>
+                              <span class="tube-label">Renk</span>
+                            </div>
+                            <div class="tube-col">
+                              <div class="tube-bar"><div class="tube-fill fill-pink" style="height: 30%;"></div></div>
+                              <span class="tube-label">Kaygan</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Food Chain Bridge Transition Box -->
+                        <div class="neo-food-chain-bridge">
+                          <div class="chain-step safe">
+                            <span class="chain-tag">Güvenli Gıda</span>
+                            <strong>Kıtır Ekmek</strong>
+                          </div>
+                          <div class="chain-arrow">➔</div>
+                          <div class="chain-step bridge">
+                            <span class="chain-tag">Mikro Geçiş</span>
+                            <strong>Fırınlanmış Çıtır Havuç</strong>
+                          </div>
+                        </div>
+                      </div>
+
+                      <span class="neo-msg-time">14:24 • Yanıtlandı</span>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Interactive Main Card Content -->
-                <div class="hero-card-stack">
-                  <div class="hero-badge-floating">
-                    <span class="sparkle-star">★</span> <%= t('hero.card_support') %>
-                  </div>
-                  
-                  <div class="hero-visual-header">
-                    <div class="hero-avatar">🥑</div>
-                    <div class="hero-avatar-text">
-                      <h4><%= t('hero.card_title') %></h4>
-                      <p><%= t('hero.card_desc') %></p>
-                    </div>
-                  </div>
-
-                  <!-- Capsule Vertical Sensory Tubes (Inspired by image 1 & 2) -->
-                  <div class="sensory-tubes-wrapper">
-                    <div class="sensory-tubes-header">
-                      <span>Duyusal Tolerans Testi</span>
-                      <span class="tube-match-pill">%94 Eşleşme</span>
-                    </div>
-                    <div class="sensory-tubes-grid">
-                      <div class="tube-col">
-                        <div class="tube-bar"><div class="tube-fill fill-green" style="height: 85%;"></div></div>
-                        <span class="tube-label">Kıtır</span>
-                      </div>
-                      <div class="tube-col">
-                        <div class="tube-bar"><div class="tube-fill fill-orange" style="height: 40%;"></div></div>
-                        <span class="tube-label">Pütür</span>
-                      </div>
-                      <div class="tube-col">
-                        <div class="tube-bar"><div class="tube-fill fill-blue" style="height: 70%;"></div></div>
-                        <span class="tube-label">Koku</span>
-                      </div>
-                      <div class="tube-col">
-                        <div class="tube-bar"><div class="tube-fill fill-purple" style="height: 90%;"></div></div>
-                        <span class="tube-label">Renk</span>
-                      </div>
-                      <div class="tube-col">
-                        <div class="tube-bar"><div class="tube-fill fill-pink" style="height: 30%;"></div></div>
-                        <span class="tube-label">Kaygan</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Retro Character Speech Bubble -->
-                  <div class="hero-chat-bubble">
-                    <div class="bubble-bot-badge">🤖 Asistan Tavsiyesi:</div>
-                    "<%= t('hero.card_bubble') %>"
-                  </div>
-
-                  <!-- Interactive Food Chain Bridge Demo -->
-                  <div class="neo-food-chain-bridge">
-                    <div class="chain-step safe">
-                      <span class="chain-tag">Güvenli Gıda</span>
-                      <strong>Kraker / Cips</strong>
-                    </div>
-                    <div class="chain-arrow">➔</div>
-                    <div class="chain-step bridge">
-                      <span class="chain-tag">Mikro Geçiş</span>
-                      <strong>Kıtır Sebze Cipsi</strong>
-                    </div>
-                  </div>
-
-                  <div class="hero-feature-pills">
-                    <span class="hero-pill badge-green"><%= t('hero.pill_food_analysis') %></span>
-                    <span class="hero-pill badge-yellow"><%= t('hero.pill_friendly_recipes') %></span>
-                    <span class="hero-pill badge-pink"><%= t('hero.pill_sensory_fit') %></span>
+                <!-- Chat Input Mockup at Bottom -->
+                <div class="neo-chat-inputbar">
+                  <div class="neo-input-pill">
+                    <span class="neo-input-placeholder">Yeni bir yiyecek veya doku sor...</span>
+                    <button type="button" class="neo-input-send-btn" aria-label="Gönder">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
